@@ -12,7 +12,7 @@ export const TEXT_FONT_SIZE ={
 
 export const TEXT_COLORS={
     primary: '#000000',
-    secondary: '#C1C1C1',
+    secondary: '#7E7E7E',
     error:'#EE1313'
 }
 

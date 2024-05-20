@@ -1,30 +1,32 @@
 import * as React from "react";
-import Svg, { Circle, G, Path, Polyline, Rect } from "react-native-svg";
+import Svg, { Circle, G, Path, Polyline, Rect, SvgProps } from "react-native-svg";
 import { THEME_COLORS } from "../../GlobalStyles/GlobalStyles";
 
 export const AccountIcon = (props:any) => (
   <Svg
-    width="30px"
-    height="30px"
+    width="25px"
+    height="25px"
     viewBox="0 0 24 24"
-    fill='none'
+    fill={props.color}
     xmlns="http://www.w3.org/2000/svg"
     {...props}
   >
     <Circle
       cx={12}
-      fill={props.color ===`${THEME_COLORS.secondary}`? props.color : 'none' }
+      // fill={props.color ===`${THEME_COLORS.secondary}`? props.color : 'none' }
       cy={7}
       r={4}
-      stroke={props.color}
+      fill={props.color}
+      // stroke={props.color}
       strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
     />
     <Path
       d="M4 21V17C4 15.8954 4.89543 15 6 15H18C19.1046 15 20 15.8954 20 17V21"
-      stroke={props.color}
+      // stroke={props.color}
       strokeWidth={2}
+      fill={props.color}
       strokeLinecap="round"
       strokeLinejoin="round"
     />
@@ -104,19 +106,19 @@ export const HomeIcon = (props:any) => (
   viewBox="0 0 32 32"
   enableBackground="new 0 0 32 32"
   xmlSpace="preserve"
-  width='35px'
-  height='35px'
+  width='25px'
+  height='25px'
   {...props}
 >
   <Polyline
-    fill="none"
+    fill={props.color}
     stroke={props.color}
     strokeWidth={1.5}
     strokeMiterlimit={10}
     points="3,17 16,4 29,17 "
   />
   <Polyline
-    fill="none"
+    fill={props.color}
     stroke={props.color}
     strokeWidth={1.5}
     strokeMiterlimit={10}
@@ -124,6 +126,36 @@ export const HomeIcon = (props:any) => (
   />
 </Svg>
 );
+
+export const CartIcon = (props: SvgProps) => (
+  <Svg
+    width='25px'
+    height='25px'
+    viewBox='0 0 16 16'
+    {...props}
+  >
+    <Path
+      fill={props.color}
+      d='M14 13.1v-1.1h-9.4l0.6-1.1 9.2-0.9 1.6-6h-12.3l-0.7-3h-3v1h2.2l2.1 8.4-1.3 2.6v1.5c0 0.8 0.7 1.5 1.5 1.5s1.5-0.7 1.5-1.5-0.7-1.5-1.5-1.5h7.5v1.5c0 0.8 0.7 1.5 1.5 1.5s1.5-0.7 1.5-1.5c0-0.7-0.4-1.2-1-1.4z'
+    />
+  </Svg>
+);
+
+export const OrdersIcon = (props: SvgProps) => (
+  <Svg
+    fill={props.color}
+    height='25px'
+    width='25px'
+    id='Layer_1'
+    viewBox='0 0 512 512'
+    {...props}
+  >
+    <Path d='M421.2,128h-42.7v21.3c0,23.5-19.1,42.7-42.7,42.7c-23.5,0-42.7-19.1-42.7-42.7V128h-85.3v21.3c0,23.5-19.1,42.7-42.7,42.7 c-23.5,0-42.7-19.1-42.7-42.7V128H79.9c0,213.3-21.3,384-21.3,384h384C442.5,512,421.2,341.3,421.2,128z M165.2,170.7 c11.8,0,21.3-9.5,21.3-21.3v-42.7c0-35.4,28.6-64,64-64c35.4,0,64,28.6,64,64v42.7c0,11.8,9.5,21.3,21.3,21.3 c11.8,0,21.3-9.5,21.3-21.3v-42.7C357.2,47.8,309.4,0,250.5,0c-58.9,0-106.7,47.8-106.7,106.7v42.7 C143.9,161.1,153.4,170.7,165.2,170.7z' />
+  </Svg>
+);
+
+
+
 
 
 
