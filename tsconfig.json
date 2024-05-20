@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "lib": ["dom", "es2015"],
+  },
+  "extends": "@react-native/typescript-config/tsconfig.json"
+}
