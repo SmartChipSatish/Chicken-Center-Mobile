@@ -3,6 +3,7 @@ import { Alert, Keyboard, Modal, StyleSheet, Text, TextInput, TouchableOpacity, 
 import Loding from '../../../Dashboard/components/Loding';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
+import { THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 
 export default function MobileNoModel({show, handleClose}:{show:boolean, handleClose:()=>void,}) {
   
@@ -88,7 +89,7 @@ export default function MobileNoModel({show, handleClose}:{show:boolean, handleC
                     <TouchableOpacity
                         onPress={SendOtp}
                         activeOpacity={numberCheck ? 0 : 1}
-                        style={[style.numberVerificationBtn, { backgroundColor: numberCheck ? 'red' : '#EF937F' }]}
+                        style={[style.numberVerificationBtn, { backgroundColor: numberCheck ? `${THEME_COLORS.secondary}` : '#EF937F' }]}
                     >
                         <Text style={{ color: 'white' }}>Proceed with OTP</Text>
                     </TouchableOpacity>
@@ -114,7 +115,7 @@ const style = StyleSheet.create({
     },
     numberVerificationBtn: {
         marginTop: 10,
-        backgroundColor: 'red',
+        backgroundColor: `${THEME_COLORS.secondary}`,
         height: 40,
         alignItems: 'center',
         justifyContent: 'center',

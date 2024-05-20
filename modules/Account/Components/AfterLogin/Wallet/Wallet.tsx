@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { TEXT_COLORS } from '../../../../GlobalStyles/GlobalStyles';
 
 const Wallet = () => {
     const navigate = useNavigation<any>()
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     },
     blance_Text: {
         fontSize: 15,
-        color: 'black'
+        color: `${TEXT_COLORS.primary}`
     },
     cash_container: {
         marginTop: 10,

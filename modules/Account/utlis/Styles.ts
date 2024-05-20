@@ -1,17 +1,18 @@
 import { StyleSheet } from "react-native";
+import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from "../../GlobalStyles/GlobalStyles";
 
 export const style = StyleSheet.create({
   login_button: {
     width: '100%',
     height: 50,
-    backgroundColor: 'red',
+    backgroundColor: `${THEME_COLORS.secondary}`,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 10,
     marginTop: 10
   },
   details_container: {
-    backgroundColor: '#fffff',
+    backgroundColor: `${THEME_COLORS.primary}`,
     margin: 8,
     flex: 1,
     flexDirection: 'row',
@@ -22,9 +23,9 @@ export const style = StyleSheet.create({
     borderBottomColor: '#CDCEDA'
   },
   title: {
-    fontSize: 18,
-    color: "black",
-  },
+    fontSize: TEXT_FONT_SIZE.small,
+    color: `${TEXT_COLORS.primary}`,
+  }, 
   discription: {
     fontSize: 15
   },

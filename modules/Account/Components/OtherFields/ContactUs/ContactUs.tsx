@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Button, Linking, Alert, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import ContactUsICon from '../../../../assets/svgimages/AccountsSvgs/contactUsICon';
+import { THEME_COLORS } from '../../../../GlobalStyles/GlobalStyles';
 
 
 const ContactUs = () => {
@@ -39,7 +40,7 @@ const style = StyleSheet.create({
     contact: {
         width: '90%',
         height: 40,
-        backgroundColor: 'red',
+        backgroundColor: `${THEME_COLORS.secondary}`,
         marginBottom: 10,
         marginTop: 10,
         borderRadius: 10,

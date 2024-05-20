@@ -4,6 +4,7 @@ import { ScrollView } from 'react-native'
 import { StyleSheet } from 'react-native'
 import { saveAs } from '../../../utlis/constents'
 import Location from './Location'
+import { TEXT_COLORS, THEME_COLORS } from '../../../../GlobalStyles/GlobalStyles'
 
 export default function AddAddress() {
   const [placeholderShow,setPlaceholderShow] =useState(false);
@@ -76,7 +77,7 @@ export default function AddAddress() {
             return <TouchableOpacity style={[Style.savas_btn,{backgroundColor: saveType === e.title? '#EA9A7E' : 'white'}]} 
                                      key={inedx} 
                                      onPress={()=>setSaveType(e.title)}>
-                   <e.icon width={20} height={20} color={'black'}/>
+                   <e.icon width={20} height={20} color={`${TEXT_COLORS.primary}`}/>
                    <Text style={{marginLeft:5}}>{e.title}</Text>
                    </TouchableOpacity>
           })}
@@ -99,7 +100,7 @@ const Style = StyleSheet.create({
     width: '90%',
     fontSize: 15,
     borderBottomWidth: 1,
-    borderBottomColor: 'black'
+    borderBottomColor: `${TEXT_COLORS.primary}`
   },
   savas_btn:{
     flexDirection:'row',
@@ -110,7 +111,7 @@ const Style = StyleSheet.create({
     justifyContent:'space-between' 
    },
    save_btn:{
-    backgroundColor:'red',
+    backgroundColor:`${THEME_COLORS.secondary}`,
     justifyContent:'center',
     alignItems:'center',
     height:50,

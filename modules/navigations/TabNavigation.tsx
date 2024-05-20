@@ -1,12 +1,12 @@
 import React from 'react';
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import HomePage from "../Dashboard/components/HomePage";
-import { HomeIcon } from "../assets/svgimages/SaveAsIcons";
 import Categories from "../Dashboard/components/Categories";
-import { AccountIcon, CategoriesIcon, PercentageIcon, SearchIcon } from "../assets/svgimages/SvgIcons";
+import { AccountIcon, CategoriesIcon, HomeIcon, PercentageIcon, SearchIcon } from "../assets/svgimages/SvgIcons";
 import Percentage from "../Dashboard/components/Percentage";
 import Search from "../Dashboard/components/Search";
 import Account from "../Account/Components/Account";
+import { THEME_COLORS } from '../GlobalStyles/GlobalStyles';
 
 export const TabNav = () => {
     const Tab = createBottomTabNavigator();
@@ -16,7 +16,7 @@ export const TabNav = () => {
         screenOptions={{
           tabBarLabelStyle: { fontSize: 12 },
           tabBarItemStyle: { width: 100 },
-          tabBarActiveTintColor: 'red',
+          tabBarActiveTintColor: `${THEME_COLORS.secondary}`,
           tabBarStyle: { height: 60 },
           tabBarInactiveTintColor: 'black'
         }}

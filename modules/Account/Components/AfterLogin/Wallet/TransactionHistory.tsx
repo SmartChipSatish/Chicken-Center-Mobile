@@ -4,6 +4,7 @@ import { StyleSheet, Text, View, TouchableOpacity, Linking, Alert } from "react-
 import AllTransactions from './AllTransactions';
 import Credited from './Credited';
 import Debited from './Debited';
+import { TEXT_COLORS } from '../../../../GlobalStyles/GlobalStyles';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -17,7 +18,7 @@ export function TransactionHistory() {
   return (
     <View style={styles.container}>
       <Tab.Navigator screenOptions={{
-        tabBarActiveTintColor: 'black',
+        tabBarActiveTintColor: `${TEXT_COLORS.primary}`,
         tabBarLabelStyle: { fontSize: 12 },
         tabBarIndicatorStyle: { backgroundColor: 'red' },
       }}>
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 15,
-    color: 'black',
+    color: `${TEXT_COLORS.primary}`,
   },
   footer: {
     position: 'absolute',
