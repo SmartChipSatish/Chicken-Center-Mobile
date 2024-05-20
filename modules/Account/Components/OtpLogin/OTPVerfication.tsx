@@ -4,6 +4,7 @@ import { View } from 'react-native'
 import { Text } from 'react-native-paper'
 import { ScreenContainer } from 'react-native-screens'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles'
 
 export default function OTPVerfication({ navigation, route }:any) {
   const [otp, setOTP] = useState(['', '', '', '', '', '']);
@@ -55,7 +56,7 @@ export default function OTPVerfication({ navigation, route }:any) {
     <View style={OTPVericationCSS.container}>
 
       <TouchableOpacity style={{marginTop:20,marginBottom:10}} onPress={()=>navigation.goBack()}>
-      <Ionicons name='chevron-back' size={30} color={'black'}/>
+      <Ionicons name='chevron-back' size={30} color={`${TEXT_COLORS.primary}`}/>
       </TouchableOpacity>
 
         <Text style={OTPVericationCSS.mainText}>Verify via OTP</Text>
@@ -118,7 +119,7 @@ const OTPVericationCSS=StyleSheet.create({
     paddingVertical: 20,
   },
   continue_btn:{
-    backgroundColor:'red',
+    backgroundColor:`${THEME_COLORS.secondary}`,
     borderRadius:8,
     height:40,
     width:'90%',
@@ -127,7 +128,7 @@ const OTPVericationCSS=StyleSheet.create({
     marginTop:10
   },
   input: {
-    borderColor: 'black',
+    borderColor: `${TEXT_COLORS.primary}`,
     width: 40,
     height: 50,
     margin: 5,

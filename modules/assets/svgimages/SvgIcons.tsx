@@ -1,5 +1,6 @@
 import * as React from "react";
 import Svg, { Circle, G, Path, Polyline, Rect } from "react-native-svg";
+import { THEME_COLORS } from "../../GlobalStyles/GlobalStyles";
 
 export const AccountIcon = (props:any) => (
   <Svg
@@ -12,7 +13,7 @@ export const AccountIcon = (props:any) => (
   >
     <Circle
       cx={12}
-      fill={props.color ==='red'? props.color : 'none' }
+      fill={props.color ===`${THEME_COLORS.secondary}`? props.color : 'none' }
       cy={7}
       r={4}
       stroke={props.color}
@@ -57,7 +58,7 @@ export const PercentageIcon = (props:any) => (
     id="Capa_1"
     xmlns="http://www.w3.org/2000/svg"
     xmlnsXlink="http://www.w3.org/1999/xlink"
-    fill='red'
+    fill={`${THEME_COLORS.secondary}`}
     width='70px'
     height='70px'
     x="0px"

@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { NoAddressIcon } from '../../../../assets/svgimages/AccountsSvgs/accountsSvgs';
 import { useNavigation } from '@react-navigation/native';
+import { THEME_COLORS } from '../../../../GlobalStyles/GlobalStyles';
 
 const Addresses = () => {
   const navigate=useNavigation<any>()
@@ -38,7 +39,7 @@ const styles = StyleSheet.create({
     bottom: 20,
     width: '100%',
     padding: 15,
-    backgroundColor: 'red',
+    backgroundColor: `${THEME_COLORS.secondary}`,
     borderRadius: 25,
     alignItems: 'center',
     justifyContent: 'center',

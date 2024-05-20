@@ -2,6 +2,7 @@ import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity
 import React, { useMemo, useState } from 'react';
 import RadioGroup from 'react-native-radio-buttons-group';
 import { CardIcon, DownArrowIcon, ForwardArrowIcon } from '../../../../assets/svgimages/AccountsSvgs/accountsSvgs';
+import { TEXT_COLORS } from '../../../../GlobalStyles/GlobalStyles';
 
 export default function RechargeWallet() {
   const radioButtons = useMemo(() => ([
@@ -47,7 +48,7 @@ export default function RechargeWallet() {
             <View style={styles.payment_types}>
               <View style={{flexDirection:'row',justifyContent:'space-around'}}>
               <CardIcon/>
-              <Text style={{ fontSize: 20, color: 'black' }}>Card</Text>
+              <Text style={{ fontSize: 20, color: `${TEXT_COLORS.primary}` }}>Card</Text>
               </View>
               {!cardShow && <ForwardArrowIcon onPress={() => setCardShow(true)} />}
               {cardShow && <DownArrowIcon onPress={() => setCardShow(false)}/>}
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    color: 'black',
+    color: `${TEXT_COLORS.primary}`,
     marginTop: 10,
   },
   input: {
