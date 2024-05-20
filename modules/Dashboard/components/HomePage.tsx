@@ -1,13 +1,20 @@
 import React from 'react'
-import { View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import { Text } from 'react-native-paper'
-import SVGComponent from '../../assets/svgimages/AccountsSvgs/accountsSvgs'
+import HeaderLocation from '../../location/HeaderLocation'
+
 
 export default function HomePage() {
   return (
-    <View>
-        <Text>Hello</Text>
-        {/* <SVGComponent/> */}
+    <View style={styles.HomePageBackground}>
+        <HeaderLocation></HeaderLocation>
     </View>
   )
 }
+const styles = StyleSheet.create({
+  HomePageBackground:{
+    backgroundColor:"white",
+    height:"100%"
+  }
+
+})

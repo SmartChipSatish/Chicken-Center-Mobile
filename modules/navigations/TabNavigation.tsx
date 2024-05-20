@@ -25,6 +25,7 @@ export const TabNav = () => {
           component={HomePage}
           options={{
             title: 'Home',
+            headerShown:false,
             tabBarIcon: ({ color, size }) => (
               <HomeIcon color={color} />
             ),
