@@ -11,6 +11,8 @@ import Cart from '../Dashboard/components/Cart';
 import Orders from '../Dashboard/components/Orders';
 import { Text, View } from 'react-native';
 import { StyleSheet } from 'react-native';
+import { FavouriteIcon } from '../assets/svgimages/HomeSvgs/svgsIcons';
+import Favourite from '../Dashboard/components/Favourite';
 
 // const CartIcons = (itemCount:number,color:string ) => {
 //     return (
@@ -25,6 +27,8 @@ import { StyleSheet } from 'react-native';
 //     );
 // };
 
+// const Cart
+
 function CustomTabBarLabel({ label, color }:any) {
     return (
       <View style={{  alignItems: 'center',justifyContent:'center' }}>
@@ -33,6 +37,10 @@ function CustomTabBarLabel({ label, color }:any) {
         {label === 'Cart' && <CartIcon color={color}/>}
         {label ==='Orders' &&<OrdersIcon  color={color} />}
         {label ==='Account' &&<AccountIcon color={color} />}
+        {label === 'Favourite' && <FavouriteIcon color={color} 
+                                           height={25} 
+                                           width={25}
+                                           fill={color}/>}
         <Text style={{color:`${color}`,fontSize:13 }}>{label}</Text>
       </View>
     );
@@ -56,6 +64,7 @@ export const TabNav = () => {
                     tabBarIcon: ({ color, size }) => (
                         <CustomTabBarLabel label={'Home'} color={color}/>
                     ),
+                    headerShown: false
                 }} />
 
             {/* <Tab.Screen name='categories'
@@ -98,6 +107,13 @@ export const TabNav = () => {
                         <CustomTabBarLabel label={'Orders'} color={color}/>
                     ),
                 }} />
+             <Tab.Screen name='favourite'
+                component={Favourite}
+                options={{
+                    tabBarIcon: ({ color, size }) => (
+                        <CustomTabBarLabel label={'Favourite'} color={color}/>
+                    ),
+                }} />   
             <Tab.Screen name="account"
                 component={Account}
                 options={{

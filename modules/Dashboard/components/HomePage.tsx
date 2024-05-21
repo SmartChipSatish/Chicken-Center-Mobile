@@ -7,76 +7,38 @@ import ProductsList from '../../Home/components/ProductsList/ProductsList';
 import { ChickenSkinless } from '../../assets/svgimages/HomeSvgs/HomeSvgs';
 import OfferCards from '../../Home/components/Offers/OfferCards';
 import HeaderLocation from '../../location/HeaderLocation'
+import { TEXT_COLORS, THEME_COLORS } from '../../GlobalStyles/GlobalStyles';
 const { height, width } = Dimensions.get('window')
 const HomePage = () => {
   const bannerImage = require('../../../modules/assets/svgimages/HomeSvgs/carouselimages/image1.png')
-  const data = [
-    {
-      title: "Chicken Skinless",
-      imgUrl: ChickenSkinless,
-      price: 270,
-      quantity: '1Kg',
-      id: 1
-    },
-    {
-      title: "Chicken Boneless",
-      imgUrl: ChickenSkinless,
-      price: 400,
-      quantity: '1Kg',
-      id: 2
-
-    },
-    {
-      title: "Chicken Wings",
-      imgUrl: ChickenSkinless,
-      price: 300,
-      quantity: '1Kg',
-      id: 3
-
-    },
-    {
-      title: "Chicken Joints",
-      imgUrl: ChickenSkinless,
-      price: 320,
-      quantity: '1Kg',
-      id: 4
-    }
-  ];
   const [searchQuery, setSearchQuery] = React.useState('');
-
+  const navigate=useNavigation<any>();
 
   return (
 
     <View style={styles.container}>
-<View style={styles.HomePageBackground}>
+      <View style={styles.HomePageBackground}>
         <HeaderLocation></HeaderLocation>
-    </View>
-      <View style={styles.searchBar}>
+      </View>
+      <TouchableOpacity onPress={()=>navigate.navigate('searchPage')}>
         <Searchbar
           placeholder="Search"
-          onChangeText={setSearchQuery}
+          // onChangeText={setSearchQuery}
           value={searchQuery}
+          style={styles.searchBar}
+          editable={false}
         />
-        {/* <View >
-          <Image style={styles.banner} source={bannerImage} />
-        </View> */}
-      </View>
-
-      <View style={styles.carouselContainer}>
-        <CarouselCards />
-      </View>
-      <View style={styles.freshMeats}>
-        <Text style={styles.header}>Offers</Text>
-      </View>
-      <View >
-        <OfferCards />
-      </View>
-
-      <View style={styles.freshMeats}>
-        <Text style={styles.header}>Fresh Meats</Text>
-      </View>
-      <ScrollView>
-        <ProductsList data={data} />
+      </TouchableOpacity>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.carouselContainer}>
+          <CarouselCards />
+        </View>
+        <View style={styles.freshMeats}>
+          <Text style={styles.header}>Fresh Meats</Text>
+        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <ProductsList  />
+        </View>
+        </View>
       </ScrollView>
 
 
@@ -87,7 +49,7 @@ const HomePage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'lightblue'
+    backgroundColor: `${THEME_COLORS.primary}`
   },
   banner: {
     backgroundColor: '#007bff',
@@ -104,8 +66,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   searchBar: {
-    backgroundColor: '#f5f5f5',
-    padding: 10,
+    borderRadius: 10,
+    marginRight: 10,
+    marginLeft: 10,
+    backgroundColor: 'white',
+    marginTop: 30,
+    borderColor: 'grey',
+    borderWidth: 1,
   },
   searchBarText: {
     fontSize: 16,
@@ -119,7 +86,7 @@ const styles = StyleSheet.create({
   },
   carouselContainer: {
     paddingHorizontal: 20,
-    height: '30%',
+    height: 200,
     // objectFit:'cover'
   },
   carouselItem: {
@@ -146,17 +113,20 @@ const styles = StyleSheet.create({
   freshMeats: {
     backgroundColor: '#fff',
     padding: 3,
+    marginTop:10
   },
   freshMeatsText: {
     fontSize: 18,
   },
   header: {
-    fontSize: 20,
-    fontWeight: 'bold'
+    fontSize: 16,
+    // fontWeight: 'bold',
+    color:`${TEXT_COLORS.primary}`,
+    marginBottom:10
   },
-  HomePageBackground:{
-    backgroundColor:"white",
-    height:"7%"
+  HomePageBackground: {
+    backgroundColor: "white",
+    height: "7%"
   }
 });
 

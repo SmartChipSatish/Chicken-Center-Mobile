@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 18,
     textAlign: 'center',
+    color:'black'
   },
   fixedBottomButton: {
     position: 'absolute',
@@ -45,7 +46,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    color: '#fff',
+    color: 'white',
     fontSize: 16,
     
   },

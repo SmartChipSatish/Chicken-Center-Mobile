@@ -112,6 +112,7 @@ const HeaderLocation = () => {
           );
         } else {
           setError('Location permission denied');
+          setModalVisible(true);
         }
       } catch (err) {
         console.warn(err);

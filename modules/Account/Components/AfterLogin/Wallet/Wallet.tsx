@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { TEXT_COLORS } from '../../../../GlobalStyles/GlobalStyles';
+import { TEXT_COLORS, THEME_COLORS } from '../../../../GlobalStyles/GlobalStyles';
 
 const Wallet = () => {
     const navigate = useNavigation<any>()
@@ -18,7 +18,7 @@ const Wallet = () => {
                 <Text style={styles.buttonText}>Add Money To Wallet</Text>
             </TouchableOpacity>
             <TouchableOpacity style={[styles.buttons,styles.transaction_btn]} onPress={() => navigate.navigate('transactionHistory')}>
-                <Text style={[styles.buttonText,{color:'red'}]}>Transaction History</Text>
+                <Text style={[styles.buttonText,{color:`${THEME_COLORS.secondary}`}]}>Transaction History</Text>
             </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
         height:50,
         justifyContent:'center',
         alignItems:'center',
-        backgroundColor: 'red',
+        backgroundColor: `${THEME_COLORS.secondary}`,
         borderRadius: 10,
         width:'90%',
         marginBottom: 10,
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     transaction_btn:{
         backgroundColor:'white',
         borderWidth:1,
-        borderColor:'red'
+        borderColor:`${THEME_COLORS.secondary}`
     },
     buttonText: {
         color: '#fff',
