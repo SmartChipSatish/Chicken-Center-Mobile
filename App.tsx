@@ -22,10 +22,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    data.map((item) =>
-      dispatch(setAddProducts(item))
-    )
-  }, [dispatch])
+    dispatch(setAddProducts(data))
+  }, [])
 
   return (
 
