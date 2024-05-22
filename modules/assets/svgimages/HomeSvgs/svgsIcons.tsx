@@ -61,7 +61,7 @@ export const BackButtonIcon = (props: SvgProps) => (
 export const RemoveProductIcon = (props: SvgProps) => (
     <Svg
     fill='#ffffff'
-    width='25px'
+    width='22px'
     height='25px'
     viewBox='-3 0 19 19'
     {...props}
