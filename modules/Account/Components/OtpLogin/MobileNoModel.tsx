@@ -110,7 +110,7 @@ const style = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.5)',
     },
     modalContent: {
-        backgroundColor: '#ffff',
+        backgroundColor: 'white',
         padding: 30,
     },
     numberVerificationBtn: {

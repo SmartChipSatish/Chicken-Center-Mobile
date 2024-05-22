@@ -122,7 +122,7 @@ const Style = StyleSheet.create({
    },
    container:{
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'white',
     height: '100%',
     padding:10,
     marginBottom:10,

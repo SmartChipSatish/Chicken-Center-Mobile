@@ -15,7 +15,7 @@ export default function AfterLogin() {
                                  style={[style.details_container,{borderBottomWidth:(index === afterLoginDetails.length-1)? 0: 1}]} 
                                  key={index}>
         <View style={{marginBottom:15}}>
-          <e.icon/>
+          <e.icon width={35} height={35} color={'gray'}/>
         </View>
         <View style={{width:'80%',marginLeft:5,marginBottom:15}}>
           <Text style={style.title}>{e.title}</Text>

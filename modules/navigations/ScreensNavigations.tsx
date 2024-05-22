@@ -11,6 +11,7 @@ import RechargeWallet from "../Account/Components/AfterLogin/Wallet/RechargeWall
 import { TransactionHistory } from "../Account/Components/AfterLogin/Wallet/TransactionHistory";
 import ContactUs from "../Account/Components/OtherFields/ContactUs/ContactUs";
 import { TabNav } from "./TabNavigation";
+import SearchPage from "../Home/components/ProductsList/SearchPage";
 
 export const StackNavgation = () => {
   const Stack = createNativeStackNavigator();
@@ -61,6 +62,11 @@ export const StackNavgation = () => {
       <Stack.Screen name="contactUs" component={ContactUs} options={{
         title:'Contact Us',
         headerTitleAlign:'center'
+      }}/>
+      <Stack.Screen name="searchPage" component={SearchPage} options={{
+        title:'Search Page',
+        headerTitleAlign:'center',
+        headerShown:false
       }}/>
     </Stack.Navigator>
   );
