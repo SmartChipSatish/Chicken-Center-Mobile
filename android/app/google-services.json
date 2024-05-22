@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "781535826140",
+    "project_id": "chicken-app-83c76",
+    "storage_bucket": "chicken-app-83c76.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:781535826140:android:11b75ba205988938e96419",
+        "android_client_info": {
+          "package_name": "com.KMMC"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "781535826140-m7001kf2sqopbkn18sels4ngdoej52bn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.KMMC",
+            "certificate_hash": "2aeb2c9b8b5b1a595c4d4dc7a10e3d194ab67d9f"
+          }
+        },
+        {
+          "client_id": "781535826140-6kr39lp0fm05a2fupcecf42j9ka8o5v0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDLa83J_MgnleJHlugZ5_lPRDsvi5xd5m0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "781535826140-6kr39lp0fm05a2fupcecf42j9ka8o5v0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
