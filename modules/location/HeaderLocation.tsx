@@ -17,6 +17,7 @@ import axios from 'axios';
 AddressesIcon
 import CrossMark from '../assets/svgimages/util';
 import { AddressesIcon } from '../assets/svgimages/AccountsSvgs/accountsSvgs';
+import { THEME_COLORS } from "../GlobalStyles/GlobalStyles";
 
 
 const HeaderLocation = () => {
@@ -25,9 +26,9 @@ const HeaderLocation = () => {
   const [previousLocation, setPreviousLocation] = useState('');
   const [useloc, setUserLoc] = useState({});
   console.log(useloc, 'sssss');
-
+  const mapKey='AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY'
   const fetchSuggestions = async (text:any) => {
-    const apiKey = 'AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY'; // Replace with your API key
+    const apiKey =mapKey ; // Replace with your API key
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${apiKey}`,
     );
@@ -43,23 +44,52 @@ const HeaderLocation = () => {
     }
   }, [userInput]);
 
-  const handleSelectLocation = async (item:any) => {
+
+
+  const handleSelectLocation = async (item: any) => {
     setUserInput(item.description);
     setSuggestions([]);
-
-    const apiKey = 'AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY'; // Replace with your API key
-    const response = await fetch(
-      `https://maps.googleapis.com/maps/api/geocode/json?place_id=${item.place_id}&key=${apiKey}`,
-    );
-    const data = await response.json();
-    const location = data.results[0].geometry.location;
-    setUserLoc({latitude: location.lat, longitude: location.lng});
+    
+    const granted = await requestLocationPermissionIfNeeded();
+    if (granted) {
+      const apiKey = mapKey;
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?place_id=${item.place_id}&key=${apiKey}`,
+      );
+      const data = await response.json();
+      const location = data.results[0].geometry.location;
+      setUserLoc({ latitude: location.lat, longitude: location.lng });
+      setLatitude(location.lat);
+      setLongitude(location.lng);
+      setAddress(item.description);
+      setModalVisible(false); // Close the modal
+    }
   };
+  
+  
+  const requestLocationPermissionIfNeeded = async () => {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Location Permission',
+          message: 'This app needs access to your location',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } else {
+      return true; // For iOS, assume permission is always granted
+    }
+  };
+  
 
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [visibles,setvisible]=useState<any>("false")
+  const [visibles,setvisible]=useState<any>(false)
 
   const [latitude, setLatitude] = useState<any>(null);
   const [longitude, setLongitude] = useState<any>(null);
@@ -68,7 +98,7 @@ const HeaderLocation = () => {
   const [error, setError] = useState<any>(null);
 
   useEffect(() => {
-    Geocoder.init('AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY');
+    Geocoder.init(mapKey);
   }, []);
 
   const requestLocation = async () => {
@@ -85,30 +115,28 @@ const HeaderLocation = () => {
           },
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          // Initialize the Geocoder with your API key
-          Geocoder.init('AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY');
-
-          // Fetch the current location
           Geolocation.getCurrentPosition(
             async location => {
               setLatitude(location.coords.latitude);
               setLongitude(location.coords.longitude);
-
-              // Reverse geocoding
+  
               try {
                 const response = await Geocoder.from(
                   location.coords.latitude,
                   location.coords.longitude,
                 );
-                console.log(response.results[0].formatted_address, 'response');
                 const address = response.results[0].formatted_address;
                 setAddress(address);
+                setUserLoc({
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude
+                });
               } catch (error:any) {
                 setError(error.message);
               }
             },
             error => setError(error.message),
-            {timeout: 10000, maximumAge: 60000,},
+            { timeout: 10000, maximumAge: 60000 }
           );
         } else {
           setError('Location permission denied');
@@ -117,13 +145,47 @@ const HeaderLocation = () => {
       } catch (err) {
         console.warn(err);
       }
-    } else {
     }
   };
-
+  
   useEffect(() => {
     requestLocation();
   }, []);
+  
+
+  const handleUseCurrentLocation = async () => {
+    const granted = await requestLocationPermissionIfNeeded();
+    if (granted) {
+      Geolocation.getCurrentPosition(
+        async location => {
+          setLatitude(location.coords.latitude);
+          setLongitude(location.coords.longitude);
+  
+          try {
+            const response = await Geocoder.from(
+              location.coords.latitude,
+              location.coords.longitude,
+            );
+            const address = response.results[0].formatted_address;
+            setAddress(address);
+            setUserInput(address);
+            setUserLoc({
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude
+            });
+          } catch (error:any) {
+            setError(error.message);
+          }
+        },
+        error => setError(error.message),
+        { timeout: 10000, maximumAge: 60000 }
+      );
+      setModalVisible(false); // Close the modal
+    }
+  };
+  
+  
+  
 
   return (
     <View>
@@ -152,7 +214,7 @@ const HeaderLocation = () => {
         onPress={() => {
           setPreviousLocation(userInput || add);
           // setModalVisible(true);
-          setvisible(true)
+          setvisible(!visibles)
         }}>
         <View
           style={{
@@ -274,11 +336,13 @@ const HeaderLocation = () => {
                 <AddressesIcon width={30} height={30} color={'maroon'} />
                 <Text
                   style={styles.modalText}
-                  onPress={() => {
-                    setUserInput(add);
-                    setUserLoc({latitude, longitude});
-                    setModalVisible(!modalVisible);
-                  }}>
+                  // onPress={() => {
+                  //   setUserInput(add);
+                  //   setUserLoc({latitude, longitude});
+                  //   setModalVisible(!modalVisible);
+                  // }}
+                  onPress={handleUseCurrentLocation}
+                  >
                   Use current location
                 </Text>
               </View>
@@ -335,10 +399,10 @@ const styles = StyleSheet.create({
     justifyContent:"center"
   },
   singleButton:{
-      color:"rgba(222,43,85,255)",
+      color:THEME_COLORS.secondary,
       borderWidth:1,
       padding:10,
-      borderColor:"black",
+      borderColor:THEME_COLORS.secondary,
       fontWeight:"bold",
       fontSize:20,
       borderRadius:10,
@@ -350,7 +414,7 @@ const styles = StyleSheet.create({
   singleButton1:{
     color:"white",
     padding:10,
-   backgroundColor:"rgba(222,43,85,255)",
+   backgroundColor:THEME_COLORS.secondary,
     fontWeight:"bold",
     fontSize:20,
     borderRadius:10,
@@ -369,7 +433,7 @@ const styles = StyleSheet.create({
   secondModel:{
    backgroundColor:"white",
    height:300,
-   marginTop:550,
+   marginTop:560,
    borderRadius:20,
    padding:20,
    borderWidth:1,
@@ -378,7 +442,7 @@ const styles = StyleSheet.create({
   },
 
   crossMark: {
-    marginLeft: 350,
+    marginLeft: 330,
     marginTop: -30,
   },
   locationText: {
@@ -398,8 +462,8 @@ const styles = StyleSheet.create({
 
   searchBar: {
     borderRadius: 10,
-    marginRight: 10,
-    marginLeft: 10,
+    marginRight: 15,
+    marginLeft: 15,
     backgroundColor: 'white',
     marginTop: 30,
     borderColor: 'grey',
@@ -473,7 +537,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    marginLeft: -160,
+    marginLeft: -140,
     marginTop: 40,
     columnGap: 5,
     padding: 5,
