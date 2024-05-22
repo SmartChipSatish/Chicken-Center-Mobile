@@ -7,8 +7,9 @@ import SplashScreen from 'react-native-splash-screen';
 import {useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {  StackNavgation, TabNav } from './modules/navigations/ScreensNavigations';
-
+import {  StackNavgation } from './modules/navigations/ScreensNavigations';
+import {Provider} from 'react-redux'
+import store from './modules/store/store';
 export default function App() {
 
   useEffect(() => {
@@ -20,7 +21,9 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <NavigationContainer>
-        <StackNavgation/>
+        <Provider store={store}>
+           <StackNavgation/>
+        </Provider>
       </NavigationContainer>
     </GestureHandlerRootView>
   );
