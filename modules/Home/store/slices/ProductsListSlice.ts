@@ -1,5 +1,5 @@
-import { createSlice } from '@reduxjs/toolkit';
-import { itemsDetails } from '../../../Dashboard/utlis/constents';
+import {createSlice} from '@reduxjs/toolkit';
+import { itemsDetails } from '../../utils/constents';
 
 interface ProductList {
     addProducts: itemsDetails[];
@@ -14,19 +14,6 @@ const ProductsListSlice = createSlice({
         setAddProducts: (state, action) => {
             state.addProducts = action.payload;
         },
-        setQuantity: (state, action) => {
-            const payload = action.payload
-            console.log(payload, 'payload');
-            const index = state.addProducts.findIndex((item) => item.id === payload.id)
-            const data = state.addProducts.map((e) => {
-                if (e.id === payload.id) {
-                    return { ...e, quantity: payload.quantity }
-                } else {
-                    return e
-                }
-            })
-            state.addProducts = data
-        },
         setFavourite: (state, action) => {
             const payload = action.payload
             const data = state.addProducts.map((item) => {
@@ -37,7 +24,18 @@ const ProductsListSlice = createSlice({
                 }
             })
             state.addProducts = data
-        }
+        },
+        setQuantity:(state, action)=>{
+          const payload = action.payload
+          const data=state.addProducts.map((e)=>{
+            if(e.id === payload.id){
+                return {...e,quantity:payload.quantity}
+            }else{
+                return e
+            }
+          })
+          state.addProducts = data
+        },
     }
 });
 

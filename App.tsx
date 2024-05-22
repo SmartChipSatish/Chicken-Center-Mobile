@@ -10,7 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StackNavgation } from './modules/navigations/ScreensNavigations';
 import { Provider, useDispatch } from 'react-redux'
 import store from './modules/store/store';
-import { data } from './modules/Dashboard/utlis/constents';
+import { data } from './modules/Home/utils/constents';
 import { setAddProducts } from './modules/Home/store/slices/ProductsListSlice';
 function App() {
   const dispatch = useDispatch();

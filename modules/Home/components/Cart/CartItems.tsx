@@ -1,62 +1,66 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../GlobalStyles/GlobalStyles';
+import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
+import { QUANTITY_LIMIT, cartProducts } from '../../utils/constents';
+import { setRemoveItem, setcardQuantity } from '../../store/slices/CartProductsSlice';
+import { setQuantity } from '../../store/slices/ProductsListSlice';
 
 export default function Cartitems() {
-    const [items, setItems] = useState([
-        {
-            id: 1,
-            name: 'Chicken chest',
-            image: 'https://img.freepik.com/premium-photo/raw-whole-chicken-with-skin-arranged-grill_527904-677.jpg',
-            priceBeforeDiscount: 150,
-            price: 100,
-            quantity: 1,
-        },
-        {
-            id: 2,
-            name: 'Chicken liver',
-            image: 'https://media.istockphoto.com/photos/chicken-meat-picture-id1319903960?k=20&m=1319903960&s=612x612&w=0&h=_VBryQo-J1RmuBGCS6OIfKiimN5wnQEcyWnH6hywcjE=',
-            priceBeforeDiscount: 200,
-            price: 150,
-            quantity: 1,
-        },
-        {
-            id: 1,
-            name: 'Chicken chest',
-            image: 'https://img.freepik.com/premium-photo/raw-whole-chicken-with-skin-arranged-grill_527904-677.jpg',
-            priceBeforeDiscount: 150,
-            price: 100,
-            quantity: 1,
-        },
-        {
-            id: 2,
-            name: 'Chicken liver',
-            image: 'https://media.istockphoto.com/photos/chicken-meat-picture-id1319903960?k=20&m=1319903960&s=612x612&w=0&h=_VBryQo-J1RmuBGCS6OIfKiimN5wnQEcyWnH6hywcjE=',
-            priceBeforeDiscount: 200,
-            price: 150,
-            quantity: 1,
-        },
-    ]);
+
+    const cartItems=useSelector((store: RootState) => store.cartProducts.cartProducts);
+    const [priceList,setPriceList]=useState({itemsPrice:0,addons:0,discount:0,coupon:0,deliveryFee:100})
+    const [total,setTotal]=useState(0);
+    const distach=useDispatch();
+
+    const handleQuantity = (type: string,item:cartProducts) => {
+        if (type === 'add' && item.quantity !== QUANTITY_LIMIT) {
+            const quantity=item?.quantity + 1
+            const amount = (item?.price * quantity) || 0;
+            distach(setcardQuantity({ id: item.id, quantity: quantity,total:amount }))
+            distach(setQuantity({ id: item.id, quantity: quantity }));
+        } else if (type === 'remove' && item.quantity !== 1) {
+            const amount = item.total-item.price || 0;
+            distach(setcardQuantity({ id: item.id, quantity: item?.quantity - 1,total:amount }))
+            distach(setQuantity({ id: item.id, quantity: item?.quantity - 1 }));
+        }else if(item.quantity === 1 && type === 'remove'){
+            distach(setRemoveItem({id:item.id}))
+        }
+    }
+
+    useEffect(()=>{
+        const data=cartItems.filter((e)=>{
+           return e.total
+        })
+        if(data){
+           const totalprice=(data.reduce((a,b)=>a+b.total,0))
+           setPriceList({...priceList,itemsPrice:totalprice})
+           const total=totalprice+priceList.deliveryFee+priceList.addons-(priceList.coupon+priceList.discount);
+           setTotal(total)
+        }
+        
+   },[cartItems]);
 
     return (
        <View>
-         <ScrollView>
+        {cartItems.length>0 ? <ScrollView >
             <View style={styles.container}>
              {/*displaying items here */}
-                {items.map((item, index) => (
+                {cartItems.map((item:any, index:number) => (
                     <View key={index} style={styles.card}>
-                        <Image style={styles.tinyLogo} source={{ uri: item.image }} />
+                        <Image style={styles.tinyLogo} source={{ uri: item.imgUrl }} />
                         <View style={styles.cardContent}>
-                            <Text style={styles.title}>{item.name}</Text>
-                            <Text style={styles.price}>₹{item.price}</Text>
+                            <Text style={styles.title}>{item.title}</Text>
+                            <Text style={styles.price}>₹{item.total}</Text>
                             <Text style={styles.discounts}>24% off</Text>
                             <View style={styles.rightAlign}>
                                 <View style={styles.quantityContainer}>
-                                    <Text style={styles.quantityButton}>-</Text>
+                                    <Text style={styles.quantityButton} onPress={()=>handleQuantity('remove',item)}>-</Text>
                                     <Text style={styles.quantity}>{item.quantity}</Text>
-                                    <Text style={styles.quantityButton}>+</Text>
+                                    <Text style={styles.quantityButton} onPress={()=>handleQuantity('add',item)}>+</Text>
                                 </View>
                             </View>
                         </View>
@@ -77,33 +81,33 @@ export default function Cartitems() {
                 <View style={styles.containers}>
                     <View style={styles.row}>
                         <Text style={styles.leftTexts}>Items Price</Text>
-                        <Text style={styles.rightAmount}>₹1,180</Text>
+                        <Text style={styles.rightAmount}>₹{priceList.itemsPrice}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.leftTexts}>Addons</Text>
-                        <Text style={styles.rightAmount}>₹1,180</Text>
+                        <Text style={styles.rightAmount}>₹{priceList.addons}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.leftTexts}>Discount</Text>
-                        <Text style={styles.rightAmount}>₹1,180</Text>
+                        <Text style={styles.rightAmount}>₹{priceList.discount}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.leftTexts}>Coupon Discount</Text>
-                        <Text style={styles.rightAmount}>₹1,180</Text>
+                        <Text style={styles.rightAmount}>₹{priceList.coupon}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={styles.leftTexts}>Delivery Fee</Text>
-                        <Text style={styles.rightAmount}>₹1,180</Text>
+                        <Text style={styles.rightAmount}>₹{priceList.deliveryFee}</Text>
                     </View>
                     <View style={styles.separator}></View>
                     <View style={styles.row}>
                         <Text style={[styles.leftTexts, styles.textColor]}>Total Amount</Text>
-                        <Text style={[styles.rightAmount, styles.textColor]}>₹1096</Text>
+                        <Text style={[styles.rightAmount, styles.textColor]}>₹{total}</Text>
                     </View>
                     <Text style={styles.buttonStyle}>Continue Checkout</Text>
                 </View>
             </View>
-        </ScrollView>
+        </ScrollView> : <Text>No Details</Text>}
        </View>
     );
 }
