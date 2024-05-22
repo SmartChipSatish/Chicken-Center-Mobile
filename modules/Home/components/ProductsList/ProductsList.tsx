@@ -5,8 +5,8 @@ import ProductItem from './AddItemModal';
 import { AddProductIcon, FavouriteIcon } from '../../../assets/svgimages/HomeSvgs/svgsIcons';
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 import { Image } from 'react-native';
-import { data, itemsDetails } from '../../../Dashboard/utlis/constents';
 import { useDispatch, useSelector } from 'react-redux';
+import { itemsDetails } from '../../utils/constents';
 import { RootState } from '../../../store/store';
 import { setFavourite } from '../../store/slices/ProductsListSlice';
 

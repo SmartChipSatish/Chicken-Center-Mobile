@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Button, Image, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Button, Image, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 import { AddProductIcon, FavouriteIcon, RemoveProductIcon } from '../../../assets/svgimages/HomeSvgs/svgsIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
-import { itemsDetails, useDetectFirstRender } from '../../../Dashboard/utlis/constents';
+import { QUANTITY_LIMIT, cartProducts, itemsDetails, useDetectFirstRender } from '../../utils/constents';
 import { setQuantity } from '../../store/slices/ProductsListSlice';
+import { setCartProducts } from '../../store/slices/CartProductsSlice';
 
 interface productDetails {
     show: boolean,
@@ -18,31 +19,55 @@ export default function ProductItem({ show, handleClose, productId }: productDet
     const [count, setCount] = useState(1);
     const [selectProduct, setSelectProduct] = useState<any>();
     const products = useSelector((store: RootState) => store.products.addProducts);
+    const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
     const distach = useDispatch();
-    const firstRender=useDetectFirstRender()
-    const [amount, setAmount] = useState<number>();
-    useEffect(() => {
-        const data = products.filter((e) => { return e.id === productId })[0]
-        setSelectProduct(data);
-        if(firstRender){
-        setAmount(data?.price);
-        }
-    }, [productId, products]);
+    const firstRender = useDetectFirstRender()
+    const [amount, setAmount] = useState<number>(0);
 
     const handleQuantity = (type: string) => {
         console.log(type, selectProduct.quantity)
-        
-        if (type === 'add' && selectProduct.quantity !== 10) {
-            const quantity=selectProduct?.quantity + 1
+
+        if (type === 'add' && selectProduct.quantity !== QUANTITY_LIMIT) {
+            const quantity = selectProduct?.quantity + 1
             distach(setQuantity({ id: productId, quantity: quantity }))
             const amount = (selectProduct?.price * quantity) || 0;
             setAmount(amount);
         } else if (type === 'remove' && selectProduct.quantity !== 1) {
             distach(setQuantity({ id: productId, quantity: selectProduct?.quantity - 1 }))
-            const amount = (selectProduct?.price * selectProduct?.quantity-1) || 0;
-            setAmount(amount);
+            const amounts = amount - selectProduct.price || 0;
+            setAmount(amounts);
         }
     }
+
+    const handleAddToCart = () => {
+        const data: cartProducts = {
+            id: productId,
+            title: selectProduct.title,
+            price: selectProduct.price,
+            quantity: selectProduct.quantity,
+            imgUrl: selectProduct.imgUrl,
+            total: amount
+        }
+        const cartDatacheck = cartItems.filter((e) => {
+            return e.id === productId
+        })
+        handleClose();
+        if (cartDatacheck.length > 0) {
+            Alert.alert('product is already added')
+        } else {
+            distach(setCartProducts(data));
+            Alert.alert('product added to cart successfully');
+        }
+
+    }
+
+    useEffect(() => {
+        const data = products.filter((e) => { return e.id === productId })[0]
+        setSelectProduct(data);
+        if (firstRender) {
+            setAmount(data?.price * data.quantity);
+        }
+    }, [productId, products]);
 
     return (
         <>
@@ -79,7 +104,7 @@ export default function ProductItem({ show, handleClose, productId }: productDet
                                         <Text style={style.quantity_text}>Quantity</Text>
                                         <View style={style.add_product_remove}>
                                             <RemoveProductIcon onPress={() => handleQuantity('remove')} />
-                                            <Text style={{ color: `#ffffff`, fontSize: 23 }}>{selectProduct?.quantity }</Text>
+                                            <Text style={{ color: `#ffffff`, fontSize: 23 }}>{selectProduct?.quantity}</Text>
                                             <AddProductIcon color={'#ffffff'} onPress={() => handleQuantity('add')} />
                                         </View>
                                     </View>
@@ -88,10 +113,10 @@ export default function ProductItem({ show, handleClose, productId }: productDet
                                 <View>
                                     <View style={style.total_amount}>
                                         <Text style={style.quantity_text}>Total Amount :</Text>
-                                        <Text style={[style.quantity_text, { color: `${THEME_COLORS.secondary}`, fontWeight: 'bold',marginRight:5 },]}> ₹ {amount}</Text>
+                                        <Text style={[style.quantity_text, { color: `${THEME_COLORS.secondary}`, fontWeight: 'bold', marginRight: 5 },]}> ₹ {amount}</Text>
                                         <Text style={{ textDecorationLine: 'line-through' }}>(₹ 250)</Text>
                                     </View>
-                                    <TouchableOpacity style={style.add_cart}>
+                                    <TouchableOpacity style={style.add_cart} onPress={handleAddToCart}>
                                         <Text style={{ color: '#ffffff', fontSize: 18 }}>Add to Cart</Text>
                                     </TouchableOpacity>
                                 </View>
