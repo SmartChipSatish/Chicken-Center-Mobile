@@ -18,7 +18,7 @@ export default function Account({ navigation }: any) {
     }
 
     GoogleSignin.configure({
-        webClientId: '635074345574-57h557s5m5q47uhhgies9vjph6l8uv98.apps.googleusercontent.com',
+        webClientId: '781535826140-6kr39lp0fm05a2fupcecf42j9ka8o5v0.apps.googleusercontent.com',
       });
 
     const handleGoogleLogin = async () => {

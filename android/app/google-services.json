@@ -1,78 +1,41 @@
 {
   "project_info": {
-    "project_number": "635074345574",
-    "project_id": "chickenoder",
-    "storage_bucket": "chickenoder.appspot.com"
+    "project_number": "781535826140",
+    "project_id": "chicken-app-83c76",
+    "storage_bucket": "chicken-app-83c76.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:635074345574:android:65d8cc432fda569a6bcba7",
+        "mobilesdk_app_id": "1:781535826140:android:11b75ba205988938e96419",
         "android_client_info": {
           "package_name": "com.KMMC"
         }
       },
       "oauth_client": [
         {
-          "client_id": "635074345574-8q7d7dppel07f7jdfqnflthqmi2sonbs.apps.googleusercontent.com",
+          "client_id": "781535826140-m7001kf2sqopbkn18sels4ngdoej52bn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.KMMC",
-            "certificate_hash": "88ea3ec05eef1638432e5f81dde45f8af7bbb970"
+            "certificate_hash": "2aeb2c9b8b5b1a595c4d4dc7a10e3d194ab67d9f"
           }
         },
         {
-          "client_id": "635074345574-57h557s5m5q47uhhgies9vjph6l8uv98.apps.googleusercontent.com",
+          "client_id": "781535826140-6kr39lp0fm05a2fupcecf42j9ka8o5v0.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyAhKHbtyLbcXMjODBvWyUlZn-AMlnI2Dig"
+          "current_key": "AIzaSyDLa83J_MgnleJHlugZ5_lPRDsvi5xd5m0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "635074345574-57h557s5m5q47uhhgies9vjph6l8uv98.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:635074345574:android:abb833757230f5396bcba7",
-        "android_client_info": {
-          "package_name": "com.chickenapp"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "635074345574-dencofjvkff16k87l1m5tuhq1vpl8d47.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.chickenapp",
-            "certificate_hash": "6c829cec6e885baca3268217191ca9c6419e0fc2"
-          }
-        },
-        {
-          "client_id": "635074345574-57h557s5m5q47uhhgies9vjph6l8uv98.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAhKHbtyLbcXMjODBvWyUlZn-AMlnI2Dig"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "635074345574-57h557s5m5q47uhhgies9vjph6l8uv98.apps.googleusercontent.com",
+              "client_id": "781535826140-6kr39lp0fm05a2fupcecf42j9ka8o5v0.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

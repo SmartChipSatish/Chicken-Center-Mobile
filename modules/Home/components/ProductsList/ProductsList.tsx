@@ -5,7 +5,7 @@ import ProductItem from './AddItemModal';
 import { AddProductIcon, FavouriteIcon } from '../../../assets/svgimages/HomeSvgs/svgsIcons';
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 import { Image } from 'react-native';
-import { data } from '../../../Dashboard/utlis/constents';
+import { data, itemsDetails } from '../../../Dashboard/utlis/constents';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
 
@@ -16,16 +16,18 @@ const ProductsList = () => {
         setShow(false)
     }
     const image = require('../../../../modules/assets/svgimages/HomeSvgs/carouselimages/Chickenimg.png')
-    const products = useSelector((store: RootState) => store.products.addProducts)
-  
+    const products = useSelector((store: RootState) => store.products.addProducts);
+    const [productId,setProductId]=useState<number>(0);
     return (
         <>
-            {products.map((e: any, index: number) => {
+            {products.map((e: itemsDetails, index: number) => {
                 return (
-                    <TouchableOpacity key={e.id} style={styles.card_items}  onPress={()=>setShow(true)}>
+                    <TouchableOpacity key={e.id} style={styles.card_items}  onPress={()=>{setShow(true);setProductId(e.id)}}>
                         <View style={styles.items_subCard} >
                             <Image
-                                source={image}
+                                source={{
+                                    uri:e.imgUrl
+                                }}
                                 style={styles.image}
                             />
                             <View >
@@ -44,7 +46,7 @@ const ProductsList = () => {
                     </TouchableOpacity>
                 )
             })}
-            {show && <ProductItem show={show} handleClose={handleClose} />}
+            {show && <ProductItem show={show} handleClose={handleClose} productId={productId}/>}
 
         </>
     )
