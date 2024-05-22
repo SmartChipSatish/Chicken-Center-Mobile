@@ -5,7 +5,9 @@ import ProductItem from './AddItemModal';
 import { AddProductIcon, FavouriteIcon } from '../../../assets/svgimages/HomeSvgs/svgsIcons';
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 import { Image } from 'react-native';
-import { data } from '../../../Dashboard/utlis/constents';
+import { data, itemsDetails } from '../../../Dashboard/utlis/constents';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
 
 const ProductsList = () => {
     const navigate = useNavigation<any>();
@@ -14,14 +16,18 @@ const ProductsList = () => {
         setShow(false)
     }
     const image = require('../../../../modules/assets/svgimages/HomeSvgs/carouselimages/Chickenimg.png')
+    const products = useSelector((store: RootState) => store.products.addProducts);
+    const [productId,setProductId]=useState<number>(0);
     return (
         <>
-            {data.map((e: any, index: number) => {
+            {products.map((e: itemsDetails, index: number) => {
                 return (
-                    <TouchableOpacity key={index} style={styles.card_items}  onPress={()=>setShow(true)}>
+                    <TouchableOpacity key={e.id} style={styles.card_items}  onPress={()=>{setShow(true);setProductId(e.id)}}>
                         <View style={styles.items_subCard} >
                             <Image
-                                source={image}
+                                source={{
+                                    uri:e.imgUrl
+                                }}
                                 style={styles.image}
                             />
                             <View >
@@ -34,13 +40,13 @@ const ProductsList = () => {
                             <FavouriteIcon color={`${THEME_COLORS.secondary}`} 
                                            height={25} 
                                            width={25}
-                                           fill={index ===1?`${THEME_COLORS.secondary}`: 'none'}/>
+                                           fill={e.favourite?`${THEME_COLORS.secondary}`: 'none'}/>
                             <AddProductIcon color={'#000000'}/>
                         </View>
                     </TouchableOpacity>
                 )
             })}
-            {show && <ProductItem show={show} handleClose={handleClose} />}
+            {show && <ProductItem show={show} handleClose={handleClose} productId={productId}/>}
 
         </>
     )
