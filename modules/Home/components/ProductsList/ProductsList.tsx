@@ -6,23 +6,34 @@ import { AddProductIcon, FavouriteIcon } from '../../../assets/svgimages/HomeSvg
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 import { Image } from 'react-native';
 import { data, itemsDetails } from '../../../Dashboard/utlis/constents';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
+import { setFavourite } from '../../store/slices/ProductsListSlice';
 
 const ProductsList = () => {
     const navigate = useNavigation<any>();
     const [show, setShow] = useState(false);
+    const [productId,setProductId]=useState<number>(0);
     const handleClose = () => {
         setShow(false)
     }
     const image = require('../../../../modules/assets/svgimages/HomeSvgs/carouselimages/Chickenimg.png')
-    const products = useSelector((store: RootState) => store.products.addProducts);
-    const [productId,setProductId]=useState<number>(0);
+    const products = useSelector((store: RootState) => store.products.addProducts);;
+    const modalShow = (e: { stopPropagation: () => void },itemId:number)=>{
+        e.stopPropagation();
+        setShow(true)
+        setProductId(itemId);
+      }
+    const dispatch = useDispatch()
+    const handleFavourite = (item: any) => {
+      console.log(item,'item')
+      dispatch(setFavourite(item))
+      }
     return (
         <>
             {products.map((e: itemsDetails, index: number) => {
                 return (
-                    <TouchableOpacity key={e.id} style={styles.card_items}  onPress={()=>{setShow(true);setProductId(e.id)}}>
+                    <TouchableOpacity key={e.id} style={styles.card_items}  onPress={(eve)=>{modalShow(eve,e.id);}}>
                         <View style={styles.items_subCard} >
                             <Image
                                 source={{
@@ -40,7 +51,8 @@ const ProductsList = () => {
                             <FavouriteIcon color={`${THEME_COLORS.secondary}`} 
                                            height={25} 
                                            width={25}
-                                           fill={e.favourite?`${THEME_COLORS.secondary}`: 'none'}/>
+                                           fill={e.favourite?`${THEME_COLORS.secondary}`: 'none'}
+                                           onPress={()=>handleFavourite(e)}/>
                             <AddProductIcon color={'#000000'}/>
                         </View>
                     </TouchableOpacity>
