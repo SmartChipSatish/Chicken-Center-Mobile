@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,6 +9,7 @@ import { QUANTITY_LIMIT, itemsDetails } from '../../utils/constents';
 import { setRemoveItem, setcardQuantity } from '../../store/slices/CartProductsSlice';
 import ProductsCard from '../ProductsList/ProductCard';
 import { useNavigation } from '@react-navigation/native';
+const empty_cart = require('../../../assets/Images/empty_cart.png');
 
 export default function Cartitems() {
 
@@ -97,7 +98,11 @@ export default function Cartitems() {
                         <Text style={styles.buttonStyle} onPress={()=>navigation.navigate('checkout')}>Continue Checkout</Text>
                     </View>
                 </View>
-            </ScrollView> : <Text>No Details</Text>}
+            </ScrollView> : <View style={styles.empty_cart}>
+                <Image source={empty_cart}/>
+                 <Text style={styles.emptycart_text}>Empty cart</Text>
+                 <Text>Please Add Products</Text>
+                 </View>}
         </View>
     );
 }
@@ -187,6 +192,13 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: TEXT_COLORS.primary,
         marginVertical: 10,
-    },
+    },empty_cart:{
+        justifyContent:'center',
+        alignItems:'center',
+    },emptycart_text:{
+        color:'black',
+        fontSize:18,
+        fontWeight:'bold'
+    }
 });
 

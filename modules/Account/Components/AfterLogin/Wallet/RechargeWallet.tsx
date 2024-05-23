@@ -2,7 +2,7 @@ import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity
 import React, { useMemo, useState } from 'react';
 import RadioGroup from 'react-native-radio-buttons-group';
 import { CardIcon, DownArrowIcon, ForwardArrowIcon } from '../../../../assets/svgimages/AccountsSvgs/accountsSvgs';
-import { TEXT_COLORS } from '../../../../GlobalStyles/GlobalStyles';
+import { TEXT_COLORS, THEME_COLORS } from '../../../../GlobalStyles/GlobalStyles';
 
 export default function RechargeWallet() {
   const radioButtons = useMemo(() => ([
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     width: '90%',
     height: 40,
     alignItems: 'center',
-    backgroundColor: 'red',
+    backgroundColor: THEME_COLORS.secondary,
     justifyContent: 'center',
     borderRadius: 10,
   },
