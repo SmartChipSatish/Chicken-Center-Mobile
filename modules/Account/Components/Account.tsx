@@ -29,6 +29,7 @@ export default function Account({ navigation }: any) {
         if(userInfo){
             setDetails(true);
         }
+        navigation.navigate('profile')
         }catch(error){
             console.log(error,'error')
         }

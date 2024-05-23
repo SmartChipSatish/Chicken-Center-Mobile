@@ -12,6 +12,7 @@ import { TransactionHistory } from "../Account/Components/AfterLogin/Wallet/Tran
 import ContactUs from "../Account/Components/OtherFields/ContactUs/ContactUs";
 import { TabNav } from "./TabNavigation";
 import SearchPage from "../Home/components/ProductsList/SearchPage";
+import Profile from "../Account/Components/Profile";
 
 export const StackNavgation = () => {
   const Stack = createNativeStackNavigator();
@@ -67,6 +68,12 @@ export const StackNavgation = () => {
         title:'Search Page',
         headerTitleAlign:'center',
         headerShown:false
+      }}/>
+      <Stack.Screen name="profile" component={Profile} options={{
+        title:'Profile Page',
+        headerTitleAlign:'center',
+        headerShown: false,
+        headerLeft: ()=> false,
       }}/>
     </Stack.Navigator>
   );
