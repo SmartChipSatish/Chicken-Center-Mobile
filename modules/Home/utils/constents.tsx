@@ -10,12 +10,14 @@ export interface itemsDetails {
 }
 
 export interface cartProducts {
+  id:number
   title: string,
   price: number,
   quantity: number,
-  offer: number
+  imgUrl: string,
+  total: number
 }
-
+export const QUANTITY_LIMIT = 10
 export const data: itemsDetails[] = [
   {
     title: "Chicken Skinless 500g",
