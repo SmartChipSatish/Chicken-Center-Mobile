@@ -1,5 +1,5 @@
 import { HomeIcon, LocationIcon, WorkingIcon } from "../../assets/svgimages/SaveAsIcons";
-import { AddressesIcon, BlogsIcon, ContactUsIcon, FAQSIcon, NotificationsIcon, OrderIcon, PrivacyPolicyIcon, RewardsSvgIcon, TermsconditionsIcon, WalletIcon } from "../../assets/svgimages/AccountsSvgs/accountsSvgs";
+import { AddressesIcon, BlogsIcon, ContactUsIcon, FAQSIcon, NotificationsIcon, OrderIcon, PrivacyPolicyIcon, ProfileIcon, RewardsSvgIcon, TermsconditionsIcon, WalletIcon } from "../../assets/svgimages/AccountsSvgs/accountsSvgs";
 
 export const details = [
   {
@@ -42,7 +42,7 @@ export const afterLoginDetails = [{
 
 },
 {
-  icon: OrderIcon,
+  icon: ProfileIcon,
   title: "Profile",
   content: "Update profile",
   navigation: 'profile'

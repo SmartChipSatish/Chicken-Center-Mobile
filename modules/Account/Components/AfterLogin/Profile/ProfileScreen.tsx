@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 
 import { Avatar, Icon } from 'react-native-elements';
 import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
 import { style } from '../../../utlis/Styles';
+import axios from 'axios';
 
 const ProfileScreen: React.FC = () => {
     const [firstName, setFirstName] = useState<string>('Talakanti');
@@ -29,6 +30,8 @@ const ProfileScreen: React.FC = () => {
             } else if (response.errorCode) {
                 console.log('ImagePicker Error: ', response.errorMessage);
             } else if (response.assets && response.assets.length > 0) {
+                console.log(response.assets[0].uri, 'sai')
+                uploadImage(response.assets[0], response.assets[0].fileName)
                 const source = response.assets[0].uri;
                 if (source) {
                     setAvatarUri(source);
@@ -36,7 +39,24 @@ const ProfileScreen: React.FC = () => {
             }
         });
     };
-
+    const uploadImage = async (picture: any, predefinedName: any) => {
+        console.log(picture, predefinedName, 'name')
+        try {
+            let formData = new FormData();
+            formData.append("upload_preset", "cgvymfjn");
+            formData.append("file", picture);
+            formData.append("public_id", predefinedName); // Adding the predefined name
+            const data = await axios.post(
+                `https://api.cloudinary.com/v1_1/dnhbdmhp6/image/upload`,
+                formData
+            );
+            console.log(data, 'sai')
+            return data;
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            // throw error;
+        }
+    }
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.avatarContainer}>
