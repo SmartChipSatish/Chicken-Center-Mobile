@@ -35,7 +35,8 @@ export const TabNav = () => {
                 tabBarShowLabel:false,
                 tabBarActiveTintColor: `${THEME_COLORS.secondary}`,
                 tabBarStyle: { height: 60 },
-                tabBarInactiveTintColor: `${TEXT_COLORS.secondary}`
+                tabBarInactiveTintColor: `${TEXT_COLORS.secondary}`,
+                tabBarHideOnKeyboard:true
             }}
         >
             <Tab.Screen name="home"

@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { Alert, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
 import { View } from 'react-native'
 import { Text } from 'react-native-paper'
-import { ScreenContainer } from 'react-native-screens'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function OTPVerfication({ navigation, route }:any) {
   const [otp, setOTP] = useState(['', '', '', '', '', '']);
   const inputRefs:any[] = [];
   const [timer,setTimer]=useState(60);
+
   const handleInputChange = (index:number, value:any) => {
     if (isNaN(value)) {
       return; // Only allow numeric characters
@@ -33,6 +34,10 @@ export default function OTPVerfication({ navigation, route }:any) {
       try{
         const res=await route.params.data.confirm(otp.join(''));
         console.log(res,'respones')
+        if(res){
+          AsyncStorage.setItem('login','true');
+          navigation.navigate('home');
+        }
        }catch(error){
         console.log(error,'error')
        }
@@ -100,6 +105,8 @@ const OTPVericationCSS=StyleSheet.create({
   container:{
     flex: 1, 
     paddingBottom: 20,
+    marginLeft:5,
+    marginRight:5
   },
   mainText:{
     fontSize:25,
