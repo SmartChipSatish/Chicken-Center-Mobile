@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { Alert, Button, Image, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Image, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 import { AddProductIcon, FavouriteIcon, RemoveProductIcon } from '../../../assets/svgimages/HomeSvgs/svgsIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
-import { QUANTITY_LIMIT, cartProducts, itemsDetails, useDetectFirstRender } from '../../utils/constents';
+import { QUANTITY_LIMIT, cartProducts, useDetectFirstRender } from '../../utils/constents';
 import { setQuantity } from '../../store/slices/ProductsListSlice';
 import { setCartProducts } from '../../store/slices/CartProductsSlice';
 
@@ -15,8 +15,6 @@ interface productDetails {
 }
 
 export default function ProductItem({ show, handleClose, productId }: productDetails) {
-    const image = require('../../../../modules/assets/svgimages/HomeSvgs/carouselimages/Chickenimg.png')
-    const [count, setCount] = useState(1);
     const [selectProduct, setSelectProduct] = useState<any>();
     const products = useSelector((store: RootState) => store.products.addProducts);
     const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
@@ -53,9 +51,10 @@ export default function ProductItem({ show, handleClose, productId }: productDet
         })
         handleClose();
         if (cartDatacheck.length > 0) {
-            Alert.alert('product is already added')
+            Alert.alert('product is already added');
         } else {
             distach(setCartProducts(data));
+            distach(setQuantity({ id: productId, quantity: 1 }));
             Alert.alert('product added to cart successfully');
         }
 
@@ -103,9 +102,12 @@ export default function ProductItem({ show, handleClose, productId }: productDet
                                     <View style={[style.product_quantity, { marginBottom: 10 }]}>
                                         <Text style={style.quantity_text}>Quantity</Text>
                                         <View style={style.add_product_remove}>
-                                            <RemoveProductIcon onPress={() => handleQuantity('remove')} />
+                                            <RemoveProductIcon onPress={() => handleQuantity('remove')} 
+                                                               style={{marginLeft:6}}/>
                                             <Text style={{ color: `#ffffff`, fontSize: 23 }}>{selectProduct?.quantity}</Text>
-                                            <AddProductIcon color={'#ffffff'} onPress={() => handleQuantity('add')} />
+                                            <AddProductIcon color={'#ffffff'} 
+                                                            onPress={() => handleQuantity('add')} 
+                                                            style={{marginRight:6}}/>
                                         </View>
                                     </View>
                                     <Text style={[style.quantity_text, { marginBottom: 10 }]}>Description</Text>

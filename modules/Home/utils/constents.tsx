@@ -6,7 +6,8 @@ export interface itemsDetails {
   price: number,
   quantity: number,
   id: number,
-  favourite: boolean
+  favourite?: boolean
+  total?: number
 }
 
 export interface cartProducts {
