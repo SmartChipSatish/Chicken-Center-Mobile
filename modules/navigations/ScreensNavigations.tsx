@@ -12,6 +12,7 @@ import { TransactionHistory } from "../Account/Components/AfterLogin/Wallet/Tran
 import ContactUs from "../Account/Components/OtherFields/ContactUs/ContactUs";
 import { TabNav } from "./TabNavigation";
 import SearchPage from "../Home/components/ProductsList/SearchPage";
+import ProfileScreen from "../Account/Components/AfterLogin/Profile/ProfileScreen";
 
 export const StackNavgation = () => {
   const Stack = createNativeStackNavigator();
@@ -41,33 +42,39 @@ export const StackNavgation = () => {
 
       }}
       />
+      <Stack.Screen name="profile" component={ProfileScreen} options={{
+        title: 'Profile',
+        headerTitleAlign: 'center',
+
+      }}
+      />
 
       <Stack.Screen name="rewards" component={Rewards} options={{
-        title:'Rewards',
+        title: 'Rewards',
         headerTitleAlign: 'center',
-      }}/>
+      }} />
 
       <Stack.Screen name="wallet" component={Wallet} options={{
-        title:'Wallet',
-        headerTitleAlign:'center'
-      }}/>
+        title: 'Wallet',
+        headerTitleAlign: 'center'
+      }} />
       <Stack.Screen name="recharge" component={RechargeWallet} options={{
-        title:'Recharge You Wallet',
-        headerTitleAlign:'center'
-      }}/>
+        title: 'Recharge You Wallet',
+        headerTitleAlign: 'center'
+      }} />
       <Stack.Screen name="transactionHistory" component={TransactionHistory} options={{
-        title:'Transaction History',
-        headerTitleAlign:'center'
-      }}/>
+        title: 'Transaction History',
+        headerTitleAlign: 'center'
+      }} />
       <Stack.Screen name="contactUs" component={ContactUs} options={{
-        title:'Contact Us',
-        headerTitleAlign:'center'
-      }}/>
+        title: 'Contact Us',
+        headerTitleAlign: 'center'
+      }} />
       <Stack.Screen name="searchPage" component={SearchPage} options={{
-        title:'Search Page',
-        headerTitleAlign:'center',
-        headerShown:false
-      }}/>
+        title: 'Search Page',
+        headerTitleAlign: 'center',
+        headerShown: false
+      }} />
     </Stack.Navigator>
   );
 };
