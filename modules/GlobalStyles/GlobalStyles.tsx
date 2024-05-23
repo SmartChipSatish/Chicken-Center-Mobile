@@ -2,6 +2,7 @@ export const THEME_COLORS={
     primary: '#ffff',
     secondary: '#F38B07',
     error: '#EE1313',
+    light_color:'#E4AA5B'
 }
 export const TEXT_FONT_SIZE ={
     large:20,

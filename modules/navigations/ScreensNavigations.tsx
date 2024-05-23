@@ -13,6 +13,7 @@ import ContactUs from "../Account/Components/OtherFields/ContactUs/ContactUs";
 import { TabNav } from "./TabNavigation";
 import SearchPage from "../Home/components/ProductsList/SearchPage";
 import ProfileScreen from "../Account/Components/AfterLogin/Profile/ProfileScreen";
+import Checkout from "../Home/components/Cart/Checkout";
 
 export const StackNavgation = () => {
   const Stack = createNativeStackNavigator();
