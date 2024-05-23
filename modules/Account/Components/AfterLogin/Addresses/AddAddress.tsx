@@ -1,22 +1,40 @@
 import { View, Text, ViewBase, TextInput, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { StyleSheet } from 'react-native'
 import { saveAs } from '../../../utlis/constents'
 import Location from './Location'
 import { TEXT_COLORS, THEME_COLORS } from '../../../../GlobalStyles/GlobalStyles'
+import { useDispatch } from 'react-redux'
+import { setAddLocation } from '../../../Store/LocationSlice'
 
 export default function AddAddress() {
   const [placeholderShow,setPlaceholderShow] =useState(false);
-  const [address,setAddress] = useState({city:'',country:'',address:'',flat:''})
+  const [address,setAddress] = useState({city:'',country:'',address:'',flat:''});
+  const [checkData,setCheckData]=useState(false);
+  const [mobileNo,setMobileNo]=useState('');
   const [saveType,setSaveType]=useState<string>('');
+  const dispatch =useDispatch()
   const handleAddress=(location:any)=>{
-   console.log(location,'locations');
+   
    const flat=location?.address?.split(',')?.shift() || '';
-   console.log(flat,'flattt');
+  
    setAddress({city:location.city,country:location.country,address:location.address,flat:flat});
   }
-  console.log(saveType,'savetypr');
+
+  const handeleSave=()=>{ 
+  
+    if(checkData){
+      dispatch(setAddLocation({...address,saveAs:saveType,mobileNo:mobileNo}));
+    }
+  }
+
+  useEffect(()=>{
+    if(mobileNo!=='' && address.city !=='' && address.country !=='' && address.address!=='' && address.flat!=='' && saveType!==''){
+      setCheckData(true);
+    }
+  },[address,mobileNo,saveType])
+
   return (
     <ScrollView keyboardShouldPersistTaps='handled'
                 showsVerticalScrollIndicator={false}>
@@ -65,6 +83,7 @@ export default function AddAddress() {
         <View style={{ marginBottom: 10 }}>
           <Text>Mobile</Text>
           <TextInput style={Style.textInput}
+            onChangeText={(text)=>setMobileNo(text)}
             placeholder='Mobile'
             keyboardType="phone-pad"
           />
@@ -74,7 +93,7 @@ export default function AddAddress() {
         <Text>Save as</Text>
         <View style={{flexDirection:'row',marginTop:5 }}>
           {saveAs.map((e,inedx)=>{
-            return <TouchableOpacity style={[Style.savas_btn,{backgroundColor: saveType === e.title? '#EA9A7E' : 'white'}]} 
+            return <TouchableOpacity style={[Style.savas_btn,{backgroundColor: saveType === e.title? `${THEME_COLORS.light_color}` : 'white'}]} 
                                      key={inedx} 
                                      onPress={()=>setSaveType(e.title)}>
                    <e.icon width={20} height={20} color={`${TEXT_COLORS.primary}`}/>
@@ -83,8 +102,8 @@ export default function AddAddress() {
           })}
         </View>
       </View>
-      <TouchableOpacity style={Style.save_btn} >
-        <Text style={{color:'white'}}>Save</Text>
+      <TouchableOpacity style={[Style.save_btn,{backgroundColor:checkData? `${THEME_COLORS.secondary}`: `${THEME_COLORS.light_color}`}]} >
+        <Text style={{color:'white'}} onPress={()=>handeleSave()}>Save</Text>
       </TouchableOpacity>
       </View>
       
@@ -111,7 +130,6 @@ const Style = StyleSheet.create({
     justifyContent:'space-between' 
    },
    save_btn:{
-    backgroundColor:`${THEME_COLORS.secondary}`,
     justifyContent:'center',
     alignItems:'center',
     height:50,

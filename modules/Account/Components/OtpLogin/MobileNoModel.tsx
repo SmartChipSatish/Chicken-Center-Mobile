@@ -89,7 +89,7 @@ export default function MobileNoModel({show, handleClose}:{show:boolean, handleC
                     <TouchableOpacity
                         onPress={SendOtp}
                         activeOpacity={numberCheck ? 0 : 1}
-                        style={[style.numberVerificationBtn, { backgroundColor: numberCheck ? `${THEME_COLORS.secondary}` : '#EF937F' }]}
+                        style={[style.numberVerificationBtn, { backgroundColor: numberCheck ? `${THEME_COLORS.secondary}` : `${THEME_COLORS.light_color}` }]}
                     >
                         <Text style={{ color: 'white' }}>Proceed with OTP</Text>
                     </TouchableOpacity>

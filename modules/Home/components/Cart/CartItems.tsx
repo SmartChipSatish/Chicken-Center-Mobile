@@ -8,6 +8,7 @@ import { RootState } from '../../../store/store';
 import { QUANTITY_LIMIT, itemsDetails } from '../../utils/constents';
 import { setRemoveItem, setcardQuantity } from '../../store/slices/CartProductsSlice';
 import ProductsCard from '../ProductsList/ProductCard';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Cartitems() {
 
@@ -15,7 +16,7 @@ export default function Cartitems() {
     const [priceList, setPriceList] = useState({ itemsPrice: 0, addons: 0, discount: 0, coupon: 0, deliveryFee: 100 })
     const [total, setTotal] = useState(0);
     const distach = useDispatch();
-
+    const navigation=useNavigation<any>()
     const handleQuantity = (type: string, item: itemsDetails) => {
         if (type === 'add' && item.quantity !== QUANTITY_LIMIT) {
             const quantity = item?.quantity + 1
@@ -93,7 +94,7 @@ export default function Cartitems() {
                             <Text style={[styles.leftTexts, styles.textColor]}>Total Amount</Text>
                             <Text style={[styles.rightAmount, styles.textColor]}>₹{total}</Text>
                         </View>
-                        <Text style={styles.buttonStyle}>Continue Checkout</Text>
+                        <Text style={styles.buttonStyle} onPress={()=>navigation.navigate('checkout')}>Continue Checkout</Text>
                     </View>
                 </View>
             </ScrollView> : <Text>No Details</Text>}
