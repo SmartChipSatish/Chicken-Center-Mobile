@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from "react"
+import React, { useState, useEffect } from "react"
 import {
   View,
   Text,
@@ -9,16 +9,19 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
-import MapView, {Marker} from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import Geocoder from 'react-native-geocoding';
-import {useNavigation} from '@react-navigation/native';
-import {Searchbar} from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import { Searchbar } from 'react-native-paper';
 import axios from 'axios';
 AddressesIcon
 import CrossMark from '../assets/svgimages/util';
 import { AddressesIcon } from '../assets/svgimages/AccountsSvgs/accountsSvgs';
-import { THEME_COLORS } from "../GlobalStyles/GlobalStyles";
-
+import { TEXT_COLORS, THEME_COLORS } from "../GlobalStyles/GlobalStyles";
+import { Image } from "react-native";
+import { NotificationDotIcon } from "../assets/svgimages/SvgIcons";
+import { LocationIcon } from "../assets/svgimages/SaveAsIcons";
+const appLogo = require('../assets/Images/app-logo.png');
 
 const HeaderLocation = () => {
   const [userInput, setUserInput] = useState<any>('');
@@ -26,9 +29,9 @@ const HeaderLocation = () => {
   const [previousLocation, setPreviousLocation] = useState('');
   const [useloc, setUserLoc] = useState({});
   console.log(useloc, 'sssss');
-  const mapKey='AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY'
-  const fetchSuggestions = async (text:any) => {
-    const apiKey =mapKey ; // Replace with your API key
+  const mapKey = 'AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY'
+  const fetchSuggestions = async (text: any) => {
+    const apiKey = mapKey; // Replace with your API key
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${text}&key=${apiKey}`,
     );
@@ -49,7 +52,7 @@ const HeaderLocation = () => {
   const handleSelectLocation = async (item: any) => {
     setUserInput(item.description);
     setSuggestions([]);
-    
+
     const granted = await requestLocationPermissionIfNeeded();
     if (granted) {
       const apiKey = mapKey;
@@ -61,12 +64,12 @@ const HeaderLocation = () => {
       setUserLoc({ latitude: location.lat, longitude: location.lng });
       setLatitude(location.lat);
       setLongitude(location.lng);
-      setAddress(item.description);
+      setDisplayAddress(item.description);
       setModalVisible(false); // Close the modal
     }
   };
-  
-  
+
+
   const requestLocationPermissionIfNeeded = async () => {
     if (Platform.OS === 'android') {
       const granted = await PermissionsAndroid.request(
@@ -84,17 +87,17 @@ const HeaderLocation = () => {
       return true; // For iOS, assume permission is always granted
     }
   };
-  
+
 
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [visibles,setvisible]=useState<any>(false)
+  const [visibles, setvisible] = useState<any>(false)
 
   const [latitude, setLatitude] = useState<any>(null);
   const [longitude, setLongitude] = useState<any>(null);
-  const [add, setAddress] = useState('');
-  console.log(add, 'syamsundarsai');
+  const [displayAddress, setDisplayAddress] = useState('');
+  console.log(displayAddress, 'syamsundarsai');
   const [error, setError] = useState<any>(null);
 
   useEffect(() => {
@@ -119,19 +122,19 @@ const HeaderLocation = () => {
             async location => {
               setLatitude(location.coords.latitude);
               setLongitude(location.coords.longitude);
-  
+
               try {
                 const response = await Geocoder.from(
                   location.coords.latitude,
                   location.coords.longitude,
                 );
                 const address = response.results[0].formatted_address;
-                setAddress(address);
+                setDisplayAddress(address);
                 setUserLoc({
                   latitude: location.coords.latitude,
                   longitude: location.coords.longitude
                 });
-              } catch (error:any) {
+              } catch (error: any) {
                 setError(error.message);
               }
             },
@@ -147,11 +150,11 @@ const HeaderLocation = () => {
       }
     }
   };
-  
+
   useEffect(() => {
     requestLocation();
   }, []);
-  
+
 
   const handleUseCurrentLocation = async () => {
     const granted = await requestLocationPermissionIfNeeded();
@@ -160,20 +163,20 @@ const HeaderLocation = () => {
         async location => {
           setLatitude(location.coords.latitude);
           setLongitude(location.coords.longitude);
-  
+
           try {
             const response = await Geocoder.from(
               location.coords.latitude,
               location.coords.longitude,
             );
             const address = response.results[0].formatted_address;
-            setAddress(address);
+            setDisplayAddress(address);
             setUserInput(address);
             setUserLoc({
               latitude: location.coords.latitude,
               longitude: location.coords.longitude
             });
-          } catch (error:any) {
+          } catch (error: any) {
             setError(error.message);
           }
         },
@@ -183,36 +186,15 @@ const HeaderLocation = () => {
       setModalVisible(false); // Close the modal
     }
   };
-  
-  
-  
+
+
+
 
   return (
     <View>
-      {/* {useloc.latitude && useloc.longitude && (
-        <MapView
-          style={{width: '100%', height: 400}}
-          initialRegion={{
-            latitude: useloc.latitude,
-            longitude: useloc.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}>
-          {useloc.latitude && useloc.longitude && (
-            <Marker
-              coordinate={{
-                latitude: useloc.latitude,
-                longitude: useloc.longitude,
-              }}
-              title="Selected Location"
-            />
-          )}
-        </MapView>
-      )} */}
-
-      <TouchableOpacity
+      {/* <TouchableOpacity
         onPress={() => {
-          setPreviousLocation(userInput || add);
+          setPreviousLocation(userInput || displayAddress);
           // setModalVisible(true);
           setvisible(!visibles)
         }}>
@@ -222,13 +204,11 @@ const HeaderLocation = () => {
             top: 20,
             left: 20,
             backgroundColor: 'white',
-          }}>
+          }}
+          >
           <View>
             {latitude && longitude ? (
               <>
-                {/* <Text>
-                  Latitude: {latitude}, Longitude: {longitude}
-                </Text> */}
                 {userInput ? (
                   <View style={styles.locationImg}>
                     <AddressesIcon width={20} height={20} color={'red'} />
@@ -241,28 +221,47 @@ const HeaderLocation = () => {
                   </View>
                 ) : (
                   <View style={styles.locationImg}>
-                    <AddressesIcon width={20} height={20} color={'red'} />
+                    <Image source={appLogo}
+                           style={styles.logo}/> 
+                    <View style={styles.displayLocation}>
+                    <Text style={styles.locationText}>Location</Text>
                     <Text
                       numberOfLines={1}
                       ellipsizeMode="tail"
-                      style={styles.locationText}>
-                      {add}
+                      style={styles.locationText}>  
+                      {displayAddress}
                     </Text>
+                    </View>
                   </View>
                 )}
               </>
             ) : (
               <Text>{error ? `Error: ${error}` : 'Fetching location...'}</Text>
             )}
-            {/* {useloc.latitude && useloc.longitude && (
-              <Text>
-                Latitude: {useloc.latitude}, Longitude: {useloc.longitude}
-              </Text>
-            )} */}
           </View>
         </View>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
+      <View style={styles.locationImg}>
+        <Image source={appLogo}
+          style={styles.logo} />
+        <View style={styles.displayLocation}>
+          <TouchableOpacity onPress={() => {
+            setPreviousLocation(userInput || displayAddress);
+            setvisible(!visibles)
+          }}>
+            <Text style={styles.locationText}>Location</Text>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={styles.locationText}>
+              {displayAddress!==''?displayAddress: 'Fetching location...'} 
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <NotificationDotIcon />
+      </View>
+      
       <View style={styles.centeredView1}>
         <Modal
           animationType="slide"
@@ -271,29 +270,29 @@ const HeaderLocation = () => {
           onRequestClose={() => {
             setvisible(!visibles);
           }}>
-     <View style={styles.secondModel}>
-      <Text style={styles.chaneText}>Change delivery Location?</Text>
-      <Text style={{marginTop:10,color:"grey",fontWeight:"bold"}}>
-        Item prices,availability & promotions are location specific.Your cart may get modified on choosing a different location.
-        </Text>
-        <View style={styles.Buttons} >
-          <TouchableOpacity onPress={()=>{setvisible(false)}}>
-          <View >
-          <Text style={styles.singleButton}>Stay here</Text>
-          </View>
-          </TouchableOpacity>
-         
-         
-         <TouchableOpacity onPress={()=>{setModalVisible(true);setvisible(false)}}>
-         <View >
-          <Text style={styles.singleButton1}>Change</Text>
-          </View>
-         </TouchableOpacity>
-        </View>
-        
-      </View>
+          <View style={styles.secondModel}>
+            <Text style={styles.chaneText}>Change delivery Location?</Text>
+            <Text style={{ marginTop: 10, color: "grey", fontWeight: "bold" }}>
+              Item prices,availability & promotions are location specific.Your cart may get modified on choosing a different location.
+            </Text>
+            <View style={styles.Buttons} >
+              <TouchableOpacity onPress={() => { setvisible(false) }}>
+                <View >
+                  <Text style={styles.singleButton}>Stay here</Text>
+                </View>
+              </TouchableOpacity>
 
-                 </Modal>
+
+              <TouchableOpacity onPress={() => { setModalVisible(true); setvisible(false) }}>
+                <View >
+                  <Text style={styles.singleButton1}>Change</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+
+        </Modal>
       </View>
 
       <View style={styles.centeredView}>
@@ -337,18 +336,18 @@ const HeaderLocation = () => {
                 <Text
                   style={styles.modalText}
                   // onPress={() => {
-                  //   setUserInput(add);
+                  //   setUserInput(displayAddress);
                   //   setUserLoc({latitude, longitude});
                   //   setModalVisible(!modalVisible);
                   // }}
                   onPress={handleUseCurrentLocation}
-                  >
+                >
                   Use current location
                 </Text>
               </View>
               <View style={styles.locationList}>
                 {suggestions.length > 0 &&
-                  suggestions.map((item:any, index:number) => (
+                  suggestions.map((item: any, index: number) => (
                     <TouchableOpacity
                       key={index}
                       onPress={() => {
@@ -393,51 +392,51 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  Buttons:{
-    display:"flex",
-    flexDirection:"row",
-    justifyContent:"center"
+  Buttons: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center"
   },
-  singleButton:{
-      color:THEME_COLORS.secondary,
-      borderWidth:1,
-      padding:10,
-      borderColor:THEME_COLORS.secondary,
-      fontWeight:"bold",
-      fontSize:20,
-      borderRadius:10,
-      width:160,
-      textAlign:"center",
-      marginTop:10
-      
+  singleButton: {
+    color: THEME_COLORS.secondary,
+    borderWidth: 1,
+    padding: 10,
+    borderColor: THEME_COLORS.secondary,
+    fontWeight: "bold",
+    fontSize: 20,
+    borderRadius: 10,
+    width: 160,
+    textAlign: "center",
+    marginTop: 10
+
   },
-  singleButton1:{
-    color:"white",
-    padding:10,
-   backgroundColor:THEME_COLORS.secondary,
-    fontWeight:"bold",
-    fontSize:20,
-    borderRadius:10,
-    width:160,
-    textAlign:"center",
-    marginLeft:30,
-    marginTop:10,
-    
-},
-  chaneText:{
-      color:"black",
-      fontWeight:"bold",
-      fontSize:20,
-    
+  singleButton1: {
+    color: "white",
+    padding: 10,
+    backgroundColor: THEME_COLORS.secondary,
+    fontWeight: "bold",
+    fontSize: 20,
+    borderRadius: 10,
+    width: 160,
+    textAlign: "center",
+    marginLeft: 30,
+    marginTop: 10,
+
   },
-  secondModel:{
-   backgroundColor:"white",
-   height:300,
-   marginTop:560,
-   borderRadius:20,
-   padding:20,
-   borderWidth:1,
-   borderColor:"#f0f0f0"
+  chaneText: {
+    color: "black",
+    fontWeight: "bold",
+    fontSize: 20,
+
+  },
+  secondModel: {
+    backgroundColor: "white",
+    height: 300,
+    marginTop: 560,
+    borderRadius: 20,
+    padding: 20,
+    borderWidth: 1,
+    borderColor: "#f0f0f0"
 
   },
 
@@ -454,6 +453,11 @@ const styles = StyleSheet.create({
   locationImg: {
     display: 'flex',
     flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 10,
+    marginLeft: 10,
+    marginRight: 10
   },
   locationImg1: {
     display: 'flex',
@@ -516,7 +520,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginRight: 10,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
@@ -550,5 +554,14 @@ const styles = StyleSheet.create({
     rowGap: 10,
     width: '100%',
     padding: 15,
+  }, displayLocation: {
+    flexDirection: 'row',
+    marginLeft: -50
   },
+  logo: {
+    backgroundColor: THEME_COLORS.secondary,
+    width: 40,
+    height: 40,
+    borderRadius: 25,
+  }
 });

@@ -1,5 +1,5 @@
 export const THEME_COLORS={
-    primary: '#ffff',
+    primary: '#FFFFFF',
     secondary: '#F38B07',
     error: '#EE1313',
     light_color:'#E4AA5B'
@@ -14,6 +14,7 @@ export const TEXT_FONT_SIZE ={
 export const TEXT_COLORS={
     primary: '#000000',
     secondary: '#7E7E7E',
+    whiteColor:'#FFFFFF',
     error:'#EE1313'
 }
 

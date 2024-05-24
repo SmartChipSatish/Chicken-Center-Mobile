@@ -1,5 +1,5 @@
 import * as React from "react";
-import Svg, { Circle, G, Path, Polyline, Rect, SvgProps } from "react-native-svg";
+import Svg, { Circle, Defs, G, LinearGradient, Path, Polyline, Rect, Stop, SvgProps } from "react-native-svg";
 import { THEME_COLORS } from "../../GlobalStyles/GlobalStyles";
 
 export const AccountIcon = (props:any) => (
@@ -151,6 +151,79 @@ export const OrdersIcon = (props: SvgProps) => (
     {...props}
   >
     <Path d='M421.2,128h-42.7v21.3c0,23.5-19.1,42.7-42.7,42.7c-23.5,0-42.7-19.1-42.7-42.7V128h-85.3v21.3c0,23.5-19.1,42.7-42.7,42.7 c-23.5,0-42.7-19.1-42.7-42.7V128H79.9c0,213.3-21.3,384-21.3,384h384C442.5,512,421.2,341.3,421.2,128z M165.2,170.7 c11.8,0,21.3-9.5,21.3-21.3v-42.7c0-35.4,28.6-64,64-64c35.4,0,64,28.6,64,64v42.7c0,11.8,9.5,21.3,21.3,21.3 c11.8,0,21.3-9.5,21.3-21.3v-42.7C357.2,47.8,309.4,0,250.5,0c-58.9,0-106.7,47.8-106.7,106.7v42.7 C143.9,161.1,153.4,170.7,165.2,170.7z' />
+  </Svg>
+);
+
+
+export const NotificationDotIcon = (props: SvgProps) => (
+  <Svg
+    width='23px'
+    height='23px'
+    viewBox='-2 0 34 34'
+    {...props}
+  >
+    <Defs>
+      <LinearGradient x1='50%' y1='0%' x2='50%' y2='100%' id='linearGradient-1'>
+        <Stop stopColor='#FFC923' offset='0%' />
+        <Stop stopColor='#FFAD41' offset='100%' />
+      </LinearGradient>
+      <LinearGradient x1='50%' y1='0%' x2='50%' y2='100%' id='linearGradient-2'>
+        <Stop stopColor='#FE9F15' offset='0%' />
+        <Stop stopColor='#FFB03C' offset='100%' />
+      </LinearGradient>
+      <LinearGradient x1='50%' y1='0%' x2='50%' y2='100%' id='linearGradient-3'>
+        <Stop stopColor='#FFB637' offset='0%' />
+        <Stop stopColor='#FFBE2F' offset='100%' />
+      </LinearGradient>
+      <LinearGradient x1='50%' y1='0%' x2='50%' y2='100%' id='linearGradient-4'>
+        <Stop stopColor='#FFC226' offset='0%' />
+        <Stop stopColor='#FFE825' offset='100%' />
+      </LinearGradient>
+      <LinearGradient x1='50%' y1='0%' x2='50%' y2='100%' id='linearGradient-5'>
+        <Stop stopColor='#EB2E2E' offset='0%' />
+        <Stop stopColor='#D71919' offset='100%' />
+      </LinearGradient>
+    </Defs>
+    <G id='icons' stroke='none' strokeWidth={1} fill='none' fillRule='evenodd'>
+      <G
+        id='ui-gambling-website-lined-icnos-casinoshunter'
+        transform='translate(-1385.000000, -1904.000000)'
+        fillRule='nonzero'
+      >
+        <G id='4' transform='translate(50.000000, 1871.000000)'>
+          <G id='notification' transform='translate(1335.000000, 33.000000)'>
+            <Path
+              d='M26,24.6895899 L26,14 C26,7.92486775 21.0751322,3 15,3 C8.92486775,3 4,7.92486775 4,14 L4,24.6895899 L6,24.6895899 C8.6862915,24.6895899 11.6862915,24.6895899 15,24.6895899 C18.3137085,24.6895899 21.3137085,24.6895899 24,24.6895899 L26,24.6895899 Z'
+              id='Path'
+              fill='url(#linearGradient-1)'
+            />
+            <Path
+              d='M26.5,23 C28.4329966,23 30,24.5670034 30,26.5 C30,28.4329966 28.4329966,30 26.5,30 L3.5,30 C1.56700338,30 0,28.4329966 0,26.5 C0,24.5670034 1.56700338,23 3.5,23 L26.5,23 Z'
+              id='Path'
+              fill='url(#linearGradient-2)'
+            />
+            <Path
+              d='M21,34 C21,30.6862915 18.3137085,28 15,28 C11.6862915,28 9,30.6862915 9,34 L21,34 Z'
+              id='Oval'
+              fill='url(#linearGradient-3)'
+              transform='translate(15.000000, 31.000000) rotate(-180.000000) translate(-15.000000, -31.000000) '
+            />
+            <Path
+              d='M17,2.13162821e-14 L13,2.13162821e-14 L11,2.13162821e-14 L11,1.56280256 C11,3.49579918 12.5670034,5.06280256 14.5,5.06280256 L15.5,5.06280256 C17.4329966,5.06280256 19,3.49579918 19,1.56280256 L19,2.13162821e-14 L17,2.13162821e-14 Z'
+              id='Rectangle-Copy-11'
+              fill='url(#linearGradient-4)'
+              transform='translate(15.000000, 2.531401) rotate(-180.000000) translate(-15.000000, -2.531401) '
+            />
+            {/* //red dot */}
+            <Path
+              d='M24,3 C21.2385763,3 19,5.23857625 19,8 C19,10.7614237 21.2385763,13 24,13 C26.7614237,13 29,10.7614237 29,8 C29,5.23857625 26.7614237,3 24,3 Z'
+              id='Path'
+              fill='url(#linearGradient-5)'
+            />
+          </G>
+        </G>
+      </G>
+    </G>
   </Svg>
 );
 

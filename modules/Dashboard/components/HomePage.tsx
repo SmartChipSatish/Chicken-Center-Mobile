@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
 import CarouselCards from '../../Home/components/HomeCauresel/CarouselCard';
 import { useNavigation } from '@react-navigation/native';
@@ -10,21 +10,18 @@ import HeaderLocation from '../../location/HeaderLocation'
 import { TEXT_COLORS, THEME_COLORS } from '../../GlobalStyles/GlobalStyles';
 const { height, width } = Dimensions.get('window')
 const HomePage = () => {
-  const bannerImage = require('../../../modules/assets/svgimages/HomeSvgs/carouselimages/image1.png')
-  const [searchQuery, setSearchQuery] = React.useState('');
   const navigate=useNavigation<any>();
 
   return (
 
     <View style={styles.container}>
       <View style={styles.HomePageBackground}>
-        <HeaderLocation></HeaderLocation>
+         <HeaderLocation></HeaderLocation>
       </View>
-      <TouchableOpacity onPress={()=>navigate.navigate('searchPage')}>
+       <TouchableOpacity onPress={()=>navigate.navigate('searchPage')}>
         <Searchbar
           placeholder="Search"
-          // onChangeText={setSearchQuery}
-          value={searchQuery}
+          value={''}
           style={styles.searchBar}
           editable={false}
         />
@@ -69,8 +66,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginRight: 10,
     marginLeft: 10,
-    backgroundColor: 'white',
-    marginTop: 30,
+    backgroundColor: '#EBF6FA',
+    marginTop: 15,
     borderColor: 'grey',
     borderWidth: 1,
   },
