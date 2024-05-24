@@ -6,10 +6,9 @@ import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../../GlobalStyles/Gl
 export default function Orders() {
   return (
     <View style={styles.ordersBackGroudnd}>
-      <Text style={styles.ordersHistory}>Order History</Text>
+      <Text style={styles.ordersHistory}>Your orders</Text>
       <View style={styles.text}></View>
-     
-      <Text style={styles.PastOrders}>Past orders...</Text>
+      <View style={{marginTop:10}}></View>
       <GlobalOrders></GlobalOrders>
     </View>
   )
@@ -32,11 +31,12 @@ const styles=StyleSheet.create({
      
   },
   ordersHistory:{
-    color:"#800000",
+    color:TEXT_COLORS.primary,
     // fontWeight:"bold",
     textAlign:"center",
     fontSize:20,
-    marginTop:20
+    marginTop:20,
+    fontWeight:"bold"
   },
   ordersBackGroudnd:{
     backgroundColor:THEME_COLORS.primary,

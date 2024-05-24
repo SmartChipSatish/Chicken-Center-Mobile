@@ -4,61 +4,42 @@ import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../GlobalStyles/GlobalStyles';
+import { RootState } from '../store/store';
 
 export default function OrderSummary() {
-
+    const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
     const [priceList,setPriceList]=useState({itemsPrice:0,addons:0,discount:0,coupon:0,deliveryFee:100})
     const [total,setTotal]=useState(0);
+    console.log(total,"toal,,,,,")
     const distach=useDispatch();
-    const [items, setItems] = useState([
-        {
-          id: 1,
-          name: 'Chicken chest',
-          image: 'https://img.freepik.com/premium-photo/raw-whole-chicken-with-skin-arranged-grill_527904-677.jpg',
-          priceBeforeDiscount: 150,
-          price: 100,
-          quantity: 1,
-        },
-        {
-          id: 2,
-          name: 'Chicken liver',
-          image: 'https://media.istockphoto.com/photos/chicken-meat-picture-id1319903960?k=20&m=1319903960&s=612x612&w=0&h=_VBryQo-J1RmuBGCS6OIfKiimN5wnQEcyWnH6hywcjE=',
-          priceBeforeDiscount: 200,
-          price: 150,
-          quantity: 1,
-        },
-        {
-          id: 1,
-          name: 'Chicken chest',
-          image: 'https://img.freepik.com/premium-photo/raw-whole-chicken-with-skin-arranged-grill_527904-677.jpg',
-          priceBeforeDiscount: 150,
-          price: 100,
-          quantity: 1,
-        },
-        {
-          id: 2,
-          name: 'Chicken liver',
-          image: 'https://media.istockphoto.com/photos/chicken-meat-picture-id1319903960?k=20&m=1319903960&s=612x612&w=0&h=_VBryQo-J1RmuBGCS6OIfKiimN5wnQEcyWnH6hywcjE=',
-          priceBeforeDiscount: 200,
-          price: 150,
-          quantity: 1,
-        },
-      ]);
     
+    useEffect(()=>{
+        const data=cartItems.filter((e)=>{
+            return e.total
+        })
 
-   
+        if (data) {
+            const totalprice = (data.reduce((a, b) => a + b.total, 0))
+            setPriceList({ ...priceList, itemsPrice: totalprice })
+            const total = totalprice + priceList.deliveryFee + priceList.addons - (priceList.coupon + priceList.discount);
+            setTotal(total)
+        }
+        
 
+    },[cartItems])
     return (
        <View style={{width:"100%"}}>
-        {items.length>0 ? <ScrollView >
+        <Text style={styles.orderSummarys}>Order Summary</Text>
+        {cartItems.length>0 ? <ScrollView >
             <View style={styles.container}>
              {/*displaying items here */}
-                {items.map((item:any, index:number) => (
+                {cartItems.map((item:any, index:number) => (
                     <View key={index} style={styles.card}>
-                        <Image style={styles.tinyLogo} source={{ uri: item.image }} />
+                        <Image style={styles.tinyLogo} source={{ uri: item.imgUrl }} />
                         <View style={styles.cardContent}>
-                            <Text style={styles.title}>{item.name}</Text>
-                            <Text style={styles.price}>₹{item.price}</Text>
+                            <Text style={styles.title}>{item.title}</Text>
+                            <Text style={styles.price1}>Qty:{item.quantity}</Text>
+                            <Text style={styles.price}>₹{item.price* item.quantity}</Text>
                             <View style={styles.rightAlign}>
                     
                             </View>
@@ -79,18 +60,17 @@ export default function OrderSummary() {
                         <Text style={styles.rightAmount}>₹{priceList.discount}</Text>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.leftTexts}>Itemn total</Text>
+                        <Text style={styles.leftTexts}>Item total</Text>
                         <Text style={styles.rightAmount}>₹{priceList.coupon}</Text>
                     </View>
                     <View style={styles.row}>
-                        <Text style={styles.leftTexts}>Hnadling charges</Text>
+                        <Text style={styles.leftTexts}>Handling charges</Text>
                         <Text style={styles.rightAmount}>₹{priceList.deliveryFee}</Text>
                     </View>
                     <View style={styles.row}>
                         <Text style={[styles.leftTexts, styles.textColor]}>Bill total</Text>
                         <Text style={[styles.rightAmount, styles.textColor]}>₹{total}</Text>
                     </View>
-                    {/* <Text style={styles.buttonStyle}>Continue Checkout</Text> */}
                 </View>
                 
                 <View style={styles.cards}>
@@ -114,6 +94,7 @@ const styles = StyleSheet.create({
     container: {
         padding: 10,
         backgroundColor: '#fff',
+        marginTop:10
         
     },
     AlltextColors:{
@@ -121,6 +102,15 @@ const styles = StyleSheet.create({
         fontWeight:"bold",
         margin:5
     },
+    orderSummarys:{
+        color:TEXT_COLORS.primary,
+        fontSize:TEXT_FONT_SIZE.large,
+        marginLeft:15,
+        fontWeight:"bold",
+        marginTop:-5
+
+    },
+
     cards: {
         
         backgroundColor: '#fff',
@@ -227,6 +217,12 @@ const styles = StyleSheet.create({
         color: TEXT_COLORS.primary,
         marginVertical: 5,
         fontWeight: "bold"
+    },
+    price1: {
+        fontSize: 13,
+        color: TEXT_COLORS.secondary,
+        marginVertical: 5,
+        
     },
     rightAlign: {
         flexDirection: 'row',
