@@ -8,9 +8,10 @@ import Cartitems from '../Home/components/Cart/CartItems';
 
 export default function GlobalOrders() {
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalVisible1, setModalVisible1] = useState(false);
-  const [RateVisible,setRateVisible]=useState(false)
-  const [items, setItems] = useState([
+  const [currentRatedItem, setCurrentRatedItem] = useState<any>(null);
+  const [ratings, setRatings] = useState<any>({});
+  const [modalVisible1,setModalVisible1]=useState(false)
+  const [items, setItems] = useState<any>([
     {
       id: 1,
       name: 'Chicken chest',
@@ -28,11 +29,11 @@ export default function GlobalOrders() {
       quantity: 1,
     },
     {
-      id: 1,
-      name: 'Chicken chest',
-      image: 'https://img.freepik.com/premium-photo/raw-whole-chicken-with-skin-arranged-grill_527904-677.jpg',
-      priceBeforeDiscount: 150,
-      price: 100,
+      id: 2,
+      name: 'Chicken liver',
+      image: 'https://media.istockphoto.com/photos/chicken-meat-picture-id1319903960?k=20&m=1319903960&s=612x612&w=0&h=_VBryQo-J1RmuBGCS6OIfKiimN5wnQEcyWnH6hywcjE=',
+      priceBeforeDiscount: 200,
+      price: 150,
       quantity: 1,
     },
     {
@@ -45,64 +46,70 @@ export default function GlobalOrders() {
     },
   ]);
 
-  
+  const handleRateOrder = (item:any) => {
+    setCurrentRatedItem(item);
+    setModalVisible(true);
+  };
+
+  const handleRatingChange = (rating:any) => {
+    setRatings((prevRatings:any) => ({ ...prevRatings, [currentRatedItem.id]: rating }));
+  };
+
+  const handleSubmitRating = () => {
+    Alert.alert("Submitted successfully");
+    setTimeout(() => {
+      setModalVisible(false);
+    }, 2000);
+  };
 
   return (
     <View>
-      <ScrollView >
-       <TouchableOpacity >
-       <View style={styles.container} >
-          {/*displaying items here */}
-          {items.map((item, index) => (
-            <TouchableOpacity  onPress={()=>{setModalVisible1(true)}}>
-              <View key={index} style={styles.card}>
+      <ScrollView>
+        <View style={styles.container}>
+          {items.map((item:any, index:any) => (
+            <TouchableOpacity key={index} onPress={()=>{setModalVisible1(true)}}>
+            <View  style={styles.card}>
+              <Image style={styles.tinyLogo} source={{ uri: item.image }} />
+              <Text style={styles.orderId}>Shipment ID: 000zx4933pxz</Text>
+              <View style={styles.cardContent}>
+                <Text style={styles.title}>{item.name}</Text>
+                <View style={styles.ordersPlace}>
+                  <Text style={styles.price}>500gms </Text>
+                  <Text> |</Text>
+                  <Text style={styles.price1}> ₹{item.price}</Text>
+                  <Text> |</Text>
+                  <Text style={styles.price2}> Qty.1</Text>
+                </View>
 
-<Image style={styles.tinyLogo} source={{ uri: item.image }} />
-<Text style={styles.orderId}>Shipment ID: 000zx4933pxz</Text>
-<View style={styles.cardContent}>
-  <Text style={styles.title}>{item.name}</Text>
-  <View style={styles.ordersPlace}>
-    <Text style={styles.price}>500gms </Text>
-    <Text> |</Text>
-    <Text style={styles.price1}> ₹{item.price}</Text>
-    <Text> |</Text>
-    <Text style={styles.price2}> Qty.1</Text>
-  </View>
-
-  <View style={styles.rightAlign}>
-    <View style={styles.quantityContainer}>
-    </View>
-  </View>
-  <View style={styles.separator}></View>
-  <View style={styles.twoButtons}>
-    <Text style={styles.RepeatColor}>Repeat</Text>
-    { <TouchableOpacity onPress={(e) => { setModalVisible(true)
-      console.log(e,"syam")
-     }}>
-      <Text style={styles.RepeatColor1}>Rate order</Text>
-    </TouchableOpacity>}
-    { <View>
-    {/* <Image
-        style={styles.tinyLogo2}
-        source={{
-          uri: "https://raw.githubusercontent.com/tranhonghan/images/main/star_filled.png",
-        }}
-      />
-      <Text>Rating submitted.Thank you!</Text> */}
-    </View>}
-   
-  </View>
-
- 
-
-</View>
-</View>
+                <View style={styles.separator}></View>
+                <View style={styles.twoButtons}>
+                  {ratings[item.id] ? (
+                    <View style={styles.ratingContainer}>
+                      {[...Array(ratings[item.id])].map((_, index) => (
+                        <Image
+                          key={index}
+                          style={styles.tinyLogo2}
+                          source={{
+                            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyYPvs1xPs_hTJQp1pKDhBqoP9NPso4AOTOMYqTAKVrA&s",
+                          }}
+                        />
+                      ))}
+                      <Text style={{marginLeft:5}}>Rating submitted</Text>
+                    </View>
+                  ) : (
+                    <TouchableOpacity onPress={() => handleRateOrder(item)}>
+                      <Text style={styles.RepeatColor1}>Rate order</Text>
+                    </TouchableOpacity>
+                    
+                  )}
+                </View>
+              </View>
+            </View>
             </TouchableOpacity>
           ))}
         </View>
-       </TouchableOpacity>
 
-        {/* {Rate-order-model} */}
+        {/* Rate order modal */}
 
         <View style={styles.centeredView}>
           <Modal
@@ -125,59 +132,53 @@ export default function GlobalOrders() {
                   </TouchableOpacity>
                   
                   <View style={styles.textColorsone}>
+                  <Image
+                         
+                          style={styles.chickenImage}
+                          source={{
+                            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqCfQOm98hADU_pLAuhtDc_Yi7cmekWqpP8EyE7IPlEg&s",
+                          }}
+                        />
                     <Text style={styles.orderText}>How would you rate the products you ordered?</Text>
                   </View>
-                  <ScrollView style={{ width: "95%" }} >
-                    {items.map((item, index) => {
-                      return (
-                        <View >
-                          <View style={styles.card1}>
-                            <View>
-
-                              <View style={{ display: "flex", flexDirection: "row" }}>
-                                <Image
-                                  style={styles.tinyLogo}
-                                  source={{
-                                    uri: item.image,
-                                  }}
-                                />
-                                <View style={styles.ordersPlace1}>
-                                  <Text style={styles.textAll}>{item.name}</Text>
-                                  <Rating></Rating>
-                                </View>
-                              </View>
+                  <ScrollView style={{ width: "95%" }}>
+                    {currentRatedItem && (
+                      <View style={styles.card1}>
+                        <View style={{ display: "flex", flexDirection: "row" }}>
+                          <Image
+                            style={styles.tinyLogos}
+                            source={{
+                              uri: currentRatedItem.image,
+                            }}
+                          />
+                          <View style={styles.ordersPlace1}>
+                            <Text style={styles.textAll}>{currentRatedItem.name}</Text>
+                            <View style={styles.allratings}>
+                            <Rating
+                            
+                              rating={ratings[currentRatedItem.id] || 0}
+                              onRatingChange={handleRatingChange}
+                            />
                             </View>
+                            
                           </View>
                         </View>
-                      )
-                    })}
-
-                    
+                      </View>
+                    )}
                   </ScrollView>
-                  <TouchableOpacity 
-                  onPress={() => {
-                    
-                    Alert.alert("submited successfull")
-                    setTimeout(()=>{
-                      setModalVisible(false);
-                      // setRateVisible(true)
-                    },2000)
-                  }}
-                  >
-                  
-                  <View style={{ margin: 20 }}>
-                    <Text style={styles.buttonSubmit}>Submits</Text>
-                  </View>
+                  <TouchableOpacity onPress={handleSubmitRating}>
+                    <View style={{ margin: 20 }}>
+                      <Text style={styles.buttonSubmit}>Submit</Text>
+                    </View>
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
           </Modal>
         </View>
-        
-        {/* {model} */} 
 
-        {/* order-summary-model */}
+      {/* Order summary modal */}
+
         <View style={styles.centeredView}>
           <Modal
             animationType="slide"
@@ -197,26 +198,18 @@ export default function GlobalOrders() {
                       <CrossMark color={'black'} width={25} height={25}></CrossMark>
                     </View>
                   </TouchableOpacity>
-                  
                  <OrderSummary></OrderSummary>
-                  
-                  <View style={{ margin: 20 }}>
-                    <Text style={styles.buttonSubmit}>Submit</Text>
-                  </View>
                 </View>
               </View>
             </View>
           </Modal>
         </View>
-
-           {/* order-summary-model */}
-
+        
+        {/* Order summary modal */}
       </ScrollView>
     </View>
   );
 }
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -224,7 +217,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     height: 1000
   },
-  tinyLogo2:{height:20,width:20},
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft:20,
+  },
+  tinyLogo2:{height:13,width:13},
+  
 
   buttonSubmit: {
     backgroundColor: THEME_COLORS.secondary,
@@ -236,25 +235,20 @@ const styles = StyleSheet.create({
     borderRadius: 5
 
   },
+  allratings:{ 
+    marginTop:25
+  },
   textAll: {
     position: "absolute",
     top: 10,
     color: TEXT_COLORS.primary,
     fontWeight: "bold"
   },
-  orderText: {
-    color: "black",
-    fontWeight: "bold",
-    fontSize: 20
-  },
-
   textColorsone: {
 
     marginVertical: -68,
     marginTop: 35,
     padding: 15,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
     backgroundColor: '#fff',
     marginBottom: 10,
     shadowColor: '#000',
@@ -262,12 +256,29 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 2,
-
-
+    display:"flex",
+    flexDirection:"row",
+    justifyContent:"space-between",
+    marginLeft:10,
+    marginRight:25,
   },
+  chickenImage:{
+    height:60,
+    width:60,
+  borderRadius:50,
+  marginLeft:30
+},
   centeredView: {
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  orderText: {
+    color: "black",
+    fontWeight: "bold",
+    fontSize: 16,
+    width:"90%",
+    marginLeft:10,
+    marginTop:5
   },
   crossMark: {
     marginLeft: 330,
@@ -286,8 +297,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     position: "relative",
     left: -50,
-    
-
   },
   modalView: {
     margin: 0,
@@ -334,7 +343,7 @@ const styles = StyleSheet.create({
   separator: {
     borderBottomWidth: 0.5,
     borderBottomColor: "rgba(0, 0, 0, 0.1)",
-    marginVertical: 10,
+    marginVertical: 18,
     marginLeft: -90,
   },
   orderId: {
@@ -354,15 +363,16 @@ const styles = StyleSheet.create({
     height: 70,
     width: 80,
     borderRadius: 8,
-    marginRight: 10, // Space between images
+    marginRight: 10,
   },
   ordersPlace: {
     display: "flex",
     flexDirection: "row"
   },
   ordersPlace1: {
-
-    marginTop: 35,
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 25,
     marginLeft: 20,
   },
 
@@ -389,9 +399,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    // padding: 10,
     marginVertical: -50,
-    // marginHorizontal: 10,
     width: "100%",
     marginTop: 1
   },
@@ -402,6 +410,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 40,
     marginLeft: 10
+  },
+  tinyLogos: {
+    height: 70,
+    width: 80,
+    borderRadius: 8,
+    marginTop: 20,
+    marginLeft: 10,
+    padding:10,
+    marginVertical:20
   },
   cardContent: {
     flex: 1,
@@ -424,15 +441,11 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: TEXT_COLORS.secondary,
     marginVertical: 5,
-    // fontWeight: "bold",
-
   },
   price2: {
     fontSize: 10,
     color: TEXT_COLORS.secondary,
     marginVertical: 5,
-    // fontWeight: "bold",
-
   },
   price1: {
     fontSize: 17,
@@ -448,7 +461,6 @@ const styles = StyleSheet.create({
   quantityContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    // backgroundColor: '#f5f5f5',
     borderRadius: 5,
     padding: 5,
     position: "relative",
@@ -476,14 +488,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-end',
   },
-
-
-
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 10,
   },
-
 
 });
