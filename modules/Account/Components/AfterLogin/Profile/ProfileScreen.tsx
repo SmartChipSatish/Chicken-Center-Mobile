@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Avatar, Icon } from 'react-native-elements';
 import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
 import { style } from '../../../utlis/Styles';
@@ -30,8 +30,16 @@ const ProfileScreen: React.FC = () => {
             } else if (response.errorCode) {
                 console.log('ImagePicker Error: ', response.errorMessage);
             } else if (response.assets && response.assets.length > 0) {
-                console.log(response.assets[0].uri, 'sai')
-                uploadImage(response.assets[0], response.assets[0].fileName)
+                console.log(response, 'sai')
+                const uri = response.assets[0].uri;
+                const type = response.assets[0].type;
+                const name = response.assets[0].fileName;
+                const source1 = {
+                    uri,
+                    type,
+                    name,
+                }
+                uploadImage(source1)
                 const source = response.assets[0].uri;
                 if (source) {
                     setAvatarUri(source);
@@ -39,24 +47,26 @@ const ProfileScreen: React.FC = () => {
             }
         });
     };
-    const uploadImage = async (picture: any, predefinedName: any) => {
-        console.log(picture, predefinedName, 'name')
-        try {
-            let formData = new FormData();
-            formData.append("upload_preset", "cgvymfjn");
-            formData.append("file", picture);
-            formData.append("public_id", predefinedName); // Adding the predefined name
-            const data = await axios.post(
-                `https://api.cloudinary.com/v1_1/dnhbdmhp6/image/upload`,
-                formData
-            );
-            console.log(data, 'sai')
-            return data;
-        } catch (error) {
-            console.error('Error uploading image:', error);
-            // throw error;
-        }
+
+
+    const uploadImage = (photo: any) => {
+        const data = new FormData()
+        console.log(data, 'data')
+        data.append('file', photo)
+        data.append('upload_preset', 'cgvymfjn')
+        data.append("cloud_name", "dnhbdmhp6")
+        fetch("https://api.cloudinary.com/v1_1/dnhbdmhp6/image/upload", {
+            method: "POST",
+            body: data
+        }).then(res => res.json()).
+            then(data => {
+                setAvatarUri(data.secure_url)
+
+            }).catch(err => {
+                Alert.alert("An Error Occured While Uploading")
+            })
     }
+    console.log(avatarUri)
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.avatarContainer}>
