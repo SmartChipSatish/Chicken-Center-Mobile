@@ -28,7 +28,7 @@ const HeaderLocation = () => {
   const [suggestions, setSuggestions] = useState<any>([]);
   const [previousLocation, setPreviousLocation] = useState('');
   const [useloc, setUserLoc] = useState({});
-  console.log(useloc, 'sssss');
+  
   const mapKey = 'AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY'
   const fetchSuggestions = async (text: any) => {
     const apiKey = mapKey; // Replace with your API key
@@ -97,7 +97,6 @@ const HeaderLocation = () => {
   const [latitude, setLatitude] = useState<any>(null);
   const [longitude, setLongitude] = useState<any>(null);
   const [displayAddress, setDisplayAddress] = useState('');
-  console.log(displayAddress, 'syamsundarsai');
   const [error, setError] = useState<any>(null);
 
   useEffect(() => {
@@ -243,18 +242,19 @@ const HeaderLocation = () => {
       </TouchableOpacity> */}
 
       <View style={styles.locationImg}>
+      <View style={styles.displayLocation}>
         <Image source={appLogo}
           style={styles.logo} />
-        <View style={styles.displayLocation}>
+
           <TouchableOpacity onPress={() => {
             setPreviousLocation(userInput || displayAddress);
             setvisible(!visibles)
-          }}>
+          }} style={{marginLeft:10}}>
             <Text style={styles.locationText}>Location</Text>
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"
-              style={styles.locationText}>
+              style={[styles.locationText,{width:200}]}>
               {displayAddress!==''?displayAddress: 'Fetching location...'} 
             </Text>
           </TouchableOpacity>
@@ -555,8 +555,7 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 15,
   }, displayLocation: {
-    flexDirection: 'row',
-    marginLeft: -50
+    flexDirection: 'row'
   },
   logo: {
     backgroundColor: THEME_COLORS.secondary,

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import ProductItem from './AddItemModal';
 import { useDispatch, useSelector } from 'react-redux';
-import { itemsDetails } from '../../utils/constents';
+import { itemData } from '../../utils/constents';
 import { RootState } from '../../../store/store';
 import { setFavourite } from '../../store/slices/ProductsListSlice';
 import ProductsCard from './ProductCard';
@@ -10,12 +10,12 @@ import ProductsCard from './ProductCard';
 const ProductsList = () => {
     const navigate = useNavigation<any>();
     const [show, setShow] = useState(false);
-    const [productId, setProductId] = useState<number>(0);
+    const [productId, setProductId] = useState<string>('');
     const handleClose = () => {
         setShow(false)
     }
     const products = useSelector((store: RootState) => store.products.addProducts);;
-    const modalShow = (e: { stopPropagation: () => void }, itemId: number) => {
+    const modalShow = (e: { stopPropagation: () => void }, itemId: string) => {
         e.stopPropagation();
         setShow(true)
         setProductId(itemId);
@@ -27,12 +27,12 @@ const ProductsList = () => {
     }
     return (
         <>
-            {products.map((e: itemsDetails) => {
+            {products.length>0 ? products.map((e: itemData) => {
                 return <ProductsCard item={e}
-                    handleFav={handleFavourite}
-                    handleModelShow={modalShow}
-                    type='product' />
-            })}
+                                     handleFav={handleFavourite}
+                                     handleModelShow={modalShow}
+                                     type='product' />
+            }):'Loding....'}
             {show && <ProductItem show={show} handleClose={handleClose} productId={productId} />}
 
         </>

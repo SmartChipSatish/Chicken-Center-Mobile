@@ -51,6 +51,7 @@ export default function AddAddress() {
             value={address.address}
             onChangeText={(text)=>setAddress({...address,address:text})}
             onFocus={()=>setPlaceholderShow(true)}
+            placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
 
@@ -60,6 +61,7 @@ export default function AddAddress() {
                      placeholder='Flat no. / House no. /Floor / Block'
                      value={address.flat}
                      onChangeText={(text)=>setAddress({...address,flat:text})}
+                     placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
 
@@ -67,6 +69,7 @@ export default function AddAddress() {
         <Text style={Style.side_header}>Landmark (optional)</Text>
           <TextInput style={Style.textInput}
             placeholder='Landmark (optional)'
+            placeholderTextColor={TEXT_COLORS.secondary}
             // keyboardType="phone-pad"
           />
         </View>
@@ -77,6 +80,7 @@ export default function AddAddress() {
             placeholder='City'
             value={address.city}
             onChangeText={(text)=>setAddress({...address,city:text})}
+            placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
 
@@ -86,6 +90,7 @@ export default function AddAddress() {
             onChangeText={(text)=>setMobileNo(text)}
             placeholder='Mobile'
             keyboardType="phone-pad"
+            placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
 

@@ -24,7 +24,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    dispatch(setAddProducts(data))
+    // dispatch(setAddProducts(data))
   }, [])
   const {
     requestUserPermission,

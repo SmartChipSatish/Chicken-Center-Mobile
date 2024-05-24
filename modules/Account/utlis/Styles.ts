@@ -44,5 +44,21 @@ export const style = StyleSheet.create({
     backgroundColor:'#D7D8E3',
     height:80,
     marginBottom:15,
+  },
+  logout_container:{
+    width: '100%',
+    height: 50,
+    backgroundColor: `${THEME_COLORS.primary}`,
+    marginTop: 10,
+    flexDirection:'row',
+    justifyContent:'space-between',
+    alignItems:'center',
+    marginBottom:10
+  },login_icon:{
+    flexDirection:'row',
+    justifyContent:'space-between',
+    marginLeft:20
+  },referText:{
+    color:TEXT_COLORS.primary
   }
 })

@@ -29,8 +29,8 @@ export default function OtherFields() {
           {e.title === 'Contact Us' && <View style={style.referAFriend}>
             <AnnouncementMicIcon/>
             <View style={{marginLeft:10}}>
-            <Text>Refer a friend</Text>
-            <Text>Invite friends and get Rs 200 per referral</Text>
+            <Text style={style.referText}>Refer a friend</Text>
+            <Text style={style.referText}>Invite friends and get Rs 200 per referral</Text>
             </View>
           </View>}
         </>

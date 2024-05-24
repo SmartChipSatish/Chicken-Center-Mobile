@@ -1,17 +1,34 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
 import CarouselCards from '../../Home/components/HomeCauresel/CarouselCard';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Searchbar } from 'react-native-paper';
 import ProductsList from '../../Home/components/ProductsList/ProductsList';
 import { ChickenSkinless } from '../../assets/svgimages/HomeSvgs/HomeSvgs';
 import OfferCards from '../../Home/components/Offers/OfferCards';
 import HeaderLocation from '../../location/HeaderLocation'
 import { TEXT_COLORS, THEME_COLORS } from '../../GlobalStyles/GlobalStyles';
+import { useGetAllProductsQuery } from '../../store/services/getAllProductsService';
+import { setAddProducts } from '../../Home/store/slices/ProductsListSlice';
+import { useDispatch } from 'react-redux';
 const { height, width } = Dimensions.get('window')
+
 const HomePage = () => {
   const navigate=useNavigation<any>();
+const {data} = useGetAllProductsQuery('');
+const dispatch=useDispatch()
+const dataFetch=async()=>{
+  const details=await data
+console.log(details,'lllll');
 
+}
+useFocusEffect(
+  useCallback(() => {
+    // dataFetch()
+    console.log(data,'dataaa')
+dispatch(setAddProducts(data))
+  }, [data])
+);
   return (
 
     <View style={styles.container}>
