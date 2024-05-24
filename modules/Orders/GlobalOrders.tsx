@@ -11,6 +11,7 @@ export default function GlobalOrders() {
   const [currentRatedItem, setCurrentRatedItem] = useState<any>(null);
   const [ratings, setRatings] = useState<any>({});
   const [modalVisible1,setModalVisible1]=useState(false)
+  const appLogo = require('../assets/Images/app-logo.png');
   const [items, setItems] = useState<any>([
     {
       id: 1,
@@ -132,13 +133,8 @@ export default function GlobalOrders() {
                   </TouchableOpacity>
                   
                   <View style={styles.textColorsone}>
-                  <Image
-                         
-                          style={styles.chickenImage}
-                          source={{
-                            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqCfQOm98hADU_pLAuhtDc_Yi7cmekWqpP8EyE7IPlEg&s",
-                          }}
-                        />
+                   <Image source={appLogo}
+                     style={styles.chickenImage} />     
                     <Text style={styles.orderText}>How would you rate the products you ordered?</Text>
                   </View>
                   <ScrollView style={{ width: "95%" }}>
@@ -263,10 +259,11 @@ const styles = StyleSheet.create({
     marginRight:25,
   },
   chickenImage:{
-    height:60,
-    width:60,
-  borderRadius:50,
-  marginLeft:30
+    height:80,
+    width:80,
+    marginLeft:30,
+    backgroundColor:THEME_COLORS.secondary,
+    borderRadius: 10,
 },
   centeredView: {
     justifyContent: 'center',
@@ -275,10 +272,10 @@ const styles = StyleSheet.create({
   orderText: {
     color: "black",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 18,
     width:"90%",
     marginLeft:10,
-    marginTop:5
+    marginTop:10
   },
   crossMark: {
     marginLeft: 330,
