@@ -93,11 +93,9 @@ export default function Cartitems() {
                         <View style={styles.separator}></View>
                         <View style={styles.row}>
                             <Text style={[styles.leftTexts, styles.textColor]}>Total Amount</Text>
-                            <Text style={[styles.rightAmount, styles.textColor]}>₹{total}</Text>
+                            <Text style={[styles.rightAmount, styles.textColor]}>₹{total}</Text> 
                         </View>
-                        <TouchableOpacity onPress={()=>navigation.navigate('checkout')}>
-                        <Text style={styles.buttonStyle} >Continue Checkout</Text>
-                        </TouchableOpacity>
+                        <Text style={styles.buttonStyle} onPress={()=>navigation.navigate('checkout',{totalAmount: total})}>Continue Checkout</Text>
                     </View>
                 </View>
             </ScrollView> : <View style={styles.empty_cart}>
