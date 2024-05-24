@@ -4,6 +4,7 @@ import { Avatar, Icon } from 'react-native-elements';
 import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
 import { style } from '../../../utlis/Styles';
 import axios from 'axios';
+import { TEXT_COLORS } from '../../../../GlobalStyles/GlobalStyles';
 
 const ProfileScreen: React.FC = () => {
     const [firstName, setFirstName] = useState<string>('Talakanti');
@@ -182,6 +183,7 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderRadius: 8,
         marginBottom: 16,
+        color: `${TEXT_COLORS.primary}`
     },
     button: {
         width: '100%',
