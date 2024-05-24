@@ -4,7 +4,7 @@ import { PermissionsAndroid, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PushNotification from 'react-native-push-notification';
 
-// Initialize push notifications
+// Initialize push notifications and create a notification channel
 PushNotification.configure({
   onNotification: function (notification) {
     console.log('LOCAL NOTIFICATION ==>', notification);
@@ -13,10 +13,22 @@ PushNotification.configure({
   requestPermissions: true,
 });
 
+PushNotification.createChannel(
+  {
+    channelId: 'default-channel-id',
+    channelName: 'Default Channel',
+    channelDescription: 'A default channel',
+    playSound: false,
+    soundName: 'default',
+    importance: 4,
+    vibrate: true,
+  },
+  (created) => console.log(`createChannel returned '${created}'`) // (optional) callback returns whether the channel was created, false means it already existed.
+);
+
 const usePushNotification = () => {
   const requestUserPermission = async () => {
     if (Platform.OS === 'ios') {
-      // Request iOS permission
       const authStatus = await messaging().requestPermission();
       const enabled =
         authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
@@ -56,11 +68,15 @@ const usePushNotification = () => {
         JSON.stringify(remoteMessage),
       );
 
-      // Display the notification in the foreground
+      // Display the notification in the foreground with image
       PushNotification.localNotification({
+        channelId: 'default-channel-id',
         title: remoteMessage.notification?.title,
         message: remoteMessage.notification?.body || '',
+        vibrate: true,
         bigText: remoteMessage.notification?.body || '',
+        largeIconUrl: remoteMessage.notification?.android?.imageUrl || remoteMessage.notification?.imageUrl,
+        bigPictureUrl: remoteMessage.notification?.android?.imageUrl || remoteMessage.notification?.imageUrl,
       });
     });
     return unsubscribe;
@@ -73,6 +89,16 @@ const usePushNotification = () => {
           'A new message arrived! (BACKGROUND)',
           JSON.stringify(remoteMessage),
         );
+
+        // Display the notification in the background with image
+        PushNotification.localNotification({
+          channelId: 'default-channel-id',
+          title: remoteMessage.notification?.title,
+          message: remoteMessage.notification?.body || '',
+          bigText: remoteMessage.notification?.body || '',
+          largeIconUrl: remoteMessage.notification?.android?.imageUrl || remoteMessage.notification?.imageUrl,
+          bigPictureUrl: remoteMessage.notification?.android?.imageUrl || remoteMessage.notification?.imageUrl,
+        });
       },
     );
     return unsubscribe;
