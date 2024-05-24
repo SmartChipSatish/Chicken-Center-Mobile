@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, Image } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -45,7 +45,7 @@ export default function Cartitems() {
     }, [cartItems]);
 
     return (
-        <View>
+        <View >
             {cartItems.length > 0 ? <ScrollView keyboardShouldPersistTaps='handled'
                 showsVerticalScrollIndicator={false}>
                 <View style={styles.container}>
@@ -95,7 +95,9 @@ export default function Cartitems() {
                             <Text style={[styles.leftTexts, styles.textColor]}>Total Amount</Text>
                             <Text style={[styles.rightAmount, styles.textColor]}>₹{total}</Text>
                         </View>
-                        <Text style={styles.buttonStyle} onPress={()=>navigation.navigate('checkout')}>Continue Checkout</Text>
+                        <TouchableOpacity onPress={()=>navigation.navigate('checkout')}>
+                        <Text style={styles.buttonStyle} >Continue Checkout</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </ScrollView> : <View style={styles.empty_cart}>
@@ -109,7 +111,7 @@ export default function Cartitems() {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: 'white',
+        backgroundColor: THEME_COLORS.primary,
     },
     input: {
         color: TEXT_COLORS.primary,
@@ -170,6 +172,7 @@ const styles = StyleSheet.create({
 
     containers: {
         padding: 20,
+        backgroundColor:THEME_COLORS.primary
     },
     row: {
         flexDirection: 'row',
@@ -180,7 +183,8 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 14,
         textAlign: 'left',
-        fontWeight:'bold'
+        fontWeight:'bold',
+        color:'#928E8E'
     },
     rightAmount: {
         fontSize: 17,

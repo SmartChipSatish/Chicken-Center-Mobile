@@ -76,6 +76,11 @@ export const StackNavgation = () => {
         headerTitleAlign: 'center',
         headerShown: false
       }} />
+      <Stack.Screen name="checkout" component={Checkout} options={{
+        title: 'Checkout',
+        headerTitleAlign: 'center',
+        // headerShown: false
+      }} />
     </Stack.Navigator>
   );
 };

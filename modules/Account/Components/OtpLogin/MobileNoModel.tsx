@@ -3,7 +3,7 @@ import { Alert, Keyboard, Modal, StyleSheet, Text, TextInput, TouchableOpacity, 
 import Loding from '../../../Dashboard/components/Loding';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
-import { THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
+import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 
 export default function MobileNoModel({show, handleClose}:{show:boolean, handleClose:()=>void,}) {
   
@@ -63,11 +63,11 @@ export default function MobileNoModel({show, handleClose}:{show:boolean, handleC
             <View style={style.modalContainer}>
                 <View style={style.modalContent}>
                     <View style={{ marginTop: 10 }}>
-                        <Text>Login / Sign up with your Phone Number</Text>
+                        <Text style={style.header}>Login / Sign up with your Phone Number</Text>
                     </View>
                     <View style={style.inputContainer}>
                         <View style={{ marginLeft: 5, justifyContent: 'center' }}>
-                            <Text style={{ fontSize: 20 }}>+91</Text>
+                            <Text style={[style.input_text,{ fontSize: 20, }]}>+91</Text>
                         </View>
                         <View style={{ width: '70%', marginBottom: 20 }}
                               >
@@ -82,6 +82,7 @@ export default function MobileNoModel({show, handleClose}:{show:boolean, handleC
                                        value={number}
                                        onFocus={handleOnchangeFocus}
                                        onBlur={onChangeBlure}
+                                       
                             />
 
                         </View>
@@ -108,9 +109,15 @@ const style = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-end',
         backgroundColor: 'rgba(0,0,0,0.5)',
+    },header:{
+        color:TEXT_COLORS.primary,
+        fontSize:18,
+        fontWeight:'bold'
+    },input_text:{
+        color:TEXT_COLORS.primary,
     },
     modalContent: {
-        backgroundColor: 'white',
+        backgroundColor: THEME_COLORS.primary,
         padding: 30,
     },
     numberVerificationBtn: {
@@ -129,6 +136,8 @@ const style = StyleSheet.create({
         alignSelf: "center",
         padding: 10,
         fontSize: 20,
+        color:TEXT_COLORS.primary,
+        fontWeight:'bold'
     },
     inputContainer: {
         flexDirection: 'row',
