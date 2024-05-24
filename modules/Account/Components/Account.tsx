@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import {  ScrollView, TouchableOpacity, View } from 'react-native'
 import { Text } from 'react-native-paper'
 import MobileNoModel from './OtpLogin/MobileNoModel';
@@ -7,6 +7,7 @@ import OtherFields from './OtherFields/OtherFields';
 import { style } from '../utlis/Styles';
 import { GoogleSignin } from 'react-native-google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 // const auths = getAuth();
 export default function Account({ navigation }: any) {
@@ -14,6 +15,7 @@ export default function Account({ navigation }: any) {
     const [show, setShow] = useState<boolean>(false);
     const [details,setDetails]=useState<boolean>(false);
     const [login,setLogin]=useState<boolean>(false);
+    
     const handleClose=()=>{
         setShow(!show);
     }
@@ -34,14 +36,17 @@ export default function Account({ navigation }: any) {
             console.log(error,'error')
         }
     };
+
     const Checkuser=async()=>{
         const login=await AsyncStorage.getItem('login');
-        console.log(login,'login')
         setLogin(Boolean(login));
     }
-    useEffect(()=>{
-        Checkuser();
-    },[])
+    
+  useFocusEffect(
+    useCallback(() => {
+    Checkuser();
+    }, [])
+  );
 
     return (
         <ScrollView style={{ margin: 10,}}

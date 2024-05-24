@@ -45,7 +45,7 @@ export default function AddAddress() {
 
       <View style={Style.container}>
         <View style={{marginBottom:10,marginTop:10}}>
-          {placeholderShow && <Text>Enter Your apartment / building / area</Text>}
+          {placeholderShow && <Text style={Style.side_header}>Enter Your apartment / building / area</Text>}
           <TextInput style={Style.textInput}
             placeholder='Enter Your apartment / building / area'
             value={address.address}
@@ -55,7 +55,7 @@ export default function AddAddress() {
         </View>
 
         <View style={{marginBottom:10}}>
-        <Text>Flat no. / House no. /Floor / Block</Text>
+        <Text style={Style.side_header}>Flat no. / House no. /Floor / Block</Text>
           <TextInput style={Style.textInput}
                      placeholder='Flat no. / House no. /Floor / Block'
                      value={address.flat}
@@ -64,7 +64,7 @@ export default function AddAddress() {
         </View>
 
         <View style={{marginBottom:10}}>
-        <Text>Landmark (optional)</Text>
+        <Text style={Style.side_header}>Landmark (optional)</Text>
           <TextInput style={Style.textInput}
             placeholder='Landmark (optional)'
             // keyboardType="phone-pad"
@@ -72,7 +72,7 @@ export default function AddAddress() {
         </View>
 
         <View style={{marginBottom:10}}>
-        <Text>City</Text>
+        <Text style={Style.side_header}>City</Text>
           <TextInput style={Style.textInput}
             placeholder='City'
             value={address.city}
@@ -81,7 +81,7 @@ export default function AddAddress() {
         </View>
 
         <View style={{ marginBottom: 10 }}>
-          <Text>Mobile</Text>
+          <Text style={Style.side_header}>Mobile</Text>
           <TextInput style={Style.textInput}
             onChangeText={(text)=>setMobileNo(text)}
             placeholder='Mobile'
@@ -90,7 +90,7 @@ export default function AddAddress() {
         </View>
 
         <View>
-        <Text>Save as</Text>
+        <Text style={Style.side_header}>Save as</Text>
         <View style={{flexDirection:'row',marginTop:5 }}>
           {saveAs.map((e,inedx)=>{
             return <TouchableOpacity style={[Style.savas_btn,{backgroundColor: saveType === e.title? `${THEME_COLORS.light_color}` : 'white'}]} 
@@ -119,8 +119,13 @@ const Style = StyleSheet.create({
     width: '90%',
     fontSize: 15,
     borderBottomWidth: 1,
+    color:TEXT_COLORS.primary,
     borderBottomColor: `${TEXT_COLORS.primary}`
-  },
+  },side_header:{
+     color:TEXT_COLORS.primary,
+     fontSize:15,
+     fontWeight:'500'
+  }, 
   savas_btn:{
     flexDirection:'row',
     borderWidth:1,
@@ -140,7 +145,7 @@ const Style = StyleSheet.create({
    },
    container:{
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: THEME_COLORS.primary,
     height: '100%',
     padding:10,
     marginBottom:10,

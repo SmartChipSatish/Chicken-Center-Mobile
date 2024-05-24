@@ -36,7 +36,7 @@ export default function OTPVerfication({ navigation, route }:any) {
         console.log(res,'respones')
         if(res){
           AsyncStorage.setItem('login','true');
-          navigation.navigate('home');
+          navigation.navigate('account');
         }
        }catch(error){
         console.log(error,'error')
