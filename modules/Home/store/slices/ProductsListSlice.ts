@@ -13,7 +13,6 @@ const ProductsListSlice = createSlice({
     reducers: {
         setAddProducts: (state, action) => {
             let payload=action.payload;
-            console.log(payload,'kkkk')
             let data;
             if(action.payload){
                  data=payload.map((e:any)=>{

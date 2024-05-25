@@ -6,6 +6,7 @@ import { itemData } from '../../utils/constents';
 import { RootState } from '../../../store/store';
 import { setFavourite } from '../../store/slices/ProductsListSlice';
 import ProductsCard from './ProductCard';
+import { Text } from 'react-native';
 
 const ProductsList = () => {
     const navigate = useNavigation<any>();
@@ -22,17 +23,17 @@ const ProductsList = () => {
     }
     const dispatch = useDispatch()
     const handleFavourite = (item: any) => {
-        console.log(item, 'item')
+
         dispatch(setFavourite(item))
     }
     return (
         <>
-            {products.length>0 ? products.map((e: itemData) => {
+            {products?.length>0 ? products.map((e: itemData) => {
                 return <ProductsCard item={e}
                                      handleFav={handleFavourite}
                                      handleModelShow={modalShow}
                                      type='product' />
-            }):'Loding....'}
+            }):<Text>Loding....</Text>}
             {show && <ProductItem show={show} handleClose={handleClose} productId={productId} />}
 
         </>

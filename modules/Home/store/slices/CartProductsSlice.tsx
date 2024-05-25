@@ -26,7 +26,6 @@ const cartProductsSlice = createSlice({
         },
         setcardQuantity:(state, action)=>{
             const payload = action.payload
-            console.log(payload,'loaddd')
             const data=state.cartProducts.map((e)=>{
               if(e.id === payload.id){
                   return {...e,quantity: payload?.quantity ,total:payload.total}

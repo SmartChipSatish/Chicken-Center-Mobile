@@ -10,7 +10,6 @@ export default function OrderSummary() {
     const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
     const [priceList,setPriceList]=useState({itemsPrice:0,addons:0,discount:0,coupon:0,deliveryFee:100})
     const [total,setTotal]=useState(0);
-    console.log(total,"toal,,,,,")
     const distach=useDispatch();
     
     useEffect(()=>{

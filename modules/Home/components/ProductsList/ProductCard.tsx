@@ -2,7 +2,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 import { AddProductIcon, FavouriteIcon } from '../../../assets/svgimages/HomeSvgs/svgsIcons';
-import { itemData, itemsDetails } from '../../utils/constents';
+import { itemData } from '../../utils/constents';
 
 interface productsinfo {
     type: string
@@ -18,7 +18,6 @@ const ProductsCard = ({ item,
     type,
     handleQuantity }: productsinfo) => {
 
-//  console.log(item,'sssw');
     return (
         <>
             <TouchableOpacity key={item.id} style={styles.card_items} onPress={(eve: any) => { type === 'product' && handleModelShow?.(eve, item.id) }}>

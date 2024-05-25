@@ -33,7 +33,6 @@ export default function OTPVerfication({ navigation, route }:any) {
     if(OTP.length >= 6){
       try{
         const res=await route.params.data.confirm(otp.join(''));
-        console.log(res,'respones')
         if(res){
           AsyncStorage.setItem('login','true');
           navigation.navigate('account');

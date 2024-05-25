@@ -59,7 +59,6 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
       }
 
     } catch (error: any) {
-      console.log(error, "dheerajfailure")
       Dialog.show({
         type: ALERT_TYPE.DANGER,
         title: 'Failure',
@@ -95,7 +94,6 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
       );
       CFPaymentGatewayService.doPayment(dropPayment)
     } catch (e) {
-      console.log(e,'checkoutfail');
     }
   };
 
@@ -111,7 +109,6 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
         .setSecondaryTextColor('#757575')
         .build();
       const upiPayment = new CFUPIIntentCheckoutPayment(session, theme);
-      console.log(JSON.stringify(upiPayment));
       CFPaymentGatewayService.doUPIPayment(upiPayment);
     } catch (e: any) {
       console.log(e.message);
@@ -137,27 +134,22 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
   }, []);
 
   useEffect(() => {
-    console.log('MOUNTED');
     CFPaymentGatewayService.setEventSubscriber({
       onReceivedEvent(eventName: string, map: Map<string, string>): void {
-        console.log('Event received on screen: ' + eventName + ' map: ' + JSON.stringify(map));
       },
     });
     CFPaymentGatewayService.setCallback({
       onVerify(orderID: string): void {
-        console.log('orderId is :' + orderID);
         verifyPayment()
         navigate.navigate('orders')
         updateStatus(orderID);
       },
       onError(error: CFErrorResponse, orderID: string): void {
-        console.log('exception is : ' + JSON.stringify(error) + '\norderId is :' + orderID);
         verifyPayment()
         updateStatus(JSON.stringify(error));
       },
     });
     return () => {
-      console.log('UNMOUNTED');
       CFPaymentGatewayService.removeCallback();
       CFPaymentGatewayService.removeEventSubscriber();
     };

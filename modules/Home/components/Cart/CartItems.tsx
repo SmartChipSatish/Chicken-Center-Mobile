@@ -30,12 +30,10 @@ export default function Cartitems() {
             distach(setRemoveItem({ id: item.id }))
         }
     }
-   console.log(cartItems,'itemsssss')
     useEffect(() => {
         const data = cartItems.filter((e) => {
             return e.total
         })
-        console.log(data,'ssssss')
         if (data) {
             const totalprice = (data.reduce((a, b) => a + b?.total || 0, 0))
             setPriceList({ ...priceList, itemsPrice: totalprice })

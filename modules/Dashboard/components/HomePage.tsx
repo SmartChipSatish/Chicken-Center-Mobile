@@ -17,15 +17,9 @@ const HomePage = () => {
   const navigate=useNavigation<any>();
 const {data} = useGetAllProductsQuery('');
 const dispatch=useDispatch()
-const dataFetch=async()=>{
-  const details=await data
-console.log(details,'lllll');
 
-}
 useFocusEffect(
   useCallback(() => {
-    // dataFetch()
-    console.log(data,'dataaa')
 dispatch(setAddProducts(data))
   }, [data])
 );

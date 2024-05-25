@@ -29,7 +29,6 @@ export default function Account({ navigation }: any) {
         try {
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
-            console.log(userInfo, 'userinfo');
             if (userInfo) {
                 setDetails(true);
             }

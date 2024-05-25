@@ -23,7 +23,6 @@ export default function ProductItem({ show, handleClose, productId }: productDet
     const [amount, setAmount] = useState<number>(0);
 
     const handleQuantity = (type: string) => {
-        // console.log(type, selectProduct.quantity)
 
         if (type === 'add' && selectProduct.quantity !== QUANTITY_LIMIT) {
             const quantity = selectProduct?.quantity + 1
@@ -36,14 +35,12 @@ export default function ProductItem({ show, handleClose, productId }: productDet
             setAmount(amounts);
         }
     }
-    // console.log(selectProduct,'ssssss')
 
     const handleAddToCart = () => {
         const data: any = {
             ...selectProduct,
             total: amount
         }
-        console.log(data,'datas')
         const cartDatacheck = cartItems.filter((e) => {
             return e.id === productId
         })
