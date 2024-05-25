@@ -1,8 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit';
-import { itemsDetails } from '../../utils/constents';
+import { itemData, itemsDetails } from '../../utils/constents';
 
 interface ProductList {
-    addProducts: itemsDetails[];
+    addProducts: itemData[];
 }
 const initialState: ProductList = {
     addProducts: [],
@@ -12,7 +12,15 @@ const ProductsListSlice = createSlice({
     initialState,
     reducers: {
         setAddProducts: (state, action) => {
-            state.addProducts = action.payload;
+            let payload=action.payload;
+            let data;
+            if(action.payload){
+                 data=payload.map((e:any)=>{
+                    return {...e,quantity:1}
+                })
+            }
+           
+            state.addProducts = data;
         },
         setFavourite: (state, action) => {
             const payload = action.payload

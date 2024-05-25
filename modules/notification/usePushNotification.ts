@@ -7,7 +7,6 @@ import PushNotification from 'react-native-push-notification';
 // Initialize push notifications and create a notification channel
 PushNotification.configure({
   onNotification: function (notification) {
-    console.log('LOCAL NOTIFICATION ==>', notification);
   },
   popInitialNotification: true,
   requestPermissions: true,
@@ -47,12 +46,10 @@ const usePushNotification = () => {
 
   const getFCMToken = async () => {
     const oldFcmToken = await AsyncStorage.getItem('fcmToken');
-    console.log('old fcm token', oldFcmToken);
     if (!oldFcmToken) {
       try {
         const newFcmToken = await messaging().getToken();
         if (newFcmToken) {
-          console.log('new fcm token', newFcmToken);
           await AsyncStorage.setItem('fcmToken', newFcmToken);
         }
       } catch (error) {

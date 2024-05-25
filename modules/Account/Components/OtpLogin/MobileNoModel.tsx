@@ -82,7 +82,7 @@ export default function MobileNoModel({show, handleClose}:{show:boolean, handleC
                                        value={number}
                                        onFocus={handleOnchangeFocus}
                                        onBlur={onChangeBlure}
-                                       
+                                       placeholderTextColor={TEXT_COLORS.secondary}
                             />
 
                         </View>
@@ -137,7 +137,6 @@ const style = StyleSheet.create({
         padding: 10,
         fontSize: 20,
         color:TEXT_COLORS.primary,
-        fontWeight:'bold'
     },
     inputContainer: {
         flexDirection: 'row',

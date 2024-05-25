@@ -5,8 +5,8 @@ import { TextInput } from 'react-native-gesture-handler';
 import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
-import { QUANTITY_LIMIT, itemsDetails } from '../../utils/constents';
-import { setRemoveItem, setcardQuantity } from '../../store/slices/CartProductsSlice';
+import { QUANTITY_LIMIT, itemData, itemsDetails } from '../../utils/constents';
+import { setCartPrices, setRemoveItem, setcardQuantity } from '../../store/slices/CartProductsSlice';
 import ProductsCard from '../ProductsList/ProductCard';
 import { useNavigation } from '@react-navigation/native';
 const empty_cart = require('../../../assets/Images/empty_cart.png');
@@ -18,27 +18,27 @@ export default function Cartitems() {
     const [total, setTotal] = useState(0);
     const distach = useDispatch();
     const navigation=useNavigation<any>()
-    const handleQuantity = (type: string, item: itemsDetails) => {
+    const handleQuantity = (type: string, item: itemData) => {
         if (type === 'add' && item.quantity !== QUANTITY_LIMIT) {
             const quantity = item?.quantity + 1
-            const amount = (item?.price * quantity) || 0;
+            const amount = (item?.itemPrice * quantity) || 0;
             distach(setcardQuantity({ id: item.id, quantity: quantity, total: amount }))
         } else if (type === 'remove' && item.quantity !== 1 && item?.total) {
-            const amount = item?.total - item.price || 0;
+            const amount = item?.total - item.itemPrice || 0;
             distach(setcardQuantity({ id: item.id, quantity: item?.quantity - 1, total: amount }))
         } else if (item.quantity === 1 && type === 'remove') {
             distach(setRemoveItem({ id: item.id }))
         }
     }
-
     useEffect(() => {
         const data = cartItems.filter((e) => {
             return e.total
         })
         if (data) {
-            const totalprice = (data.reduce((a, b) => a + b.total, 0))
+            const totalprice = (data.reduce((a, b) => a + b?.total || 0, 0))
             setPriceList({ ...priceList, itemsPrice: totalprice })
             const total = totalprice + priceList.deliveryFee + priceList.addons - (priceList.coupon + priceList.discount);
+            distach(setCartPrices({...priceList,total:total}))
             setTotal(total)
         }
 
@@ -50,7 +50,7 @@ export default function Cartitems() {
                 showsVerticalScrollIndicator={false}>
                 <View style={styles.container}>
                     <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                        {cartItems.map((item: itemsDetails, index: number) => (
+                        {cartItems.map((item: itemData, index: number) => (
                             <ProductsCard item={item}
                                 type='cart'
                                 handleQuantity={handleQuantity}
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
         color: THEME_COLORS.secondary,
         fontWeight: "bold",
     },
-    price: {
+    itemPrice: {
         fontSize: TEXT_FONT_SIZE.medium,
         color: TEXT_COLORS.primary,
         marginVertical: 5,

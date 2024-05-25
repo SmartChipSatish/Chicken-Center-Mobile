@@ -27,11 +27,8 @@ const ProfileScreen: React.FC = () => {
 
         launchImageLibrary(options, (response) => {
             if (response.didCancel) {
-                console.log('User cancelled image picker');
             } else if (response.errorCode) {
-                console.log('ImagePicker Error: ', response.errorMessage);
             } else if (response.assets && response.assets.length > 0) {
-                console.log(response, 'sai')
                 const uri = response.assets[0].uri;
                 const type = response.assets[0].type;
                 const name = response.assets[0].fileName;
@@ -52,7 +49,6 @@ const ProfileScreen: React.FC = () => {
 
     const uploadImage = (photo: any) => {
         const data = new FormData()
-        console.log(data, 'data')
         data.append('file', photo)
         data.append('upload_preset', 'cgvymfjn')
         data.append("cloud_name", "dnhbdmhp6")
@@ -67,7 +63,6 @@ const ProfileScreen: React.FC = () => {
                 Alert.alert("An Error Occured While Uploading")
             })
     }
-    console.log(avatarUri)
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.avatarContainer}>

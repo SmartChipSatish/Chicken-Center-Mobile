@@ -11,7 +11,7 @@ import { setCartProducts } from '../../store/slices/CartProductsSlice';
 interface productDetails {
     show: boolean,
     handleClose: () => void,
-    productId: number
+    productId: string
 }
 
 export default function ProductItem({ show, handleClose, productId }: productDetails) {
@@ -23,27 +23,22 @@ export default function ProductItem({ show, handleClose, productId }: productDet
     const [amount, setAmount] = useState<number>(0);
 
     const handleQuantity = (type: string) => {
-        console.log(type, selectProduct.quantity)
 
         if (type === 'add' && selectProduct.quantity !== QUANTITY_LIMIT) {
             const quantity = selectProduct?.quantity + 1
             distach(setQuantity({ id: productId, quantity: quantity }))
-            const amount = (selectProduct?.price * quantity) || 0;
+            const amount = (selectProduct?.itemPrice * quantity) || 0;
             setAmount(amount);
         } else if (type === 'remove' && selectProduct.quantity !== 1) {
             distach(setQuantity({ id: productId, quantity: selectProduct?.quantity - 1 }))
-            const amounts = amount - selectProduct.price || 0;
+            const amounts = amount - selectProduct.itemPrice || 0;
             setAmount(amounts);
         }
     }
 
     const handleAddToCart = () => {
-        const data: cartProducts = {
-            id: productId,
-            title: selectProduct.title,
-            price: selectProduct.price,
-            quantity: selectProduct.quantity,
-            imgUrl: selectProduct.imgUrl,
+        const data: any = {
+            ...selectProduct,
             total: amount
         }
         const cartDatacheck = cartItems.filter((e) => {
@@ -64,7 +59,7 @@ export default function ProductItem({ show, handleClose, productId }: productDet
         const data = products.filter((e) => { return e.id === productId })[0]
         setSelectProduct(data);
         if (firstRender) {
-            setAmount(data?.price * data.quantity);
+            setAmount(data?.itemPrice * data.quantity);
         }
     }, [productId, products]);
 
@@ -81,14 +76,15 @@ export default function ProductItem({ show, handleClose, productId }: productDet
                             <View style={style.product_details}>
                                 <Image
                                     source={{
-                                        uri: selectProduct?.imgUrl,
+                                        uri: selectProduct?.imageUrl,
                                     }}
                                     style={style.image}
                                 />
                                 <View >
-                                    <Text style={style.product_text}>{selectProduct?.title}</Text>
+                                    <Text style={style.product_text}>{selectProduct?.itemName+' '+selectProduct?.itemQty}</Text>
+
                                     <View style={style.product_prices}>
-                                        <Text style={style.price}>₹ {selectProduct?.price}</Text>
+                                        <Text style={style.itemPrice}>₹ {selectProduct?.itemPrice}</Text>
                                         <Text style={{ textDecorationLine: 'line-through' }}>₹ 250</Text>
                                         <FavouriteIcon color={`${THEME_COLORS.secondary}`}
                                             height={25}
@@ -141,7 +137,7 @@ const style = StyleSheet.create({
     image: {
         width: 150,
         height: 150,
-        objectFit: 'contain',
+        objectFit: 'cover',
         borderRadius: 10,
         marginLeft: 10,
         marginRight: 10,
@@ -164,7 +160,7 @@ const style = StyleSheet.create({
         width: '70%',
 
     },
-    price: {
+    itemPrice: {
         color: `${THEME_COLORS.secondary}`,
         fontSize: 18,
         fontWeight: "bold",

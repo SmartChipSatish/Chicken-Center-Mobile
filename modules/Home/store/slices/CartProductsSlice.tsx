@@ -1,12 +1,22 @@
 import {createSlice} from '@reduxjs/toolkit';
-import { cartProducts } from '../../utils/constents';
+import { cartPriceDetails, cartProducts, itemData } from '../../utils/constents';
 
 interface ProductList {
-    cartProducts:cartProducts[]
+    cartProducts:itemData[],
+    cartPriceDetails:cartPriceDetails
 }
 const initialState:ProductList ={
-    cartProducts:[]
+    cartProducts:[],
+    cartPriceDetails:{
+        itemPrice: 0,
+        addons: 0,
+        discount: 0,
+        couponDiscount: 0,
+        deliveryFee: 0,
+        total: 0
+    }
 }
+
 const cartProductsSlice = createSlice({
     name: 'cartproducts',
     initialState,
@@ -16,7 +26,6 @@ const cartProductsSlice = createSlice({
         },
         setcardQuantity:(state, action)=>{
             const payload = action.payload
-            console.log(payload,'loaddd')
             const data=state.cartProducts.map((e)=>{
               if(e.id === payload.id){
                   return {...e,quantity: payload?.quantity ,total:payload.total}
@@ -32,9 +41,12 @@ const cartProductsSlice = createSlice({
                 return e.id !== payload.id
             })
             state.cartProducts =details
+        },
+        setCartPrices:(state,action)=>{
+           state.cartPriceDetails=action.payload
         }
     }
 });
 
-export const {setCartProducts, setcardQuantity,setRemoveItem} = cartProductsSlice.actions;
+export const {setCartProducts, setcardQuantity,setRemoveItem, setCartPrices} = cartProductsSlice.actions;
 export default cartProductsSlice;

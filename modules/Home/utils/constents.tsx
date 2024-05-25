@@ -10,14 +10,36 @@ export interface itemsDetails {
   total?: number
 }
 
+export interface cartPriceDetails{
+  itemPrice:number
+  addons:number
+  discount:number
+  couponDiscount:number
+  deliveryFee:number
+  total:number
+}
+
 export interface cartProducts {
-  id:number
+  id:string
   title: string,
   price: number,
   quantity: number,
   imgUrl: string,
-  total: number
+  total: number,
 }
+
+export interface itemData{
+  globalItemStatus: boolean,
+  id: string,
+  itemName: string,
+  itemPrice: number,
+  itemQty: string,
+  favourite: boolean,
+  quantity:number,
+  imageUrl:string
+  total?:number
+}
+
 export const QUANTITY_LIMIT = 10
 export const data: itemsDetails[] = [
   {

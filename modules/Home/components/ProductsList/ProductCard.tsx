@@ -2,14 +2,14 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 import { AddProductIcon, FavouriteIcon } from '../../../assets/svgimages/HomeSvgs/svgsIcons';
-import { itemsDetails } from '../../utils/constents';
+import { itemData } from '../../utils/constents';
 
 interface productsinfo {
     type: string
-    item: itemsDetails
-    handleModelShow?: (eve: any, id: number) => void
-    handleFav?: (data: itemsDetails) => void
-    handleQuantity?: (type: string, item: itemsDetails) => void
+    item: itemData
+    handleModelShow?: (eve: any, id: string) => void
+    handleFav?: (data: itemData) => void
+    handleQuantity?: (type: string, item: itemData) => void
 }
 
 const ProductsCard = ({ item,
@@ -18,20 +18,19 @@ const ProductsCard = ({ item,
     type,
     handleQuantity }: productsinfo) => {
 
-
     return (
         <>
             <TouchableOpacity key={item.id} style={styles.card_items} onPress={(eve: any) => { type === 'product' && handleModelShow?.(eve, item.id) }}>
                 <View style={styles.items_subCard} >
                     <Image
                         source={{
-                            uri: item.imgUrl
+                            uri: item.imageUrl
                         }}
                         style={styles.image}
                     />
                     <View >
-                        <Text style={styles.item_text}>{item.title}</Text>
-                        <Text style={styles.item_price}>₹ {type ==='cart' ?item.total :item.price}</Text>
+                        <Text style={styles.item_text}>{item.itemName+' '+item.itemQty}</Text>
+                        <Text style={styles.item_price}>₹ {type ==='cart' ?item.total :item.itemPrice}</Text>
                         <Text style={{ textDecorationLine: 'line-through' }}>₹ 250</Text>
                     </View>
                 </View>
@@ -79,9 +78,9 @@ const styles = StyleSheet.create({
         height: 100
     },
     image: {
-        width: 88,
+        width: 85,
         height: 85,
-        objectFit: 'contain',
+        objectFit: 'cover',
         borderRadius: 10,
         marginRight: 10
     },
