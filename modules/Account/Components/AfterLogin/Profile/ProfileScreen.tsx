@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Avatar, Icon } from 'react-native-elements';
 import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
 import { style } from '../../../utlis/Styles';
 import axios from 'axios';
 import { TEXT_COLORS } from '../../../../GlobalStyles/GlobalStyles';
-
+import { useGetAllUsersQuery, useLazyGetAllUserByIdQuery } from '../../../../store/services/getUsersService';
+import { useFocusEffect } from '@react-navigation/native';
 const ProfileScreen: React.FC = () => {
-    const [firstName, setFirstName] = useState<string>('Talakanti');
-    const [lastName, setLastName] = useState<string>('Saiprakash');
-    const [email, setEmail] = useState<string>('talakantisaiprakash@gmail.com');
-    const [mobileNumber, setMobileNumber] = useState<string>('901542135');
+    const { data } = useGetAllUsersQuery('');
+    const [getUserId, { data: user, isLoading }] = useLazyGetAllUserByIdQuery();
+
+    const [name, setName] = useState<string>('user');
+    const [email, setEmail] = useState<string>('user@gmail.com');
+    const [mobileNumber, setMobileNumber] = useState<Number>(9999999999);
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
     const [avatarUri, setAvatarUri] = useState<string | null>(null);
@@ -63,6 +66,22 @@ const ProfileScreen: React.FC = () => {
                 Alert.alert("An Error Occured While Uploading")
             })
     }
+
+    useEffect(() => {
+
+        const fetchData = async () => {
+            try {
+                const response = await getUserId({ id: "664de740835b08b634646081" }).unwrap();
+                console.log(response)
+                setEmail(response?.email)
+                setName(response?.name)
+                setMobileNumber(response?.primaryNumber)
+            } catch (error) {
+                console.log(error)
+            }
+        };
+        fetchData();
+    }, []);
     return (
         <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.avatarContainer}>
@@ -77,20 +96,15 @@ const ProfileScreen: React.FC = () => {
                     <Icon name="edit" type="font-awesome" color="#fff" />
                 </TouchableOpacity>
             </View>
-            <Text style={styles.name}>{`${firstName} ${lastName}`}</Text>
+            <Text style={styles.name}>{name}</Text>
 
             <TextInput
                 style={styles.input}
-                placeholder="First Name"
-                value={firstName}
-                onChangeText={setFirstName}
+                placeholder="Name"
+                value={name}
+                onChangeText={setName}
             />
-            <TextInput
-                style={styles.input}
-                placeholder="Last Name"
-                value={lastName}
-                onChangeText={setLastName}
-            />
+
             <TextInput
                 style={styles.input}
                 placeholder="Email"
@@ -101,8 +115,8 @@ const ProfileScreen: React.FC = () => {
             <TextInput
                 style={styles.input}
                 placeholder="Mobile Number"
-                value={mobileNumber}
-                onChangeText={setMobileNumber}
+                value={mobileNumber.toString()}
+                onChangeText={(number) => setMobileNumber(Number(number))}
                 keyboardType="phone-pad"
             />
 
