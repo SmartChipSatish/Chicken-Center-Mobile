@@ -73,7 +73,7 @@ export const TabNav = () => {
             <Tab.Screen name='orders'
                 component={Orders}
                 options={{
-                    headerShown:false,
+                    title: 'Your orders',
                     tabBarIcon: ({ color, size }) => (
                         <CustomTabBarLabel label={'Orders'} color={color} />
                     ),
@@ -81,6 +81,7 @@ export const TabNav = () => {
             <Tab.Screen name='favourite'
                 component={Favourite}
                 options={{
+                    title: 'Favourite',
                     tabBarIcon: ({ color, size }) => (
                         <CustomTabBarLabel label={'Favourite'} color={color} />
                     ),

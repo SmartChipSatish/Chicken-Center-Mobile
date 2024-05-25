@@ -5,15 +5,18 @@ import { Text } from 'react-native-paper'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import auth from '@react-native-firebase/auth';
+import { useGetUseDetailsMutation, useGetUserDataQuery } from '../../api/services/getUserDEtails'
 
 export default function OTPVerfication({ navigation, route }:any) {
   const [otp, setOTP] = useState(['', '', '', '', '', '']);
   const inputRefs:any[] = [];
   const [timer,setTimer]=useState(60);
-
+  // const {getUserDetails} = useGetUserDataQuery<any>('');
+  const [getUser] =useGetUseDetailsMutation();
   const handleInputChange = (index:number, value:any) => {
     if (isNaN(value)) {
-      return; // Only allow numeric characters
+      return;
     }
 
     const newOTP = [...otp];
@@ -28,22 +31,33 @@ export default function OTPVerfication({ navigation, route }:any) {
     }
   };
  
-  const handleSubmit=async()=>{
+  const handleSubmit = async () => {
     const OTP = otp.join('');
-    if(OTP.length >= 6){
-      try{
-        const res=await route.params.data.confirm(otp.join(''));
-        if(res){
-          AsyncStorage.setItem('login','true');
-          navigation.navigate('account');
+    if (OTP.length >= 6) {
+      try {
+        const credential = auth.PhoneAuthProvider.credential(route.params.data.verificationId, OTP);
+        await auth().signInWithCredential(credential);
+        const user = auth().currentUser;
+        const idToken = await user?.getIdToken();
+        console.log(idToken,'ggg')
+        if (idToken) {
+          AsyncStorage.setItem('login', 'true');
+          AsyncStorage.setItem('idToken', JSON.stringify(idToken));
+          AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
+          navigation.navigate('home');
+          // console.log(getUserDetails,'lllll')
+          const data= await getUser(`${user?.uid}`);
+          console.log(data,'details');
+        } else {
+          Alert.alert("Please enter a valid OTP");
         }
-       }catch(error){
-        console.log(error,'error')
-       }
-    }else{
-     Alert.alert("Please enter a valid OTP")
+      } catch (error) {
+        Alert.alert("Some thing went wrong");
+      }
+    } else {
+      Alert.alert("Please enter a valid OTP")
     }
-    
+
   }
 
   useEffect(()=>{
@@ -90,7 +104,7 @@ export default function OTPVerfication({ navigation, route }:any) {
           </View>
         
 
-  <View style={OTPVericationCSS.footer_container}>
+   <View style={OTPVericationCSS.footer_container}>
           <Text >By continuing you agree to our Terms & Conditions</Text>
           <TouchableOpacity style={OTPVericationCSS.continue_btn} onPress={handleSubmit}>
             <Text style={{color:'white',fontSize:18}}>Continue</Text>

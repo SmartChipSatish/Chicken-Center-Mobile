@@ -9,14 +9,15 @@ import { GoogleSignin } from 'react-native-google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { ForwardArrowIcon, LogoutIcon } from '../../assets/svgimages/AccountsSvgs/accountsSvgs';
+import auth from '@react-native-firebase/auth';
+import { useGetUseDetailsMutation } from '../api/services/getUserDEtails';
 
-// const auths = getAuth();
-export default function Account({ navigation }: any) {
+ export default function Account({ navigation }: any) {
 
     const [show, setShow] = useState<boolean>(false);
     const [details, setDetails] = useState<boolean>(false);
     const [login, setLogin] = useState<boolean>(false);
-
+    const [getUser] =useGetUseDetailsMutation();
     const handleClose = () => {
         setShow(!show);
     }
@@ -28,8 +29,15 @@ export default function Account({ navigation }: any) {
     const handleGoogleLogin = async () => {
         try {
             await GoogleSignin.hasPlayServices();
-            const userInfo = await GoogleSignin.signIn();
-            if (userInfo) {
+            const { idToken } = await GoogleSignin.signIn();
+            const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+            await auth().signInWithCredential(googleCredential);
+             const user = auth().currentUser;
+            const idTokens = await user?.getIdToken();
+            AsyncStorage.setItem('login', 'true');
+            AsyncStorage.setItem('idToken', JSON.stringify(idTokens));
+            const data= await getUser('');
+            if (idTokens) {
                 setDetails(true);
             }
         } catch (error) {
@@ -37,21 +45,21 @@ export default function Account({ navigation }: any) {
         }
     };
 
-    const Checkuser = async () => {
-        const login = await AsyncStorage.getItem('login');
-        setLogin(Boolean(login));
-    }
+    // const Checkuser = async () => {
+    //     const login = await AsyncStorage.getItem('login');
+    //     setLogin(Boolean(login));
+    // }
 
     const handleLogout=async()=>{
         await AsyncStorage.clear();
-        navigation.navigate('home');
+        navigation.navigate('login');
     }
 
-    useFocusEffect(
-        useCallback(() => {
-            Checkuser();
-        }, [])
-    );
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         Checkuser();
+    //     }, [])
+    // );
 
     return (
         <ScrollView style={{ margin: 10, }}
@@ -62,7 +70,7 @@ export default function Account({ navigation }: any) {
                 <View style={style.container}>
                     <Text>KMMC</Text>
                     <Text>Welcom to Chicken , Manage your oders, rewards, addresses & other details.</Text>
-                    {!login && <View>
+                   {/* <View>
                         <TouchableOpacity style={style.login_button} onPress={() => { setShow(true); }} >
                             <Text style={{ color: 'white' }}>Login / Sign Up</Text>
                         </TouchableOpacity>
@@ -70,13 +78,13 @@ export default function Account({ navigation }: any) {
                         <TouchableOpacity style={style.login_button} onPress={() => handleGoogleLogin()} >
                             <Text style={{ color: 'white' }}>Google</Text>
                         </TouchableOpacity>
-                    </View>}
-                    {details && <Text>login don</Text>}
+                    </View> */}
+                    {/* {details && <Text>login don</Text>} */}
                 </View>
 
-                {login && <AfterLogin />}
+                <AfterLogin />
                 <OtherFields />
-                {login && <TouchableOpacity
+                <TouchableOpacity
                     style={[style.logout_container]}
                     onPress={handleLogout}
                 >
@@ -90,7 +98,7 @@ export default function Account({ navigation }: any) {
                         <ForwardArrowIcon />
                     </View>
                 </TouchableOpacity>
-                }
+                
                 <View style={[style.container, { justifyContent: 'center', alignItems: 'center', height: 80 }]}>
                     <Text>App version - 1.0.0</Text>
                 </View>
