@@ -5,7 +5,13 @@ export const getAllPrducts= productsApi.injectEndpoints({
         getAllProducts: builder.query({
           query: () => '/items/getAllItems',
         }),
+        getItemsDetails:builder.mutation({
+          query: (id) => ({
+            url:'/items/getAllItems',
+            method: 'GET',
+          }),
+        })
       }),
 })
 
-export const {useGetAllProductsQuery} =  getAllPrducts
+export const {useGetAllProductsQuery, useGetItemsDetailsMutation} =  getAllPrducts

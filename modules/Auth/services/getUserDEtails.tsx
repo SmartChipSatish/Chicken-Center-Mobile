@@ -21,9 +21,6 @@ export const getUserData = createApi({
     ),
 
     endpoints: (builder) => ({
-        getUserData: builder.query({
-            query: () => 'getUser',
-        }),
         getUseDetails:builder.mutation({
             query: (id) =>( 
                 {
@@ -36,4 +33,4 @@ export const getUserData = createApi({
     
 })
 
-export const { useGetUserDataQuery, useGetUseDetailsMutation } = getUserData
+export const {  useGetUseDetailsMutation } = getUserData

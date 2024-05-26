@@ -7,7 +7,7 @@ import auth from '@react-native-firebase/auth';
 import Contacts from 'react-native-contacts';
 import { GoogleSignin } from 'react-native-google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useGetUseDetailsMutation } from '../../Account/api/services/getUserDEtails';
+import { useGetUseDetailsMutation } from '../services/getUserDEtails';
 import Loding from '../../Dashboard/components/Loding';
 
 export default function LoginPage() {
@@ -16,9 +16,7 @@ export default function LoginPage() {
     const [numberCheck, setNumberCheck] = useState<boolean>(false);
     const [loding, setLoding] = useState<boolean>(false);
     const navigation = useNavigation<any>();
-    const [focuse, setFocuse] = useState(true);
     const [getUser] = useGetUseDetailsMutation();
-    // let textInptRef = useRef(null);
     const NumberValidation = (number: string) => {
         setNumber(number);
         const numberRegx = /^[0-9]{10}$/
@@ -28,7 +26,7 @@ export default function LoginPage() {
             setNumberCheck(false);
         }
     }
-    
+
     GoogleSignin.configure({
         webClientId: '781535826140-6kr39lp0fm05a2fupcecf42j9ka8o5v0.apps.googleusercontent.com',
     });
@@ -54,13 +52,7 @@ export default function LoginPage() {
 
     }
 
-    const handleOnchangeFocus = () => {
-        setFocuse(true);
-    }
 
-    const onChangeBlure = () => {
-        setFocuse(false)
-    }
     const getPhoneNo = async () => {
         if (Platform.OS === 'android') {
             const granted = await PermissionsAndroid.request(
@@ -73,20 +65,16 @@ export default function LoginPage() {
             );
 
             if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-                //   setPermissionDenied(true);
                 return;
             }
         }
 
         Contacts.getAll()
             .then((contacts: any) => {
-                console.log(contacts, 'number')
-                //   setContacts(contacts);
                 NumberValidation(contacts)
             })
             .catch((e) => {
                 console.log(e);
-                //   setPermissionDenied(true);
             });
     };
     useEffect(() => {
@@ -117,25 +105,19 @@ export default function LoginPage() {
             await auth().signInWithCredential(googleCredential);
             const user = auth().currentUser;
             const idTokens = await user?.getIdToken();
-            console.log(user,'userss')
             AsyncStorage.setItem('login', 'true');
             AsyncStorage.setItem('idToken', JSON.stringify(idTokens));
             setLoding(true);
-            try{
-                console.log('detaolssss');
+            try {
                 const data = await getUser(`${user?.uid}`);
-                console.log(data,'details');
-                if(data){
+                if (data) {
                     setLoding(false);
                     navigation.navigate('main');
                 }
 
-            }catch(error){
-              console.log(error,'error');
+            } catch (error) {
+                console.log(error, 'error');
             }
-            // if (idTokens) {
-            //     setDetails(true);
-            // }
         } catch (error) {
             console.log(error, 'error')
         }
@@ -151,14 +133,13 @@ export default function LoginPage() {
     );
 
     return (
-        <View>
-        <ScrollView showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps='always'
-            style={{ backgroundColor: THEME_COLORS.primary }}>
-            <View style={style.modalContainer}>
-                <View style={style.modalContent}>
-                    <View style={{ marginTop: 10 }}>
-                        <Text style={style.header}>Login / Sign up with your Phone Number</Text>
+        <View style={style.container}>
+            <ScrollView showsVerticalScrollIndicator={false}
+                        contentContainerStyle={style.scrollViewContent}
+                        keyboardShouldPersistTaps='always'>
+                <View style={style.innerContainer}>
+                    <View style={{width:'100%'}}>
+                    <Text style={style.header}>Login / Sign up with your Phone Number</Text>
                     </View>
                     <View style={style.inputContainer}>
                         <View style={{ marginLeft: 5, justifyContent: 'center' }}>
@@ -168,20 +149,18 @@ export default function LoginPage() {
                         >
 
                             <TextInput style={style.mobileNo_textInput}
-                                //    ref={(input)=> textInptRef =input}
                                 placeholder='Enter Number'
                                 onChangeText={(e) => NumberValidation(e)}
                                 keyboardType="phone-pad"
                                 maxLength={10}
                                 autoFocus={true}
                                 value={number}
-                                onFocus={handleOnchangeFocus}
-                                onBlur={onChangeBlure}
                                 placeholderTextColor={TEXT_COLORS.secondary}
                             />
 
                         </View>
                     </View>
+                    <View style={{width:'100%'}}>
                     <TouchableOpacity
                         onPress={SendOtp}
                         activeOpacity={numberCheck ? 0 : 1}
@@ -191,34 +170,41 @@ export default function LoginPage() {
                     >
                         <Text style={{ color: 'white' }}>Proceed with OTP</Text>
                     </TouchableOpacity>
+                    <View style={{justifyContent:'center',alignItems:'center',marginTop:'15%'}}>
+                    <Text style={{fontSize:20,color:TEXT_COLORS.primary,fontWeight:'bold'}}>------ or ------</Text>
+                    </View>
                     <TouchableOpacity style={style.numberVerificationBtn} onPress={() => handleGoogleLogin()} >
                         <Text style={{ color: 'white' }}>Google</Text>
                     </TouchableOpacity>
+                    </View>
                 </View>
-            </View>
-        </ScrollView>
-        {loding && <Loding/>}
+                {loding && <Loding/>}
+            </ScrollView>
         </View>
     );
 }
 
 const style = StyleSheet.create({
-    modalContainer: {
-        // flex: 1,
-        // justifyContent: 'flex-end',
-        // backgroundColor: 'rgba(0,0,0,0.5)',
-        justifyContent:'center',
-        alignItems:'center'
-    }, header: {
+    container: {
+        flex: 1,
+    },
+    scrollViewContent: {
+        flexGrow: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+    },
+    innerContainer: {
+        width: '100%',
+        alignItems: 'center',
+    },
+    header: {
         color: TEXT_COLORS.primary,
         fontSize: 18,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+      
     }, input_text: {
         color: TEXT_COLORS.primary,
-    },
-    modalContent: {
-        backgroundColor: THEME_COLORS.primary,
-        padding: 30,
     },
     numberVerificationBtn: {
         marginTop: 10,
@@ -226,10 +212,10 @@ const style = StyleSheet.create({
         height: 40,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 5
+        borderRadius: 5,
+        
     },
     mobileNo_textInput: {
-        //    borderBottomWidt
         height: 58,
         marginTop: 20,
         width: '90%',

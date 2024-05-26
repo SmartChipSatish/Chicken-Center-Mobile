@@ -10,7 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { ForwardArrowIcon, LogoutIcon } from '../../assets/svgimages/AccountsSvgs/accountsSvgs';
 import auth from '@react-native-firebase/auth';
-import { useGetUseDetailsMutation } from '../api/services/getUserDEtails';
+import { useGetUseDetailsMutation } from '../../Auth/services/getUserDEtails';
 
  export default function Account({ navigation }: any) {
 

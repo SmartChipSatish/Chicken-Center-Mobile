@@ -6,13 +6,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import auth from '@react-native-firebase/auth';
-import { useGetUseDetailsMutation, useGetUserDataQuery } from '../../api/services/getUserDEtails'
+import { useGetUseDetailsMutation } from '../../../Auth/services/getUserDEtails'
 
 export default function OTPVerfication({ navigation, route }:any) {
   const [otp, setOTP] = useState(['', '', '', '', '', '']);
   const inputRefs:any[] = [];
   const [timer,setTimer]=useState(60);
-  // const {getUserDetails} = useGetUserDataQuery<any>('');
   const [getUser] =useGetUseDetailsMutation();
   const handleInputChange = (index:number, value:any) => {
     if (isNaN(value)) {
@@ -39,20 +38,17 @@ export default function OTPVerfication({ navigation, route }:any) {
         await auth().signInWithCredential(credential);
         const user = auth().currentUser;
         const idToken = await user?.getIdToken();
-        console.log(idToken,'ggg')
         if (idToken) {
           AsyncStorage.setItem('login', 'true');
           AsyncStorage.setItem('idToken', JSON.stringify(idToken));
           AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
-          navigation.navigate('home');
-          // console.log(getUserDetails,'lllll')
           const data= await getUser(`${user?.uid}`);
-          console.log(data,'details');
+          navigation.navigate('main');
         } else {
           Alert.alert("Please enter a valid OTP");
         }
       } catch (error) {
-        Alert.alert("Some thing went wrong");
+        Alert.alert("Please check and enter the correct verification code");
       }
     } else {
       Alert.alert("Please enter a valid OTP")
@@ -134,7 +130,6 @@ const OTPVericationCSS=StyleSheet.create({
     position: 'absolute',
     bottom: 0, 
     width: '100%',
-    // backgroundColor: 'blue',
     alignItems: 'center',
     paddingVertical: 20,
   },
