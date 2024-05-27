@@ -73,7 +73,9 @@ export default function GlobalOrders() {
               <Image style={styles.tinyLogo} source={{ uri: item.image }} />
               <Text style={styles.orderId}>Shipment ID: 000zx4933pxz</Text>
               <View style={styles.cardContent}>
+                <View>
                 <Text style={styles.title}>{item.name}</Text>
+                </View>
                 <View style={styles.ordersPlace}>
                   <Text style={styles.price}>500gms </Text>
                   <Text> |</Text>
@@ -84,6 +86,7 @@ export default function GlobalOrders() {
 
                 <View style={styles.separator}></View>
                 <View style={styles.twoButtons}>
+                <Text style={styles.RepeatColor}>Repeat</Text>
                   {ratings[item.id] ? (
                     <View style={styles.ratingContainer}>
                       {[...Array(ratings[item.id])].map((_, index) => (
@@ -95,7 +98,7 @@ export default function GlobalOrders() {
                           }}
                         />
                       ))}
-                      <Text style={{marginLeft:5}}>Rating submitted</Text>
+                      <Text >Rating submitted</Text>
                     </View>
                   ) : (
                     <TouchableOpacity onPress={() => handleRateOrder(item)}>
@@ -148,8 +151,10 @@ export default function GlobalOrders() {
                             }}
                           />
                           <View style={styles.ordersPlace1}>
-                            <Text style={styles.textAll}>{currentRatedItem.name}</Text>
-                            <View style={styles.allratings}>
+                            <View>
+                            <Text style={styles.textAll} >{currentRatedItem.name}</Text>
+                            </View>
+                            <View >
                             <Rating
                             
                               rating={ratings[currentRatedItem.id] || 0}
@@ -216,7 +221,7 @@ const styles = StyleSheet.create({
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft:20,
+    marginLeft:-10,
   },
   tinyLogo2:{height:13,width:13},
   
@@ -232,13 +237,11 @@ const styles = StyleSheet.create({
 
   },
   allratings:{ 
-    marginTop:25
+    marginTop:25,
+    marginRight:30
   },
   textAll: {
-    position: "absolute",
-    top: 10,
     color: TEXT_COLORS.primary,
-    fontWeight: "bold"
   },
   textColorsone: {
 
@@ -286,8 +289,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     position: "relative",
     left: -50,
-    justifyContent: "space-evenly"
-
+    justifyContent: "center",
   },
   twoButtons1: {
     display: "flex",
@@ -325,6 +327,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 5,
     borderRadius: 5,
+    marginRight:25
   },
   RepeatColor1: {
     backgroundColor: THEME_COLORS.primary,
@@ -368,8 +371,9 @@ const styles = StyleSheet.create({
   },
   ordersPlace1: {
     display: "flex",
-    flexDirection: "row",
-    marginTop: 25,
+    flexDirection: "column",
+    justifyContent:"center",
+    marginTop: -5,
     marginLeft: 20,
   },
 
@@ -418,10 +422,11 @@ const styles = StyleSheet.create({
     marginVertical:20
   },
   cardContent: {
-    flex: 1,
     marginLeft: -90,
     marginTop: 50,
-    justifyContent: 'center',
+    display:"flex",
+    flexDirection:"column",
+    justifyContent:"center",
   },
   cardContent1: {
     flex: 1,
@@ -455,14 +460,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-end',
   },
-  quantityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderRadius: 5,
-    padding: 5,
-    position: "relative",
-    bottom: 80
-  },
+
   quantityButton: {
     fontSize: 16,
     color: 'maroon',
