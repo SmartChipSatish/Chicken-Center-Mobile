@@ -8,7 +8,7 @@ import HeaderLocation from '../../location/HeaderLocation'
 import { TEXT_COLORS, THEME_COLORS } from '../../GlobalStyles/GlobalStyles';
 import { useGetItemsDetailsMutation } from '../../store/services/getAllProductsService';
 import { setAddProducts } from '../../Home/store/slices/ProductsListSlice';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 const { height, width } = Dimensions.get('window')
 
 const HomePage = () => {

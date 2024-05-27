@@ -1,9 +1,13 @@
 
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi } from '@reduxjs/toolkit/query/react'
+import { Headers } from './AuthHeaders'
+import { ApiUrls } from './Config'
 
 export const productsApi = createApi({
   reducerPath: 'productsApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'https://food-delivery-ekjr.onrender.com/items' }),
+  baseQuery: Headers(
+    ApiUrls.items
+  ),
   endpoints: () => ({
 
   }),
