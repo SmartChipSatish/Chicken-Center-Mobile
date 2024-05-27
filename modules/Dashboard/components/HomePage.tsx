@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     borderColor: 'grey',
     borderWidth: 1,
+    marginBottom:'2%'
   },
   searchBarText: {
     fontSize: 16,

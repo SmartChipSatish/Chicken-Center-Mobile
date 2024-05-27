@@ -1,4 +1,4 @@
-import { View, Text, ViewBase, TextInput, TouchableOpacity } from 'react-native'
+import { View, Text, ViewBase, TextInput, TouchableOpacity, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { StyleSheet } from 'react-native'
@@ -25,7 +25,11 @@ export default function AddAddress() {
   const handeleSave=()=>{ 
   
     if(checkData){
+      console.log('sssss');
       dispatch(setAddLocation({...address,saveAs:saveType,mobileNo:mobileNo}));
+      Alert.alert('Address added');
+    }else{
+      Alert.alert('Enter all details');
     }
   }
 
