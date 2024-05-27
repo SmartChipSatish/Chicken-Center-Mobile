@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, Modal, TouchableOpacity, Alert } from 'react-native';
 import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../GlobalStyles/GlobalStyles';
 import CrossMark from '../assets/svgimages/util';
 import Rating from './Rating';
 import OrderSummary from './OrderSummary';
 import Cartitems from '../Home/components/Cart/CartItems';
+import { useGetAllOrdersQuery } from './store/OrdersEndpoint';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function GlobalOrders() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -12,6 +14,15 @@ export default function GlobalOrders() {
   const [ratings, setRatings] = useState<any>({});
   const [modalVisible1,setModalVisible1]=useState(false)
   const appLogo = require('../assets/Images/app-logo.png');
+  const [ordersData, setOrdersData] = useState([])
+  const {data, isLoading} = useGetAllOrdersQuery([])
+  
+  useFocusEffect(
+    useCallback(()=>{
+    setOrdersData(data)
+  },[data])
+  )
+console.log(ordersData,'ordersData')
   const [items, setItems] = useState<any>([
     {
       id: 1,

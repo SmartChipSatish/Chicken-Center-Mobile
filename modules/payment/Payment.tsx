@@ -14,51 +14,60 @@ import {
 import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
 import { TEXT_COLORS, THEME_COLORS } from '../GlobalStyles/GlobalStyles';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
+import { setClearCart } from '../Home/store/slices/CartProductsSlice';
+import { useInitiateOrderMutation, useVerifyOrderMutation } from './store/PaymentEndpoints';
 
-const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) => {
-  const navigate=useNavigation<any>();
-  const [order, setOrder] = useState({
-    payment_session_id: '',
-    order_id: '',
-    order_expiry_time: '',
-  });
-  const [orderId, setOrderId] = useState("");
+const Payment = ({ totalAmount, type, myOrderId }: { totalAmount: number, type: string, myOrderId: string }) => {
+  const navigate = useNavigation<any>();
+  // const [order, setOrder] = useState({
+  //   payment_session_id: '',
+  //   order_id: '',
+  //   order_expiry_time: '',
+  // });
+  // const [orderId, setOrderId] = useState("");
   const [responseText, setResponseText] = useState('');
-
-  const createOrder = () => {
-    return new Promise((resolve, reject) => {
-      axios.post('http://192.168.1.13:8000/createOrder', {
-        customerName: 'Dheeraj',
-        customerEmail: 'dheeraj@gmail.com',
-        customerPhone: '+919876543211',
-        totalAmount: totalAmount
-      })
-        .then(response => {
-          setOrder(response.data);
-          setOrderId(response.data.order_id)
-          resolve(response.data);
-        })
-        .catch(err => reject(err));
-    });
-  };
+  console.log(myOrderId, 'orderId')
 
 
-
-
-  const verifyPayment = async () => {
+  const [initiateOrder] = useInitiateOrderMutation();
+  const createOrder = async () => {
     try {
-      let res = await axios.post("http://192.168.1.13:8000/verify", { orderId: orderId })
-      if (res.data) {     
+      const response = await initiateOrder({
+        customerName: 'Nasa2',
+        customerEmail: 'Nasa2@gmail.com',
+        customerPhone: '+919876243167',
+        orderId: myOrderId,
+        totalAmount: totalAmount
+      });
+      // setOrder(response.data);
+      console.log(response.data, 'createOrders');
+      // setOrderId(response.data.order_id);
+      return response.data;
+    } catch (err) {
+      console.log(err, 'createOrderError');
+      ToastAndroid.showWithGravity('Failed to create order. Please try again.', ToastAndroid.LONG, ToastAndroid.CENTER);
+      return null;
+    }
+  };
+  const dispatch = useDispatch()
+  const [paymentVerify] = useVerifyOrderMutation()
+  const verifyPayment = async (orderID: string) => {
+    try {
+      let res = await paymentVerify({ orderId: orderID })
+      console.log(res.data, 'verifypayment')
+      if (res.data) {
+        dispatch(setClearCart())
         Dialog.show({
           type: ALERT_TYPE.SUCCESS,
           title: 'Success',
           textBody: 'Payment Verified',
           button: 'close',
         })
-    
       }
 
     } catch (error: any) {
+      console.log(error, 'verifyError')
       Dialog.show({
         type: ALERT_TYPE.DANGER,
         title: 'Failure',
@@ -68,10 +77,10 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
     }
   }
 
-  const startCheckout = async (e: any) => {
-    // e.preventDefault();
+  const startCheckout = async () => {
     try {
-      const session = getSession();
+      const orderData = await createOrder();
+      const session = getSession(orderData);
       const paymentModes = new CFPaymentComponentBuilder()
         .add(CFPaymentModes.CARD)
         .add(CFPaymentModes.UPI)
@@ -93,13 +102,15 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
         theme,
       );
       CFPaymentGatewayService.doPayment(dropPayment)
-    } catch (e) {
+    } catch (error) {
+      console.log(error, 'checkoutError')
     }
   };
 
   const startUPICheckout = async () => {
     try {
-      const session = getSession();
+      const orderData = await createOrder();
+      const session = getSession(orderData);
       const theme = new CFThemeBuilder()
         .setNavigationBarBackgroundColor('#E64A19')
         .setNavigationBarTextColor('#FFFFFF')
@@ -115,23 +126,19 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
     }
   };
 
-  const getSession = () => {
+
+  const getSession = (orderData: any) => {
     return new CFSession(
-      order.payment_session_id,
-      order.order_id,
+      orderData.payment_session_id,
+      orderData.order_id,
       CFEnvironment.SANDBOX,
     );
   };
-
-
   const updateStatus = (message: string) => {
     setResponseText(message);
-    ToastAndroid.showWithGravity(message,  ToastAndroid.LONG,ToastAndroid.CENTER);
+    ToastAndroid.showWithGravity(message, ToastAndroid.LONG, ToastAndroid.CENTER);
   };
 
-  useEffect(() => {
-    createOrder();
-  }, []);
 
   useEffect(() => {
     CFPaymentGatewayService.setEventSubscriber({
@@ -140,12 +147,13 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
     });
     CFPaymentGatewayService.setCallback({
       onVerify(orderID: string): void {
-        verifyPayment()
-        navigate.navigate('orders')
+        console.log('orderId is :' + orderID);
+        verifyPayment(orderID)
+        // navigate.navigate('orders')
         updateStatus(orderID);
       },
       onError(error: CFErrorResponse, orderID: string): void {
-        verifyPayment()
+        // verifyPayment()
         updateStatus(JSON.stringify(error));
       },
     });
@@ -156,36 +164,22 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
   }, []);
 
   return (
-<>
-    <View style={styles.container}>
-     
-      {type=== 'online' && 
-       <View>
-      <TouchableOpacity onPress={startCheckout}>
-        <Text style={styles.text}>Confirm Order</Text>
-      </TouchableOpacity>
-      <AlertNotificationRoot>
-     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-       {/* No button needed since the verifyPayment is triggered by the useEffect */}
-     </View>
-   </AlertNotificationRoot>
+    <>
+      <View style={styles.container}>
+
+        <View>
+          <TouchableOpacity onPress={type === 'online' ? startCheckout : startUPICheckout}>
+            <Text style={styles.text}>Confirm Order</Text>
+          </TouchableOpacity>
+          <AlertNotificationRoot>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+              {/* No button needed since the verifyPayment is triggered by the useEffect */}
+            </View>
+          </AlertNotificationRoot>
+        </View>
       </View>
-      }
-      {type=== 'upi' && 
-      <View>
-      <TouchableOpacity onPress={startUPICheckout}>
-        <Text style={styles.text}>Confirm Order</Text>
-      </TouchableOpacity>
-      <AlertNotificationRoot>
-     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-       {/* No button needed since the verifyPayment is triggered by the useEffect */}
-     </View>
-   </AlertNotificationRoot>
-      </View>
-      }
-    </View>
-     
-   </>
+
+    </>
   );
 };
 
@@ -209,10 +203,10 @@ const styles = StyleSheet.create({
     flex: 1,
     // color: TEXT_COLORS.primary
   },
-  text: { 
-    color: 'white', 
-    fontSize: 18, 
-    fontWeight: 'bold' 
+  text: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold'
   }
 });
 
