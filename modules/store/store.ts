@@ -16,7 +16,7 @@ const store = configureStore({
         locations: locationsSlice.reducer,
         [productsApi.reducerPath]: productsApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
-        [getUserData.reducerPath]: getUserData.reducer
+        [getUserData.reducerPath]: getUserData.reducer,
         [ordersApi.reducerPath] : ordersApi.reducer,
         [paymentApi.reducerPath] : paymentApi.reducer
     },
