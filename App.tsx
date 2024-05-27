@@ -14,9 +14,10 @@ import { data } from './modules/Home/utils/constents';
 import { setAddProducts } from './modules/Home/store/slices/ProductsListSlice';
 import usePushNotification from './modules/notification/usePushNotification';
 import axios from 'axios';
+import { BeforeLoginScreens } from './modules/navigations/BeforeNavigation';
 function App() {
   const dispatch = useDispatch();
-
+ const [login,setLogin]=useState(false);
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide();
@@ -71,11 +72,19 @@ function App() {
     sendFcmToken();
   }, []);
 
+  const Checkuser = async () => {
+    const login = await AsyncStorage.getItem('login');
+    setLogin(Boolean(login));
+}
+useEffect(()=>{
+  Checkuser();
+},[])
+
   return (
 
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
-        <StackNavgation />
+       {login? <StackNavgation /> : <BeforeLoginScreens/>}
       </NavigationContainer>
     </GestureHandlerRootView>
 

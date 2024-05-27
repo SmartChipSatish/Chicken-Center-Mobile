@@ -46,9 +46,11 @@ const usePushNotification = () => {
 
   const getFCMToken = async () => {
     const oldFcmToken = await AsyncStorage.getItem('fcmToken');
+    console.log(oldFcmToken, 'old fcm')
     if (!oldFcmToken) {
       try {
         const newFcmToken = await messaging().getToken();
+        console.log(newFcmToken, 'new fcm')
         if (newFcmToken) {
           await AsyncStorage.setItem('fcmToken', newFcmToken);
         }

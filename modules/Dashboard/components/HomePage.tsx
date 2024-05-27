@@ -1,35 +1,62 @@
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView, Alert, BackHandler } from 'react-native';
 import CarouselCards from '../../Home/components/HomeCauresel/CarouselCard';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Searchbar } from 'react-native-paper';
 import ProductsList from '../../Home/components/ProductsList/ProductsList';
-import { ChickenSkinless } from '../../assets/svgimages/HomeSvgs/HomeSvgs';
-import OfferCards from '../../Home/components/Offers/OfferCards';
 import HeaderLocation from '../../location/HeaderLocation'
 import { TEXT_COLORS, THEME_COLORS } from '../../GlobalStyles/GlobalStyles';
-import { useGetAllProductsQuery } from '../../store/services/getAllProductsService';
+import { useGetItemsDetailsMutation } from '../../store/services/getAllProductsService';
 import { setAddProducts } from '../../Home/store/slices/ProductsListSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 const { height, width } = Dimensions.get('window')
 
 const HomePage = () => {
-  const navigate=useNavigation<any>();
-const {data} = useGetAllProductsQuery('');
-const dispatch=useDispatch()
+  const navigate = useNavigation<any>();
+  const [itemsData] =useGetItemsDetailsMutation();
+  const dispatch = useDispatch()
+  const BackPressAlert = () => {
+    Alert.alert('Exit App', 'Are you sure you want to exit', [
+      {
+        text: 'Cancel',
+        onPress: () => null,
+        style: 'cancel'
+      },
+      {
+        text: 'Exit',
+        onPress: () => BackHandler.exitApp()
+      }
 
-useFocusEffect(
-  useCallback(() => {
-dispatch(setAddProducts(data))
-  }, [data])
-);
+    ])
+    return true;
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      BackHandler.addEventListener('hardwareBackPress', BackPressAlert);
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', BackPressAlert)
+      }
+    }, [])
+  );
+const handleGetItemData=async()=>{
+  const data=await itemsData('');
+  dispatch(setAddProducts(data?.data))
+}
+
+  useFocusEffect(
+    useCallback(() => {
+      handleGetItemData();
+    }, [])
+  );
+
   return (
 
     <View style={styles.container}>
       <View style={styles.HomePageBackground}>
-         <HeaderLocation></HeaderLocation>
+        <HeaderLocation></HeaderLocation>
       </View>
-       <TouchableOpacity onPress={()=>navigate.navigate('searchPage')}>
+      <TouchableOpacity onPress={() => navigate.navigate('searchPage')}>
         <Searchbar
           placeholder="Search"
           value={''}
@@ -43,9 +70,9 @@ dispatch(setAddProducts(data))
         </View>
         <View style={styles.freshMeats}>
           <Text style={styles.header}>Fresh Meats</Text>
-        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <ProductsList  />
-        </View>
+          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+            <ProductsList />
+          </View>
         </View>
       </ScrollView>
 
@@ -121,7 +148,7 @@ const styles = StyleSheet.create({
   freshMeats: {
     backgroundColor: '#fff',
     padding: 3,
-    marginTop:10
+    marginTop: 10
   },
   freshMeatsText: {
     fontSize: 18,
@@ -129,8 +156,8 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 16,
     // fontWeight: 'bold',
-    color:`${TEXT_COLORS.primary}`,
-    marginBottom:10
+    color: `${TEXT_COLORS.primary}`,
+    marginBottom: 10
   },
   HomePageBackground: {
     backgroundColor: "white",
