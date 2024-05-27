@@ -1,25 +1,23 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Avatar, Icon } from 'react-native-elements';
 import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
 import { style } from '../../../utlis/Styles';
-import axios from 'axios';
 import { TEXT_COLORS } from '../../../../GlobalStyles/GlobalStyles';
-import { useGetAllUsersQuery, useLazyGetAllUserByIdQuery } from '../../../../store/services/getUsersService';
-import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useGetUserDetailsMutation } from '../../../../Auth/services/getUserDetailsService';
+
 const ProfileScreen: React.FC = () => {
-    const { data } = useGetAllUsersQuery('');
-    const [getUserId, { data: user, isLoading }] = useLazyGetAllUserByIdQuery();
+    const [getUser] = useGetUserDetailsMutation();
 
     const [name, setName] = useState<string>('user');
     const [email, setEmail] = useState<string>('user@gmail.com');
-    const [mobileNumber, setMobileNumber] = useState<Number>(9999999999);
-    const [password, setPassword] = useState<string>('');
-    const [confirmPassword, setConfirmPassword] = useState<string>('');
+    const [mobileNumber, setMobileNumber] = useState<number>(9999999999);
     const [avatarUri, setAvatarUri] = useState<string | null>(null);
-    const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
-    const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState<boolean>(false);
-
+    // const [password, setPassword] = useState<string>('');
+    // const [confirmPassword, setConfirmPassword] = useState<string>('');
+    // const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+    // const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState<boolean>(false);
     const handleChoosePhoto = () => {
         const options: ImageLibraryOptions = {
             mediaType: 'photo',
@@ -39,8 +37,8 @@ const ProfileScreen: React.FC = () => {
                     uri,
                     type,
                     name,
-                }
-                uploadImage(source1)
+                };
+                uploadImage(source1);
                 const source = response.assets[0].uri;
                 if (source) {
                     setAvatarUri(source);
@@ -49,128 +47,129 @@ const ProfileScreen: React.FC = () => {
         });
     };
 
-
     const uploadImage = (photo: any) => {
-        const data = new FormData()
-        data.append('file', photo)
-        data.append('upload_preset', 'cgvymfjn')
-        data.append("cloud_name", "dnhbdmhp6")
+        const data = new FormData();
+        data.append('file', photo);
+        data.append('upload_preset', 'cgvymfjn');
+        data.append("cloud_name", "dnhbdmhp6");
         fetch("https://api.cloudinary.com/v1_1/dnhbdmhp6/image/upload", {
             method: "POST",
             body: data
-        }).then(res => res.json()).
-            then(data => {
-                setAvatarUri(data.secure_url)
-
+        }).then(res => res.json())
+            .then(data => {
+                setAvatarUri(data.secure_url);
             }).catch(err => {
-                Alert.alert("An Error Occured While Uploading")
-            })
-    }
+                Alert.alert("An Error Occured While Uploading");
+            });
+    };
 
     useEffect(() => {
-
         const fetchData = async () => {
             try {
-                const response = await getUserId({ id: "664de740835b08b634646081" }).unwrap();
-                console.log(response)
-                setEmail(response?.email)
-                setName(response?.name)
-                setMobileNumber(response?.primaryNumber)
+                const uid = await AsyncStorage.getItem('uid');
+                const response = await getUser(uid).unwrap();
+                setEmail(response?.email);
+                setName(response?.name);
+                setMobileNumber(response?.primaryNumber);
             } catch (error) {
-                console.log(error)
+                console.log(error);
             }
         };
         fetchData();
     }, []);
+
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <View style={styles.avatarContainer}>
-                <Avatar
-                    rounded
-                    size="xlarge"
-                    source={avatarUri ? { uri: avatarUri } : { uri: 'https://res.cloudinary.com/dz209s6jk/image/upload/v1663222594/Avatars/rmxkvbdtrp5v0rcosrev.png' }}
-                    icon={{ name: 'user', type: 'font-awesome' }}
-                    containerStyle={styles.avatar}
-                />
-                <TouchableOpacity style={styles.editIcon} onPress={handleChoosePhoto}>
-                    <Icon name="edit" type="font-awesome" color="#fff" />
-                </TouchableOpacity>
-            </View>
-            <Text style={styles.name}>{name}</Text>
-
-            <TextInput
-                style={styles.input}
-                placeholder="Name"
-                value={name}
-                onChangeText={setName}
-            />
-
-            <TextInput
-                style={styles.input}
-                placeholder="Email"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Mobile Number"
-                value={mobileNumber.toString()}
-                onChangeText={(number) => setMobileNumber(Number(number))}
-                keyboardType="phone-pad"
-            />
-
-            <View style={styles.passwordContainer}>
+        <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <View style={styles.avatarContainer}>
+                    <Avatar
+                        rounded
+                        size="xlarge"
+                        source={avatarUri ? { uri: avatarUri } : { uri: 'https://res.cloudinary.com/dz209s6jk/image/upload/v1663222594/Avatars/rmxkvbdtrp5v0rcosrev.png' }}
+                        icon={{ name: 'user', type: 'font-awesome' }}
+                        containerStyle={styles.avatar}
+                    />
+                    <TouchableOpacity style={styles.editIcon} onPress={handleChoosePhoto}>
+                        <Icon name="edit" type="font-awesome" color="#fff" />
+                    </TouchableOpacity>
+                </View>
+                <Text style={styles.name}>{name}</Text>
                 <TextInput
                     style={styles.input}
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry={!isPasswordVisible}
+                    placeholder="Name"
+                    value={name}
+                    onChangeText={setName}
                 />
-                <TouchableOpacity
-                    style={styles.showIcon}
-                    onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                >
-                    <Icon name={isPasswordVisible ? "eye" : "eye-slash"} type="font-awesome" />
-                </TouchableOpacity>
-            </View>
-
-            <View style={styles.passwordContainer}>
                 <TextInput
                     style={styles.input}
-                    placeholder="Confirm Password"
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    secureTextEntry={!isConfirmPasswordVisible}
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
                 />
-                <TouchableOpacity
-                    style={styles.showIcon}
-                    onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
-                >
-                    <Icon name={isConfirmPasswordVisible ? "eye" : "eye-slash"} type="font-awesome" />
-                </TouchableOpacity>
-            </View>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Mobile Number"
+                    value={mobileNumber.toString()}
+                    onChangeText={(number) => setMobileNumber(Number(number))}
+                    keyboardType="phone-pad"
+                />
+                {/* 
+                <View style={styles.passwordContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Password"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry={!isPasswordVisible}
+                    />
+                    <TouchableOpacity
+                        style={styles.showIcon}
+                        onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                    >
+                        <Icon name={isPasswordVisible ? "eye" : "eye-slash"} type="font-awesome" />
+                    </TouchableOpacity>
+                </View>
 
+                <View style={styles.passwordContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Confirm Password"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        secureTextEntry={!isConfirmPasswordVisible}
+                    />
+                    <TouchableOpacity
+                        style={styles.showIcon}
+                        onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
+                    >
+                        <Icon name={isConfirmPasswordVisible ? "eye" : "eye-slash"} type="font-awesome" />
+                    </TouchableOpacity>
+                </View> */}
+            </ScrollView>
             <TouchableOpacity style={style.login_button}>
                 <Text style={styles.buttonText}>Update Profile</Text>
             </TouchableOpacity>
-        </ScrollView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+        backgroundColor: '#fff',
+    },
+    scrollContainer: {
         flexGrow: 1,
         alignItems: 'center',
         padding: 16,
-        backgroundColor: '#fff',
     },
     avatarContainer: {
         position: 'relative',
+        marginVertical: 20,
     },
     avatar: {
-        marginVertical: 20,
+        marginBottom: 20,
     },
     editIcon: {
         position: 'absolute',
@@ -192,7 +191,7 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderRadius: 8,
         marginBottom: 16,
-        color: `${TEXT_COLORS.primary}`
+        color: `${TEXT_COLORS.primary}`,
     },
     button: {
         width: '100%',
@@ -201,6 +200,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 8,
         marginTop: 20,
+        position: 'absolute',
+        bottom: 0,
     },
     buttonText: {
         color: '#fff',
