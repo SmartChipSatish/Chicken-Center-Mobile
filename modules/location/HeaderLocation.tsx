@@ -89,7 +89,7 @@ const HeaderLocation = () => {
   };
 
 
-  const navigation = useNavigation();
+  const navigation = useNavigation<any>();
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
   const [visibles, setvisible] = useState<any>(false)
@@ -259,7 +259,7 @@ const HeaderLocation = () => {
             </Text>
           </TouchableOpacity>
         </View>
-        <NotificationDotIcon />
+        <NotificationDotIcon onPress={()=>navigation.navigate('notifications')}/>
       </View>
       
       <View style={styles.centeredView1}>
@@ -456,8 +456,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 10,
-    marginLeft: 10,
-    marginRight: 10
+    marginLeft: '3%',
+    marginRight: '3%'
   },
   locationImg1: {
     display: 'flex',

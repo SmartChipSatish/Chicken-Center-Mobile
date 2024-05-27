@@ -4,6 +4,7 @@ import cartProductsSlice from "../Home/store/slices/CartProductsSlice";
 import locationsSlice from "../Account/Store/LocationSlice";
 import { productsApi } from "./api/productsApi";
 import { userApi } from "./api/userApi";
+import { getUserData } from "../Auth/services/getUserDEtails";
 
 
 const store = configureStore({
@@ -13,9 +14,10 @@ const store = configureStore({
         locations: locationsSlice.reducer,
         [productsApi.reducerPath]: productsApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
+        [getUserData.reducerPath]: getUserData.reducer
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(productsApi.middleware, userApi.middleware),
+        getDefaultMiddleware().concat(productsApi.middleware, userApi.middleware, getUserData.middleware),
 
 
 })

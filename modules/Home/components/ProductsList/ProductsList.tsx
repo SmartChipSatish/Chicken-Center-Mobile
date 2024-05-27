@@ -15,7 +15,7 @@ const ProductsList = () => {
     const handleClose = () => {
         setShow(false)
     }
-    const products = useSelector((store: RootState) => store.products.addProducts);;
+    const products = useSelector((store: RootState) => store.products.addProducts);
     const modalShow = (e: { stopPropagation: () => void }, itemId: string) => {
         e.stopPropagation();
         setShow(true)
@@ -23,9 +23,9 @@ const ProductsList = () => {
     }
     const dispatch = useDispatch()
     const handleFavourite = (item: any) => {
-
         dispatch(setFavourite(item))
     }
+
     return (
         <>
             {products?.length>0 ? products.map((e: itemData) => {
