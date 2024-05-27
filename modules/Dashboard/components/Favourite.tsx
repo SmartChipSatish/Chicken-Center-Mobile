@@ -1,4 +1,4 @@
-import { View, ScrollView } from 'react-native'
+import { View, ScrollView, Text } from 'react-native'
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../store/store'
@@ -28,14 +28,14 @@ export default function Favourite() {
     return (
         <ScrollView>
             <View style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: THEME_COLORS.primary }}>
-                {favouritesList.map((item: any) => {
+                {favouritesList?.length>0? favouritesList?.map((item: any) => {
                     return (
                         <ProductsCard type='product'
                             item={item}
                             handleFav={handleFavourite}
                             handleModelShow={modalShow} />
                     )
-                })}
+                }):<Text>No Favourites</Text>}
                 {show && <ProductItem show={show} handleClose={handleClose} productId={productId} />}
             </View>
         </ScrollView>

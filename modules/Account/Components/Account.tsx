@@ -10,14 +10,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { ForwardArrowIcon, LogoutIcon } from '../../assets/svgimages/AccountsSvgs/accountsSvgs';
 import auth from '@react-native-firebase/auth';
-import { useGetUseDetailsMutation } from '../../Auth/services/getUserDEtails';
+import { useGetUserDetailsMutation } from '../../Auth/services/getUserDetailsService';
 
  export default function Account({ navigation }: any) {
 
     const [show, setShow] = useState<boolean>(false);
     const [details, setDetails] = useState<boolean>(false);
     const [login, setLogin] = useState<boolean>(false);
-    const [getUser] =useGetUseDetailsMutation();
+    const [getUser] =useGetUserDetailsMutation();
     const handleClose = () => {
         setShow(!show);
     }

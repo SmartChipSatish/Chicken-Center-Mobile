@@ -3,11 +3,11 @@ import { productsApi } from "../api/productsApi";
 export const getAllPrducts = productsApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllProducts: builder.query({
-      query: () => '/items/getAllItems',
+      query: () => '/getAllItems',
     }),
     getItemsDetails: builder.mutation({
       query: (id) => ({
-        url: '/items/getAllItems',
+        url: '/getAllItems',
         method: 'GET',
       }),
     })

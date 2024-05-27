@@ -6,13 +6,16 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import auth from '@react-native-firebase/auth';
-import { useGetUseDetailsMutation } from '../../../Auth/services/getUserDEtails'
+import Loding from '../../../Dashboard/components/Loding'
+import { Keyboard } from 'react-native'
+import { useGetUserDetailsMutation } from '../../../Auth/services/getUserDetailsService'
 
 export default function OTPVerfication({ navigation, route }:any) {
   const [otp, setOTP] = useState(['', '', '', '', '', '']);
   const inputRefs:any[] = [];
   const [timer,setTimer]=useState(60);
-  const [getUser] =useGetUseDetailsMutation();
+  const [getUser] =useGetUserDetailsMutation();
+  const [loding,setLoding]=useState<boolean>(false);
   const handleInputChange = (index:number, value:any) => {
     if (isNaN(value)) {
       return;
@@ -29,11 +32,33 @@ export default function OTPVerfication({ navigation, route }:any) {
       inputRefs[index - 1]?.focus();
     }
   };
+
+  const handleResendOTP = async () => {
+    if (route.params.number !== '') {
+        Keyboard.dismiss();
+        setLoding(true);
+        try {
+            const res = await auth().signInWithPhoneNumber('+91' + route.params.number);
+            setLoding(false);
+            if(res){
+              setTimer(60);
+            }
+        } catch (error) {
+            setLoding(false);
+            Alert.alert("Something went wrong");
+        }
+    } else {
+        Alert.alert("Please enter a valid mobile number");
+    }
+
+}
  
   const handleSubmit = async () => {
     const OTP = otp.join('');
     if (OTP.length >= 6) {
       try {
+        Keyboard.dismiss();
+        setLoding(true);
         const credential = auth.PhoneAuthProvider.credential(route.params.data.verificationId, OTP);
         await auth().signInWithCredential(credential);
         const user = auth().currentUser;
@@ -44,11 +69,14 @@ export default function OTPVerfication({ navigation, route }:any) {
           AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
           const data= await getUser(`${user?.uid}`);
           navigation.navigate('main');
+          setLoding(false);
         } else {
           Alert.alert("Please enter a valid OTP");
+          setLoding(false);
         }
       } catch (error) {
         Alert.alert("Please check and enter the correct verification code");
+        setLoding(false);
       }
     } else {
       Alert.alert("Please enter a valid OTP")
@@ -94,7 +122,7 @@ export default function OTPVerfication({ navigation, route }:any) {
           <View style={OTPVericationCSS.timer_container}>
           <Text>Didn't receive the OTP?</Text>
           {timer !==0 &&<Text>Resend: { timer }</Text>}
-          {timer ===0 && <TouchableOpacity onPress={()=>setTimer(60)}>
+          {timer ===0 && <TouchableOpacity onPress={handleResendOTP}>
                           <Text>Resend : Send</Text>
                          </TouchableOpacity>}
           </View>
@@ -106,6 +134,7 @@ export default function OTPVerfication({ navigation, route }:any) {
             <Text style={{color:'white',fontSize:18}}>Continue</Text>
           </TouchableOpacity>
         </View>
+        {loding && <Loding/>}
     </View>
   )
 }

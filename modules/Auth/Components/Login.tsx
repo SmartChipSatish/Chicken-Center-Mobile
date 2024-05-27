@@ -7,8 +7,8 @@ import auth from '@react-native-firebase/auth';
 import Contacts from 'react-native-contacts';
 import { GoogleSignin } from 'react-native-google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useGetUseDetailsMutation } from '../services/getUserDEtails';
 import Loding from '../../Dashboard/components/Loding';
+import { useGetUserDetailsMutation } from '../services/getUserDetailsService';
 
 export default function LoginPage() {
 
@@ -16,7 +16,7 @@ export default function LoginPage() {
     const [numberCheck, setNumberCheck] = useState<boolean>(false);
     const [loding, setLoding] = useState<boolean>(false);
     const navigation = useNavigation<any>();
-    const [getUser] = useGetUseDetailsMutation();
+    const [getUser] = useGetUserDetailsMutation();
     const NumberValidation = (number: string) => {
         setNumber(number);
         const numberRegx = /^[0-9]{10}$/
