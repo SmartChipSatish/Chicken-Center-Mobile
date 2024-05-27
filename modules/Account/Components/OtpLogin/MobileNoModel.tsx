@@ -1,9 +1,10 @@
-import React, { useRef, useState } from 'react'
-import { Alert, Keyboard, Modal, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react'
+import { Alert, Keyboard, Modal, PermissionsAndroid, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import Loding from '../../../Dashboard/components/Loding';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
+import Contacts from 'react-native-contacts';
 
 export default function MobileNoModel({show, handleClose}:{show:boolean, handleClose:()=>void,}) {
   
@@ -51,6 +52,38 @@ export default function MobileNoModel({show, handleClose}:{show:boolean, handleC
     const onChangeBlure=()=>{
         setFocuse(false)
     }
+    const getPhoneNo = async () => {
+        if (Platform.OS === 'android') {
+            const granted = await PermissionsAndroid.request(
+              PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+              {
+                title: 'Contacts Permission',
+                message: 'This app would like to view your contacts.',
+                buttonPositive: 'Please accept bare mortal',
+              }
+            );
+    
+            if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+            //   setPermissionDenied(true);
+              return;
+            }
+          }
+    
+          Contacts.getAll()
+            .then((contacts:any) => {
+                console.log(contacts,'number')
+            //   setContacts(contacts);
+            NumberValidation(contacts)
+            })
+            .catch((e) => {
+              console.log(e);
+            //   setPermissionDenied(true);
+            });
+        };
+        useEffect(()=>{
+            getPhoneNo();
+        },[])
+    
 
     return (
     <>

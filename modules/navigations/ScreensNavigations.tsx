@@ -14,6 +14,8 @@ import { TabNav } from "./TabNavigation";
 import SearchPage from "../Home/components/ProductsList/SearchPage";
 import ProfileScreen from "../Account/Components/AfterLogin/Profile/ProfileScreen";
 import Checkout from "../Home/components/Cart/Checkout";
+import { BeforeLoginScreens } from "./BeforeNavigation";
+import LoginPage from "../Auth/Components/Login";
 
 export const StackNavgation = () => {
   const Stack = createNativeStackNavigator();
@@ -23,14 +25,17 @@ export const StackNavgation = () => {
       <Stack.Screen name='main' component={TabNav} options={{
         headerShown: false
       }} />
-      <Stack.Screen name='otpverfication' component={OTPVerfication} options={{
+      <Stack.Screen name='login' component={LoginPage} options={{
         headerShown: false,
-        headerLeft: () => {
-          return (
-            <Ionicons name='chevron-back' size={30} color={'black'} />
-          )
-        }
       }} />
+      <Stack.Screen name='otpverfication' component={OTPVerfication} options={{
+                headerShown: false,
+                headerLeft: () => {
+                    return (
+                        <Ionicons name='chevron-back' size={30} color={'black'} />
+                    )
+                }
+            }} />
       <Stack.Screen name="addresses" component={Addresses} options={{
         title: 'Saved addresses'
       }} />

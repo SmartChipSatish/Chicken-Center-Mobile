@@ -6,8 +6,8 @@ import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../../GlobalStyles/Gl
 export default function Orders() {
   return (
     <View style={styles.ordersBackGroudnd}>
-      <Text style={styles.ordersHistory}>Your orders</Text>
-      <View style={styles.text}></View>
+      {/* <Text style={styles.ordersHistory}>Your orders</Text>
+      <View style={styles.text}></View> */}
       <View style={{marginTop:10}}></View>
       <GlobalOrders></GlobalOrders>
     </View>
