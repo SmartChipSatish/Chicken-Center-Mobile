@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView, Alert, BackHandler } from 'react-native';
 import CarouselCards from '../../Home/components/HomeCauresel/CarouselCard';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -6,14 +6,17 @@ import { Searchbar } from 'react-native-paper';
 import ProductsList from '../../Home/components/ProductsList/ProductsList';
 import HeaderLocation from '../../location/HeaderLocation'
 import { TEXT_COLORS, THEME_COLORS } from '../../GlobalStyles/GlobalStyles';
-import { useGetItemsDetailsMutation } from '../../store/services/getAllProductsService';
+import { useGetAllProductsQuery, useGetItemsDetailsMutation, useLazyGetAllProductsQuery } from '../../store/services/getAllProductsService';
 import { setAddProducts } from '../../Home/store/slices/ProductsListSlice';
 import { useDispatch } from 'react-redux';
+import { openDatabase } from 'react-native-sqlite-storage';
 const { height, width } = Dimensions.get('window')
+let db = openDatabase({ name: 'itemslist.db' });
 
 const HomePage = () => {
   const navigate = useNavigation<any>();
   const [itemsData] =useGetItemsDetailsMutation();
+  const [getItems] =useLazyGetAllProductsQuery<any>();
   const dispatch = useDispatch()
   const BackPressAlert = () => {
     Alert.alert('Exit App', 'Are you sure you want to exit', [
@@ -39,16 +42,18 @@ const HomePage = () => {
       }
     }, [])
   );
+
 const handleGetItemData=async()=>{
-  const data=await itemsData('');
-  dispatch(setAddProducts(data?.data))
+  getItems().then((data)=>{
+  dispatch(setAddProducts(data.data));
+  }).catch((error)=>{
+    console.log(error,'error');
+  })
 }
 
-  useFocusEffect(
-    useCallback(() => {
-      handleGetItemData();
-    }, [])
-  );
+  useEffect(()=>{
+  handleGetItemData();
+  },[])
 
   return (
 

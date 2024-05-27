@@ -16,7 +16,7 @@ const ProductsListSlice = createSlice({
             let data;
             if(action.payload){
                  data=payload.map((e:any)=>{
-                    return {...e,quantity:1}
+                    return {...e,quantity:1,showQuantity:false}
                 })
             }
            
@@ -44,8 +44,20 @@ const ProductsListSlice = createSlice({
           })
           state.addProducts = data
         },
+        setShowQuantity:(state,action)=>{
+          const playload=action.payload
+          console.log(playload.id,'fff')
+          const newDetails=state.addProducts.map((e)=>{
+            if(e.id === playload.id){
+                return {...e,showQuantity: !e.showQuantity}
+            }else{
+                return e
+            }
+          })
+          state.addProducts = newDetails
+        }
     }
 });
 
-export const { setAddProducts, setQuantity, setFavourite } = ProductsListSlice.actions;
+export const { setAddProducts, setQuantity, setFavourite, setShowQuantity } = ProductsListSlice.actions;
 export default ProductsListSlice;

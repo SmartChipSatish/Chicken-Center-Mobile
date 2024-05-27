@@ -10,13 +10,16 @@ interface productsinfo {
     handleModelShow?: (eve: any, id: string) => void
     handleFav?: (data: itemData) => void
     handleQuantity?: (type: string, item: itemData) => void
+    handelAddCart?: (id: string) => void
+
 }
 
-const ProductsCard = ({ item,
+const ProductsCard: React.FC<productsinfo> = ({ item,
     handleModelShow,
     handleFav,
     type,
-    handleQuantity }: productsinfo) => {
+    handleQuantity,
+    handelAddCart }) => {
 
     return (
         <>
@@ -29,24 +32,30 @@ const ProductsCard = ({ item,
                         style={styles.image}
                     />
                     <View >
-                        <Text style={styles.item_text}>{item.itemName+' '+item.itemQty}</Text>
-                        <Text style={styles.item_price}>₹ {type ==='cart' ?item.total :item.itemPrice}</Text>
+                        <Text style={styles.item_text}>{item.itemName + ' ' + item.itemQty}</Text>
+                        <Text style={styles.item_price}>₹ {type === 'cart' ? item.total : item.itemPrice}</Text>
                         <Text style={{ textDecorationLine: 'line-through' }}>₹ 250</Text>
                     </View>
                 </View>
-                {type === 'product' && <View style={styles.item_addIcon}>
-                    <FavouriteIcon color={`${THEME_COLORS.secondary}`}
-                        height={25}
-                        width={25}
-                        fill={item.favourite ? `${THEME_COLORS.secondary}` : 'none'}
-                        onPress={() => handleFav?.(item)} />
-                    <AddProductIcon color={'#000000'} />
-                </View>}
-                {type === 'cart' && <View style={styles.quantityContainer}>
-                    <Text style={styles.quantityButton} onPress={() => handleQuantity?.('remove', item)}>-</Text>
-                    <Text style={styles.quantity}>{item.quantity}</Text>
-                    <Text style={styles.quantityButton} onPress={() => handleQuantity?.('add', item)}>+</Text>
-                </View>}
+                <View style={styles.add_fav}>
+                    {type === 'product' && <View >
+                        <FavouriteIcon color={`${THEME_COLORS.secondary}`}
+                            height={25}
+                            width={25}
+                            fill={item.favourite ? `${THEME_COLORS.secondary}` : 'none'}
+                            onPress={() => handleFav?.(item)} />
+                        {/* <AddProductIcon color={'#000000'} /> */}
+                    </View>}
+                    {(item.showQuantity || type === 'cart') && <View style={styles.quantityContainer}>
+                        <Text style={styles.quantityButton} onPress={() => handleQuantity?.('remove', item)}>-</Text>
+                        <Text style={styles.quantity}>{item.quantity}</Text>
+                        <Text style={styles.quantityButton} onPress={() => handleQuantity?.('add', item)}>+</Text>
+                    </View>}
+                    {!item.showQuantity && type === 'product' && <TouchableOpacity
+                        onPress={() => handelAddCart?.(item.id)}>
+                        <Text style={styles.addBtn}>Add</Text>
+                    </TouchableOpacity>}
+                </View>
             </TouchableOpacity>
         </>
     )
@@ -97,12 +106,6 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
-    item_addIcon: {
-        marginRight: 10,
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        height: '90%'
-    },
     quantityContainer: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -119,5 +122,15 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: TEXT_COLORS.primary,
         marginHorizontal: 10,
-    },
+    }, add_fav: {
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end',
+        height: '90%'
+    }, addBtn: {
+        backgroundColor: THEME_COLORS.secondary,
+        color: TEXT_COLORS.whiteColor,
+        borderRadius: 10,
+        padding: 5,
+    }
 })

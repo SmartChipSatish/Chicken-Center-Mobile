@@ -37,7 +37,9 @@ export interface itemData{
   favourite: boolean,
   quantity:number,
   imageUrl:string
-  total?:number
+  total?:number,
+  showQuantity?:boolean,
+
 }
 
 export const QUANTITY_LIMIT = 10
