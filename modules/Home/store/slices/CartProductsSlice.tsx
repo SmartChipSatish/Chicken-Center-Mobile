@@ -44,9 +44,21 @@ const cartProductsSlice = createSlice({
         },
         setCartPrices:(state,action)=>{
            state.cartPriceDetails=action.payload
+        },
+        setClearCart:(state)=>{
+            state.cartProducts = [];
+            state.cartPriceDetails = {
+                itemPrice: 0,
+                addons: 0,
+                discount: 0,
+                couponDiscount: 0,
+                deliveryFee: 0,
+                total: 0
+            }
+
         }
     }
 });
 
-export const {setCartProducts, setcardQuantity,setRemoveItem, setCartPrices} = cartProductsSlice.actions;
+export const {setCartProducts, setcardQuantity,setRemoveItem, setCartPrices, setClearCart} = cartProductsSlice.actions;
 export default cartProductsSlice;

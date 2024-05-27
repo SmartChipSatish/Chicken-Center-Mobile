@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CashonDeliveryIcon, OnelineIcon, UpiIcon } from '../../../assets/svgimages/HomeSvgs/svgsIcons'
 import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles'
 import { TextInput } from 'react-native'
@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '../../../store/store'
 import { LocationIcon } from '../../../assets/svgimages/SaveAsIcons'
 import Payment from '../../../payment/Payment'
+import { useCreateOrderMutation } from '../../../Orders/store/OrdersEndpoint'
 
 export default function Checkout({ route }: any) {
     const { totalAmount } = route.params;
@@ -15,7 +16,30 @@ export default function Checkout({ route }: any) {
     const [paymentType, setpaymentType] = useState('cash');
     const locations = useSelector((store: RootState) => store.locations.locations);
     const [indexSelect, setInedx] = useState<number>(0);
+    const [createData] = useCreateOrderMutation();
+    const [orderId, setOrderId] = useState('')
+    const createOrder = async () => {
+        try {
+            const response = await createData({
+                userId: "664de740835b08b634646088",
+                createdBy: "664de740835b08b634646088",
+                updatedBy: "664de740835b08b634646088",
+                items: [
+                    {
+                        itemId: "66509e96f5b94b86a246d978"
+                    }
+                ]
+            }).unwrap();
+            console.log(response, 'response')
+            setOrderId(response.id)
+        } catch (error) {
+            console.error('Error:', error);
+        }
 
+    };
+    useEffect(() => {
+        createOrder()
+    }, [])
     return (
         <View style={style.container}>
             <ScrollView style={style.sub_container}
@@ -88,12 +112,13 @@ export default function Checkout({ route }: any) {
             </ScrollView>
             
             <TouchableOpacity style={style.confirm_order}>
-                {paymentType === 'cash' &&
+                {paymentType === 'cash' ?
                     <Text style={style.cashBtn} onPress={()=>navigation.navigate('orders')}>
                         Confirm Order
-                    </Text>}
-                    {paymentType === 'upi' && <Payment totalAmount={totalAmount} type={'upi'}/>}
-                   {paymentType === 'online' && <Payment totalAmount={totalAmount} type={'online'} />}
+                    </Text>:
+                    <Payment totalAmount={totalAmount} type={paymentType} myOrderId={orderId}/>}
+                    {/* {paymentType === 'upi' && <Payment totalAmount={totalAmount} type={'upi'} myOrderId={orderId}/>}
+                   {paymentType === 'online' && <Payment totalAmount={totalAmount} type={'online'} myOrderId={orderId} />} */}
             </TouchableOpacity>
         </View>
     )
