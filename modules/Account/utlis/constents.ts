@@ -52,7 +52,7 @@ export const afterLoginDetails = [{
   icon: OrderIcon,
   title: "Orders",
   content: "Orders placed: 0",
-  navigation: 'addresses'
+  navigation: 'orders'
 
 },
 {

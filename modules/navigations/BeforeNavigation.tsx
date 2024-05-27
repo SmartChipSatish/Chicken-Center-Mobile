@@ -4,6 +4,7 @@ import Login from "../Auth/Components/Login";
 import OTPVerfication from "../Account/Components/OtpLogin/OTPVerfication";
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { TabNav } from "./TabNavigation";
+import { StackNavgation } from "./ScreensNavigations";
 
 export const BeforeLoginScreens = () => {
     const Stack = createNativeStackNavigator();
@@ -20,7 +21,7 @@ export const BeforeLoginScreens = () => {
                     )
                 }
             }} />
-            <Stack.Screen name='main' component={TabNav} options={{
+            <Stack.Screen name='main' component={StackNavgation} options={{
                 headerShown: false
             }} />
         </Stack.Navigator>
