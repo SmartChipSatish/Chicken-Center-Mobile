@@ -11,6 +11,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { ForwardArrowIcon, LogoutIcon } from '../../assets/svgimages/AccountsSvgs/accountsSvgs';
 import auth from '@react-native-firebase/auth';
 import { useGetUserDetailsMutation } from '../../Auth/services/getUserDetailsService';
+import { Image } from 'react-native';
+const appLogo = require('../../assets/Images/app-logo.png');
 
  export default function Account({ navigation }: any) {
 
@@ -67,9 +69,13 @@ import { useGetUserDetailsMutation } from '../../Auth/services/getUserDetailsSer
             showsVerticalScrollIndicator={false}
         >
             <View>
-                <View style={style.container}>
-                    <Text>KMMC</Text>
-                    <Text>Welcom to Chicken , Manage your oders, rewards, addresses & other details.</Text>
+                <View style={[style.container,style.account]}>
+                <Image source={appLogo}
+                       style={style.logo} />
+                   <View style={{marginLeft:'3%'}}>
+                    <Text style={style.main_title}>KMMC</Text>
+                    <Text>Manage your Account</Text>
+                    </View>
                    {/* <View>
                         <TouchableOpacity style={style.login_button} onPress={() => { setShow(true); }} >
                             <Text style={{ color: 'white' }}>Login / Sign Up</Text>
@@ -100,7 +106,8 @@ import { useGetUserDetailsMutation } from '../../Auth/services/getUserDetailsSer
                 </TouchableOpacity>
                 
                 <View style={[style.container, { justifyContent: 'center', alignItems: 'center', height: 80 }]}>
-                    <Text>App version - 1.0.0</Text>
+                <Text style={style.footer_Text}>Designed & Developed by: <Text style={{fontWeight:'bold'}}>SmartChip Technology</Text></Text>
+                <Text>App version - 1.0.0</Text>
                 </View>
             </View>
             {show && <MobileNoModel show={show} handleClose={handleClose} />}

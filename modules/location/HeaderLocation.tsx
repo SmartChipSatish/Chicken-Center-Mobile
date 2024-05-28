@@ -26,7 +26,7 @@ const appLogo = require('../assets/Images/app-logo.png');
 const HeaderLocation = () => {
   const [userInput, setUserInput] = useState<any>('');
   const [suggestions, setSuggestions] = useState<any>([]);
-  const [previousLocation, setPreviousLocation] = useState('');
+  const [previousLocation, setPreviousLocation] = useState(''); 
   const [useloc, setUserLoc] = useState({});
   
   const mapKey = 'AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY'
@@ -246,7 +246,7 @@ const HeaderLocation = () => {
         <Image source={appLogo}
           style={styles.logo} />
 
-          <TouchableOpacity onPress={() => {
+          {/* <TouchableOpacity onPress={() => {
             setPreviousLocation(userInput || displayAddress);
             setvisible(!visibles)
           }} style={{marginLeft:10}}>
@@ -257,7 +257,10 @@ const HeaderLocation = () => {
               style={[styles.locationText,{width:200}]}>
               {displayAddress!==''?displayAddress: 'Fetching location...'} 
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
+          <View style={{marginLeft:10}}>
+            <Text style={{color:TEXT_COLORS.primary,fontWeight:'bold'}}>Maalasa My Chicken</Text>
+          </View>
         </View>
         <NotificationDotIcon onPress={()=>navigation.navigate('notifications')}/>
       </View>
@@ -555,7 +558,9 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 15,
   }, displayLocation: {
-    flexDirection: 'row'
+    flexDirection: 'row',
+    justifyContent:'center',
+    alignItems:'center'
   },
   logo: {
     backgroundColor: THEME_COLORS.secondary,

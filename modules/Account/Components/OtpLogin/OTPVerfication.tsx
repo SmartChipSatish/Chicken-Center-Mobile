@@ -64,11 +64,17 @@ export default function OTPVerfication({ navigation, route }:any) {
         const user = auth().currentUser;
         const idToken = await user?.getIdToken();
         if (idToken) {
-          AsyncStorage.setItem('login', 'true');
-          AsyncStorage.setItem('idToken', JSON.stringify(idToken));
-          AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
+          AsyncStorage.setItem('idToken', JSON.stringify(idToken))
           const data= await getUser(`${user?.uid}`);
-          navigation.navigate('main');
+          const userId =data?.data?._id
+          if (userId) {
+              setLoding(false);
+              AsyncStorage.setItem('idToken', JSON.stringify(idToken+userId));
+              AsyncStorage.setItem('userId',JSON.stringify(userId));
+              AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
+              AsyncStorage.setItem('login', 'true');
+              navigation.navigate('main');
+          }
           setLoding(false);
         } else {
           Alert.alert("Please enter a valid OTP");

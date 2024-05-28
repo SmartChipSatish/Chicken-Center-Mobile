@@ -113,6 +113,8 @@ export default function LoginPage() {
                 if (userId) {
                     setLoding(false);
                     AsyncStorage.setItem('idToken', JSON.stringify(idTokens+userId));
+                    AsyncStorage.setItem('userId',JSON.stringify(userId));
+                    AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
                     AsyncStorage.setItem('login', 'true');
                     navigation.navigate('main');
                 }
