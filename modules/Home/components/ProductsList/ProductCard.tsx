@@ -55,10 +55,14 @@ const addtocart=(id:string)=>{
                         <Text style={styles.quantity}>{item.quantity}</Text>
                         <Text style={styles.quantityButton} onPress={() => handleCartQuantity('add', item, dispatch)}>+</Text>
                     </View>}
-                    {!item.showQuantity && type === 'product' && <TouchableOpacity
+                    {!item.showQuantity && type === 'product' && item.globalItemStatus &&<TouchableOpacity
                         onPress={() => addtocart(item.id)}>
                         <Text style={styles.addBtn}>Add</Text>
                     </TouchableOpacity>}
+                    {!item.showQuantity && type === 'product' && !item.globalItemStatus &&<View
+                        >
+                        <Text style={[styles.addBtn,{color:THEME_COLORS.secondary,backgroundColor:TEXT_COLORS.whiteColor}]}>Not Available</Text>
+                    </View>}
                 </View>
             </View>
         </>
