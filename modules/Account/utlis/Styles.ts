@@ -34,7 +34,9 @@ export const style = StyleSheet.create({
     backgroundColor: '#fff',
     height: '100%',
     padding:10,
-    marginBottom:10
+    marginBottom:10,
+    // justifyContent:'center',
+    // alignItems:'center'
   },
   referAFriend:{
     display:'flex', 
@@ -60,5 +62,24 @@ export const style = StyleSheet.create({
     marginLeft:20
   },referText:{
     color:TEXT_COLORS.primary
+  },footer_Text:{
+    color:TEXT_COLORS.primary,
+    marginTop:'2%',
+    marginBottom:'4%',
+    fontSize:15
+    // fontWeight:'bold'
+  },logo:{
+    backgroundColor: THEME_COLORS.secondary,
+    width: 60,
+    height: 60,
+    borderRadius: 50,
+    objectFit:'contain'
+  },account:{
+    flexDirection:'row',
+    alignItems:'center'
+  },main_title:{
+    color:THEME_COLORS.secondary,
+    fontWeight:'bold',
+    fontSize:18
   }
 })
