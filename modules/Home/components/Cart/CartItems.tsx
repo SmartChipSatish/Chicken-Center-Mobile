@@ -5,10 +5,11 @@ import { TextInput } from 'react-native-gesture-handler';
 import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
-import { QUANTITY_LIMIT, itemData, itemsDetails } from '../../utils/constents';
+import { QUANTITY_LIMIT, itemData } from '../../utils/constents';
 import { setCartPrices, setRemoveItem, setcardQuantity } from '../../store/slices/CartProductsSlice';
 import ProductsCard from '../ProductsList/ProductCard';
 import { useNavigation } from '@react-navigation/native';
+import { setShowQuantity } from '../../store/slices/ProductsListSlice';
 const empty_cart = require('../../../assets/Images/empty_cart.png');
 
 export default function Cartitems() {
@@ -16,18 +17,19 @@ export default function Cartitems() {
     const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
     const [priceList, setPriceList] = useState({ itemsPrice: 0, addons: 0, discount: 0, coupon: 0, deliveryFee: 100 })
     const [total, setTotal] = useState(0);
-    const distach = useDispatch();
+    const dispatch = useDispatch();
     const navigation=useNavigation<any>()
     const handleQuantity = (type: string, item: itemData) => {
         if (type === 'add' && item.quantity !== QUANTITY_LIMIT) {
             const quantity = item?.quantity + 1
             const amount = (item?.itemPrice * quantity) || 0;
-            distach(setcardQuantity({ id: item.id, quantity: quantity, total: amount }))
+            dispatch(setcardQuantity({ id: item.id, quantity: quantity, total: amount }))
         } else if (type === 'remove' && item.quantity !== 1 && item?.total) {
             const amount = item?.total - item.itemPrice || 0;
-            distach(setcardQuantity({ id: item.id, quantity: item?.quantity - 1, total: amount }))
+            dispatch(setcardQuantity({ id: item.id, quantity: item?.quantity - 1, total: amount }))
         } else if (item.quantity === 1 && type === 'remove') {
-            distach(setRemoveItem({ id: item.id }))
+            dispatch(setRemoveItem({ id: item.id }))
+            dispatch(setShowQuantity({id:item.id}));
         }
     }
     useEffect(() => {
@@ -38,7 +40,7 @@ export default function Cartitems() {
             const totalprice = (data.reduce((a, b) => a + b?.total || 0, 0))
             setPriceList({ ...priceList, itemsPrice: totalprice })
             const total = totalprice + priceList.deliveryFee + priceList.addons - (priceList.coupon + priceList.discount);
-            distach(setCartPrices({...priceList,total:total}))
+            dispatch(setCartPrices({...priceList,total:total}))
             setTotal(total)
         }
 

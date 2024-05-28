@@ -105,13 +105,15 @@ export default function LoginPage() {
             await auth().signInWithCredential(googleCredential);
             const user = auth().currentUser;
             const idTokens = await user?.getIdToken();
-            AsyncStorage.setItem('login', 'true');
             AsyncStorage.setItem('idToken', JSON.stringify(idTokens));
             setLoding(true);
             try {
                 const data = await getUser(`${user?.uid}`);
-                if (data) {
+                const userId =data?.data?._id
+                if (userId) {
                     setLoding(false);
+                    AsyncStorage.setItem('idToken', JSON.stringify(idTokens+userId));
+                    AsyncStorage.setItem('login', 'true');
                     navigation.navigate('main');
                 }
 

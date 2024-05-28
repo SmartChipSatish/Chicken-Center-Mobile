@@ -26,7 +26,7 @@ export default function OtherFields() {
             <ForwardArrowIcon />
           </View>
         </TouchableOpacity>
-          {e.title === 'Contact Us' && <View style={style.referAFriend}>
+          {e.title === 'Contact Us' && <View style={style.referAFriend} key={index}>
             <AnnouncementMicIcon/>
             <View style={{marginLeft:10}}>
             <Text style={style.referText}>Refer a friend</Text>
