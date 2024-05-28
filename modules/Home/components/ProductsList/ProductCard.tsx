@@ -1,29 +1,34 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { useState } from 'react'
+import React from 'react';
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
-import { AddProductIcon, FavouriteIcon } from '../../../assets/svgimages/HomeSvgs/svgsIcons';
+import { FavouriteIcon } from '../../../assets/svgimages/HomeSvgs/svgsIcons';
 import { itemData } from '../../utils/constents';
+import { handelAddToCart, handleCartQuantity } from '../../utils/AddTocartAndQuantity';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
 
 interface productsinfo {
     type: string
     item: itemData
-    handleModelShow?: (eve: any, id: string) => void
     handleFav?: (data: itemData) => void
-    handleQuantity?: (type: string, item: itemData) => void
-    handelAddCart?: (id: string) => void
 
 }
 
 const ProductsCard: React.FC<productsinfo> = ({ item,
-    handleModelShow,
     handleFav,
     type,
-    handleQuantity,
-    handelAddCart }) => {
+ }) => {
+const dispatch=useDispatch();
+const products = useSelector((store: RootState) => store.products.addProducts);
+
+const addtocart=(id:string)=>{
+    const cartItem= products.filter((e)=>(e.id===id))[0];
+    handelAddToCart(id,dispatch,cartItem);
+}
 
     return (
         <>
-            <TouchableOpacity key={item.id} style={styles.card_items} onPress={(eve: any) => { type === 'product' && handleModelShow?.(eve, item.id) }}>
+            <View key={item.id} style={styles.card_items} >
                 <View style={styles.items_subCard} >
                     <Image
                         source={{
@@ -44,19 +49,18 @@ const ProductsCard: React.FC<productsinfo> = ({ item,
                             width={25}
                             fill={item.favourite ? `${THEME_COLORS.secondary}` : 'none'}
                             onPress={() => handleFav?.(item)} />
-                        {/* <AddProductIcon color={'#000000'} /> */}
                     </View>}
                     {(item.showQuantity || type === 'cart') && <View style={styles.quantityContainer}>
-                        <Text style={styles.quantityButton} onPress={() => handleQuantity?.('remove', item)}>-</Text>
+                        <Text style={styles.quantityButton} onPress={() => handleCartQuantity('remove', item,dispatch)}>-</Text>
                         <Text style={styles.quantity}>{item.quantity}</Text>
-                        <Text style={styles.quantityButton} onPress={() => handleQuantity?.('add', item)}>+</Text>
+                        <Text style={styles.quantityButton} onPress={() => handleCartQuantity('add', item, dispatch)}>+</Text>
                     </View>}
                     {!item.showQuantity && type === 'product' && <TouchableOpacity
-                        onPress={() => handelAddCart?.(item.id)}>
+                        onPress={() => addtocart(item.id)}>
                         <Text style={styles.addBtn}>Add</Text>
                     </TouchableOpacity>}
                 </View>
-            </TouchableOpacity>
+            </View>
         </>
     )
 }
