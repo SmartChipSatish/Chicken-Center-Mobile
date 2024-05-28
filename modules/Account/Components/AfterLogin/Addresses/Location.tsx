@@ -10,37 +10,50 @@ const Location = ({handleAddress}:{handleAddress:(data:any)=>void}) => {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [address, setAddress] = useState('');
-  const [location,setLocation]=useState({city:'',country:'',address:''});
+  const [location,setLocation]=useState({city:'',country:'',address:'',pincode:"",street:"",state:""});
 
   const [error, setError] = useState<any>(null);
 
-  const handleMapPress = async (e:any) => {
-    const { latitude, longitude } = e.nativeEvent.coordinate;
-    setLatitude(latitude);
-    setLongitude(longitude);
-    try {
-      const response = await Geocoder.from(latitude, longitude);
-      const address = response.results[0].formatted_address;
-      const addressComponents = response.results[0].address_components;
-      const flatComponent = addressComponents.find(component =>
-        component.types.includes('subpremise')
-      );
-      const cityComponent = addressComponents.find(component =>
-        component.types.includes('locality')
-      );
-      const countryComponent = addressComponents.find(component =>
-        component.types.includes('country')
-      );
+  const handleMapPress = async (e: any) => {
+  const { latitude, longitude } = e.nativeEvent.coordinate;
+  setLatitude(latitude);
+  setLongitude(longitude);
+  try {
+    const response = await Geocoder.from(latitude, longitude);
+    const address = response.results[0].formatted_address;
+    const addressComponents = response.results[0].address_components;
+    const flatComponent = addressComponents.find(component =>
+      component.types.includes('subpremise')
+    );
+    const cityComponent = addressComponents.find(component =>
+      component.types.includes('locality')
+    );
+    const countryComponent = addressComponents.find(component =>
+      component.types.includes('country')
+    );
+    const pincodeComponent = addressComponents.find(component =>
+      component.types.includes('postal_code')
+    );
+    const streetComponent = addressComponents.find(component =>
+      component.types.includes('route')
+    );
+    const stateComponent = addressComponents.find(component =>
+      component.types.includes('administrative_area_level_1')
+    );
 
-      const flat = flatComponent ? flatComponent.long_name : '';
-      const city = cityComponent ? cityComponent.long_name : '';
-      const country = countryComponent ? countryComponent.long_name : '';
-      setLocation({city:city,country:country,address:address})
-      setAddress(address);
-    } catch (error:any) {
-      setError(error.message);
-    }
-  };
+    const flat = flatComponent ? flatComponent.long_name : '';
+    const city = cityComponent ? cityComponent.long_name : '';
+    const country = countryComponent ? countryComponent.long_name : '';
+    const pincode = pincodeComponent ? pincodeComponent.long_name : '';
+    const street = streetComponent ? streetComponent.long_name : '';
+    const state = stateComponent ? stateComponent.long_name : '';
+    setLocation({ city, country, address, pincode,street,state });
+    setAddress(address);
+  } catch (error: any) {
+    setError(error.message);
+  }
+};
+
 
   useEffect(() => {
     Geocoder.init('AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY');
@@ -88,11 +101,24 @@ const Location = ({handleAddress}:{handleAddress:(data:any)=>void}) => {
                 const countryComponent = addressComponents.find(component =>
                   component.types.includes('country')
                 );
+                const pincodecomponent = addressComponents.find(component =>
+                  component.types.includes('postal_code')
+                );
+                const streetComponent = addressComponents.find(component =>
+                  component.types.includes('route')
+                );
+                const stateComponent = addressComponents.find(component =>
+                  component.types.includes('administrative_area_level_1')
+                );
+
 
                 const flat = flatComponent ? flatComponent.long_name : '';
                 const city = cityComponent ? cityComponent.long_name : '';
                 const country = countryComponent ? countryComponent.long_name : '';
-                setLocation({city:city,country:country,address:address})
+                const pincode=pincodecomponent?pincodecomponent.long_name : '';
+                const street=streetComponent?streetComponent.long_name : '';
+                const state=stateComponent?stateComponent.long_name : '';
+                setLocation({ city, country, address, pincode,street,state })
                 setAddress(address);
               } catch (error:any) {
                 setError(error.message);

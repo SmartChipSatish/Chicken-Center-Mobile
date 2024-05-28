@@ -22,12 +22,16 @@ import { Image } from "react-native";
 import { NotificationDotIcon } from "../assets/svgimages/SvgIcons";
 import { LocationIcon } from "../assets/svgimages/SaveAsIcons";
 const appLogo = require('../assets/Images/app-logo.png');
+import {useDispatch,useSelector } from "react-redux";
+import { setLatitudes, setLongitudes } from "../Account/Store/LocationSlice";
+
 
 const HeaderLocation = () => {
   const [userInput, setUserInput] = useState<any>('');
   const [suggestions, setSuggestions] = useState<any>([]);
   const [previousLocation, setPreviousLocation] = useState(''); 
   const [useloc, setUserLoc] = useState({});
+  const dispatch=useDispatch();
   
   const mapKey = 'AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY'
   const fetchSuggestions = async (text: any) => {
@@ -98,10 +102,20 @@ const HeaderLocation = () => {
   const [longitude, setLongitude] = useState<any>(null);
   const [displayAddress, setDisplayAddress] = useState('');
   const [error, setError] = useState<any>(null);
+  // console.log(latitude,longitude,"baipalli....")
+
+
 
   useEffect(() => {
     Geocoder.init(mapKey);
+    
+ 
   }, []);
+
+  useEffect(()=>{
+    dispatch(setLatitudes(latitude))
+    dispatch(setLongitudes(longitude))
+  })
 
   const requestLocation = async () => {
     if (Platform.OS === 'android') {
