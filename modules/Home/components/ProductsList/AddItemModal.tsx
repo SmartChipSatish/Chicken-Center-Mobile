@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { Alert, Image, Modal, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { TEXT_COLORS, THEME_COLORS } from '../../../GlobalStyles/GlobalStyles';
-import { AddProductIcon, FavouriteIcon, RemoveProductIcon } from '../../../assets/svgimages/HomeSvgs/svgsIcons';
+import { FavouriteIcon } from '../../../assets/svgimages/HomeSvgs/svgsIcons';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
-import { QUANTITY_LIMIT, cartProducts, useDetectFirstRender } from '../../utils/constents';
+import { QUANTITY_LIMIT, useDetectFirstRender } from '../../utils/constents';
 import { setFavourite, setQuantity } from '../../store/slices/ProductsListSlice';
 import { setCartProducts } from '../../store/slices/CartProductsSlice';
 
