@@ -81,21 +81,21 @@ console.log(ordersData,'ordersData')
           {items.map((item:any, index:any) => (
             <TouchableOpacity key={index} onPress={()=>{setModalVisible1(true)}}>
             <View  style={styles.card}>
+              <View style={{display:"flex",flexDirection:"column"}}>
+              <View>
+              <Text style={styles.orderId}>Shipment ID: 000zx4933pxzsdnkjdsnknk </Text>
+              </View>
+              <View>
               <Image style={styles.tinyLogo} source={{ uri: item.image }} />
-              <Text style={styles.orderId}>Shipment ID: 000zx4933pxz</Text>
-              <View style={styles.cardContent}>
-                <View>
-                <Text style={styles.title}>{item.name}</Text>
-                </View>
-                <View style={styles.ordersPlace}>
-                  <Text style={styles.price}>500gms </Text>
-                  <Text> |</Text>
+              </View>
+
+              <View style={styles.ordersPlace}>
+                  
                   <Text style={styles.price1}> ₹{item.price}</Text>
                   <Text> |</Text>
                   <Text style={styles.price2}> Qty.1</Text>
                 </View>
 
-                <View style={styles.separator}></View>
                 <View style={styles.twoButtons}>
                 <Text style={styles.RepeatColor}>Repeat</Text>
                   {ratings[item.id] ? (
@@ -109,7 +109,7 @@ console.log(ordersData,'ordersData')
                           }}
                         />
                       ))}
-                      <Text >Rating submitted</Text>
+                      <Text style={styles.Ratings}>Rating submitted</Text>
                     </View>
                   ) : (
                     <TouchableOpacity onPress={() => handleRateOrder(item)}>
@@ -118,7 +118,10 @@ console.log(ordersData,'ordersData')
                     
                   )}
                 </View>
+
+
               </View>
+              
             </View>
             </TouchableOpacity>
           ))}
@@ -229,6 +232,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     height: 1000
   },
+  Ratings:{
+    color:TEXT_COLORS.secondary
+  },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -298,9 +304,12 @@ const styles = StyleSheet.create({
   twoButtons: {
     display: "flex",
     flexDirection: 'row',
-    position: "relative",
-    left: -50,
+    // position: "relative",
+    // left: -50,
     justifyContent: "center",
+    alignItems:"center",
+    marginTop:20,
+    marginLeft:50
   },
   twoButtons1: {
     display: "flex",
@@ -359,9 +368,11 @@ const styles = StyleSheet.create({
   },
   orderId: {
     marginTop: 5,
-    marginLeft: -77,
+    // marginLeft: -77,
     color: TEXT_COLORS.primary,
     fontWeight: "bold",
+    marginVertical:-20
+    
 
 
   },
@@ -378,7 +389,9 @@ const styles = StyleSheet.create({
   },
   ordersPlace: {
     display: "flex",
-    flexDirection: "row"
+    flexDirection: "row",
+    marginTop:-40,
+    marginLeft:100
   },
   ordersPlace1: {
     display: "flex",
@@ -421,7 +434,8 @@ const styles = StyleSheet.create({
     width: 80,
     borderRadius: 8,
     marginTop: 40,
-    marginLeft: 10
+    // marginVertical:-10
+    // marginLeft: -260
   },
   tinyLogos: {
     height: 70,
