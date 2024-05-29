@@ -14,7 +14,7 @@ const empty_cart = require('../../../assets/Images/empty_cart.png');
 export default function Cartitems() {
 
     const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
-    const [priceList, setPriceList] = useState({ itemsPrice: 0, addons: 0, discount: 0, coupon: 0, deliveryFee: 100 })
+    const [priceList, setPriceList] = useState({ itemsPrice: 0, addons: 0, discount: 0, coupon: 0, deliveryFee: 0 })
     const [total, setTotal] = useState(0);
     const dispatch = useDispatch();
     const navigation=useNavigation<any>()

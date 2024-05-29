@@ -5,8 +5,9 @@ import CrossMark from '../assets/svgimages/util';
 import Rating from './Rating';
 import OrderSummary from './OrderSummary';
 import Cartitems from '../Home/components/Cart/CartItems';
-import { useGetAllOrdersQuery } from './store/OrdersEndpoint';
+import { useGetAllOrdersQuery, useGetOrdersByUserIdMutation } from './store/OrdersEndpoint';
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function GlobalOrders() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -15,14 +16,26 @@ export default function GlobalOrders() {
   const [modalVisible1,setModalVisible1]=useState(false)
   const appLogo = require('../assets/Images/app-logo.png');
   const [ordersData, setOrdersData] = useState([])
-  const {data, isLoading} = useGetAllOrdersQuery([])
-  
-  useFocusEffect(
-    useCallback(()=>{
-    setOrdersData(data)
-  },[data])
-  )
-console.log(ordersData,'ordersData')
+  // const {data, isLoading} = useGetAllOrdersQuery('')
+  const  [getOrdersByUserId] = useGetOrdersByUserIdMutation();
+  const getOrderData=async()=>{
+    try{
+      const storedUid = await AsyncStorage.getItem('userId');
+            console.log(storedUid)
+            const uid = storedUid?.replace(/['"]/g, '').trim();
+            console.log(uid,'uid')
+        const response = await getOrdersByUserId(uid);
+        setOrdersData(response.data)
+        console.log(response,'orderbyuserid')
+    }catch(error){
+        console.log(error)
+    }
+    
+}
+useEffect(()=>{
+  getOrderData()
+},[])
+
   const [items, setItems] = useState<any>([
     {
       id: 1,
@@ -73,27 +86,33 @@ console.log(ordersData,'ordersData')
       setModalVisible(false);
     }, 2000);
   };
+const [myOrderId,setMyOrderId] = useState()
+
 
   return (
     <View>
       <ScrollView>
         <View style={styles.container}>
-          {items.map((item:any, index:any) => (
-            <TouchableOpacity key={index} onPress={()=>{setModalVisible1(true)}}>
+
+          {ordersData && ordersData.length > 0 && ordersData.map((item:any, index:any) => (
+            <TouchableOpacity key={item._id} onPress={()=>{setMyOrderId(item._id);setModalVisible1(true);}}>
             <View  style={styles.card}>
               <View style={{display:"flex",flexDirection:"column"}}>
               <View>
-              <Text style={styles.orderId}>Shipment ID: 000zx4933pxzsdnkjdsnknk </Text>
+              {/* <Text style={styles.orderId}>Shipment ID: 000zx4933pxzsdnkjdsnknk </Text> */}
+              <Text style={styles.orderId}>ORDER ID: {item.id}</Text>
+              <Text style={styles.status}>Status: {item.orderStatus}</Text>
               </View>
               <View>
-              <Image style={styles.tinyLogo} source={{ uri: item.image }} />
+              <Image style={styles.tinyLogo} source={{ uri: item?.items[0]?.imageUrl }} />
               </View>
 
               <View style={styles.ordersPlace}>
                   
-                  <Text style={styles.price1}> ₹{item.price}</Text>
+                  <Text style={styles.price1}> ₹{item?.totals?.amount}</Text>
                   <Text> |</Text>
-                  <Text style={styles.price2}> Qty.1</Text>
+                  <Text style={styles.price2}> Qty.{item?.totals?.quantity}</Text>
+
                 </View>
 
                 <View style={styles.twoButtons}>
@@ -213,7 +232,7 @@ console.log(ordersData,'ordersData')
                       <CrossMark color={'black'} width={25} height={25}></CrossMark>
                     </View>
                   </TouchableOpacity>
-                 <OrderSummary></OrderSummary>
+                 <OrderSummary orderId={myOrderId}></OrderSummary>
                 </View>
               </View>
             </View>
@@ -372,9 +391,13 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.primary,
     fontWeight: "bold",
     marginVertical:-20
-    
-
-
+  },
+  status:{
+    marginTop: 20,
+    // marginLeft: 120,
+    color: TEXT_COLORS.primary,
+    fontWeight: "bold",
+    marginVertical:-20
   },
   prices: {
     color: TEXT_COLORS.primary,
@@ -447,7 +470,7 @@ const styles = StyleSheet.create({
     marginVertical:20
   },
   cardContent: {
-    marginLeft: -90,
+    marginLeft: -200,
     marginTop: 50,
     display:"flex",
     flexDirection:"column",
