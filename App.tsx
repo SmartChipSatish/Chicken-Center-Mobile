@@ -7,14 +7,14 @@ import SplashScreen from 'react-native-splash-screen';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { StackNavgation } from './modules/navigations/ScreensNavigations';
+import { StackNavgation } from './src/navigations/ScreensNavigations';
 import { Provider, useDispatch } from 'react-redux'
-import store from './modules/store/store';
-import { data } from './modules/Home/utils/constents';
-import { setAddProducts } from './modules/Home/store/slices/ProductsListSlice';
-import usePushNotification from './modules/notification/usePushNotification';
+import store from './src/store/store';
+import { data } from './src/modules/home/utils/constents';
+import { setAddProducts } from './src/modules/home/store/slices/ProductsListSlice';
+import usePushNotification from './src/modules/home/components/notification/usePushNotification';
 import axios from 'axios';
-import { BeforeLoginScreens } from './modules/navigations/BeforeNavigation';
+import { BeforeLoginScreens } from './src/navigations/BeforeNavigation';
 function App() {
   const dispatch = useDispatch();
  const [login,setLogin]=useState(false);
