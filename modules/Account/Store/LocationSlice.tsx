@@ -5,11 +5,13 @@ interface ProductList {
     locations:any[],
     latitudes:{},
     longitudes:{},
+    displayAddressesall:any[]
 }
 const initialState:ProductList ={
     locations:[],
     latitudes:{},
-    longitudes:{}
+    longitudes:{},
+    displayAddressesall:[]
 }
 const locationsSlice = createSlice({
     name: 'location',
@@ -24,8 +26,11 @@ const locationsSlice = createSlice({
         setLongitudes: (state, action) => {
             state.longitudes=action.payload
         },
+        setDisplayAddressAll:(state,action)=>{
+            state.displayAddressesall.push(action.payload)
+        }
     }
 });
 
-export const { setAddLocation,setLatitudes,setLongitudes } = locationsSlice.actions;
+export const { setAddLocation,setLatitudes,setLongitudes,setDisplayAddressAll } = locationsSlice.actions;
 export default locationsSlice;
