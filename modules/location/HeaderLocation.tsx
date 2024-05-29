@@ -21,6 +21,7 @@ import { TEXT_COLORS, THEME_COLORS } from "../GlobalStyles/GlobalStyles";
 import { Image } from "react-native";
 import { NotificationDotIcon } from "../assets/svgimages/SvgIcons";
 import { LocationIcon } from "../assets/svgimages/SaveAsIcons";
+import AppTitle from "./AppTitle";
 const appLogo = require('../assets/Images/app-logo.png');
 
 const HeaderLocation = () => {
@@ -191,56 +192,6 @@ const HeaderLocation = () => {
 
   return (
     <View>
-      {/* <TouchableOpacity
-        onPress={() => {
-          setPreviousLocation(userInput || displayAddress);
-          // setModalVisible(true);
-          setvisible(!visibles)
-        }}>
-        <View
-          style={{
-            position: 'absolute',
-            top: 20,
-            left: 20,
-            backgroundColor: 'white',
-          }}
-          >
-          <View>
-            {latitude && longitude ? (
-              <>
-                {userInput ? (
-                  <View style={styles.locationImg}>
-                    <AddressesIcon width={20} height={20} color={'red'} />
-                    <Text
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                      style={styles.locationText}>
-                      {userInput}
-                    </Text>
-                  </View>
-                ) : (
-                  <View style={styles.locationImg}>
-                    <Image source={appLogo}
-                           style={styles.logo}/> 
-                    <View style={styles.displayLocation}>
-                    <Text style={styles.locationText}>Location</Text>
-                    <Text
-                      numberOfLines={1}
-                      ellipsizeMode="tail"
-                      style={styles.locationText}>  
-                      {displayAddress}
-                    </Text>
-                    </View>
-                  </View>
-                )}
-              </>
-            ) : (
-              <Text>{error ? `Error: ${error}` : 'Fetching location...'}</Text>
-            )}
-          </View>
-        </View>
-      </TouchableOpacity> */}
-
       <View style={styles.locationImg}>
       <View style={styles.displayLocation}>
         <Image source={appLogo}
@@ -259,7 +210,8 @@ const HeaderLocation = () => {
             </Text>
           </TouchableOpacity> */}
           <View style={{marginLeft:10}}>
-            <Text style={{color:TEXT_COLORS.primary,fontWeight:'bold'}}>Maalasa My Chicken</Text>
+            {/* <Text style={{color:TEXT_COLORS.primary,fontWeight:'bold'}}>Maalasa My Chicken</Text> */}
+            <AppTitle/>
           </View>
         </View>
         <NotificationDotIcon onPress={()=>navigation.navigate('notifications')}/>

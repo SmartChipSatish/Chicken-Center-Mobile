@@ -5,7 +5,7 @@ export const getUserData = userApi.injectEndpoints({
         getUserDetails: builder.mutation({
             query: (id) => (
                 {
-                    url: `/getUser?uId=${id}`,
+                    url: `/getUserByUid?uId=${id}`,
                     method: 'GET'
                 }),
             invalidatesTags: ['userList']

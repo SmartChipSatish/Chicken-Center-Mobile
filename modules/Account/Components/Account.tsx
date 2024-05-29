@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { ScrollView, TouchableOpacity, View } from 'react-native'
+import React, { useState } from 'react'
+import { Alert, Linking, ScrollView, TouchableOpacity, View } from 'react-native'
 import { Text } from 'react-native-paper'
 import MobileNoModel from './OtpLogin/MobileNoModel';
 import AfterLogin from './AfterLogin/AfterLogin';
@@ -7,19 +7,14 @@ import OtherFields from './OtherFields/OtherFields';
 import { style } from '../utlis/Styles';
 import { GoogleSignin } from 'react-native-google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useFocusEffect } from '@react-navigation/native';
 import { ForwardArrowIcon, LogoutIcon } from '../../assets/svgimages/AccountsSvgs/accountsSvgs';
-import auth from '@react-native-firebase/auth';
-import { useGetUserDetailsMutation } from '../../Auth/services/getUserDetailsService';
 import { Image } from 'react-native';
 const appLogo = require('../../assets/Images/app-logo.png');
 
  export default function Account({ navigation }: any) {
 
     const [show, setShow] = useState<boolean>(false);
-    const [details, setDetails] = useState<boolean>(false);
-    const [login, setLogin] = useState<boolean>(false);
-    const [getUser] =useGetUserDetailsMutation();
+
     const handleClose = () => {
         setShow(!show);
     }
@@ -28,40 +23,20 @@ const appLogo = require('../../assets/Images/app-logo.png');
         webClientId: '781535826140-6kr39lp0fm05a2fupcecf42j9ka8o5v0.apps.googleusercontent.com',
     });
 
-    const handleGoogleLogin = async () => {
-        try {
-            await GoogleSignin.hasPlayServices();
-            const { idToken } = await GoogleSignin.signIn();
-            const googleCredential = auth.GoogleAuthProvider.credential(idToken);
-            await auth().signInWithCredential(googleCredential);
-             const user = auth().currentUser;
-            const idTokens = await user?.getIdToken();
-            AsyncStorage.setItem('login', 'true');
-            AsyncStorage.setItem('idToken', JSON.stringify(idTokens));
-            const data= await getUser('');
-            if (idTokens) {
-                setDetails(true);
-            }
-        } catch (error) {
-            console.log(error, 'error')
-        }
-    };
-
-    // const Checkuser = async () => {
-    //     const login = await AsyncStorage.getItem('login');
-    //     setLogin(Boolean(login));
-    // }
-
     const handleLogout=async()=>{
         await AsyncStorage.clear();
         navigation.navigate('login');
     }
 
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         Checkuser();
-    //     }, [])
-    // );
+    const handlePress = async () => {
+        const url = 'http://smartchiptechno.com';
+        const supported = await Linking.canOpenURL(url);
+        if (supported) {
+          await Linking.openURL(url);
+        } else {
+          Alert.alert(`Don't know how to open this URL: ${url}`);
+        }
+      };
 
     return (
         <ScrollView style={{ margin: 10, }}
@@ -71,21 +46,12 @@ const appLogo = require('../../assets/Images/app-logo.png');
             <View>
                 <View style={[style.container,style.account]}>
                 <Image source={appLogo}
-                       style={style.logo} />
+                       style={style.logo} 
+                       resizeMode="contain" />
                    <View style={{marginLeft:'3%'}}>
                     <Text style={style.main_title}>KMMC</Text>
                     <Text>Manage your Account</Text>
                     </View>
-                   {/* <View>
-                        <TouchableOpacity style={style.login_button} onPress={() => { setShow(true); }} >
-                            <Text style={{ color: 'white' }}>Login / Sign Up</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={style.login_button} onPress={() => handleGoogleLogin()} >
-                            <Text style={{ color: 'white' }}>Google</Text>
-                        </TouchableOpacity>
-                    </View> */}
-                    {/* {details && <Text>login don</Text>} */}
                 </View>
 
                 <AfterLogin />
@@ -106,7 +72,7 @@ const appLogo = require('../../assets/Images/app-logo.png');
                 </TouchableOpacity>
                 
                 <View style={[style.container, { justifyContent: 'center', alignItems: 'center', height: 80 }]}>
-                <Text style={style.footer_Text}>Designed & Developed by: <Text style={{fontWeight:'bold'}}>SmartChip Technology</Text></Text>
+                <Text style={style.footer_Text}>Designed & Developed by: <Text style={{fontWeight:'bold'}} onPress={handlePress}>SmartChip Technology</Text></Text>
                 <Text>App version - 1.0.0</Text>
                 </View>
             </View>
