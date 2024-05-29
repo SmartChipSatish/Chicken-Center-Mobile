@@ -209,7 +209,7 @@ const ProfileScreen: React.FC = () => {
                     style={styles.input}
                     placeholder="Mobile Number"
                     value={mobileNumber}
-                    maxLength={10}
+                    maxLength={12}
                     onChangeText={(e) => { handlePhoneChange(e) }}
                     readOnly={canUpdatePhone ? false : true}
                     keyboardType="phone-pad"

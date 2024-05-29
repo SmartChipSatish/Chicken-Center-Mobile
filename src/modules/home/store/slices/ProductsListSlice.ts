@@ -55,9 +55,14 @@ const ProductsListSlice = createSlice({
             }
           })
           state.addProducts = newDetails
+        },setShowQuantityReset:(state,action)=>{
+            const newDetails=state.addProducts.map((e)=>{
+                    return {...e,showQuantity: false}
+              })
+              state.addProducts = newDetails
         }
     }
 });
 
-export const { setAddProducts, setQuantity, setFavourite, setShowQuantity } = ProductsListSlice.actions;
+export const { setAddProducts, setQuantity, setFavourite, setShowQuantity, setShowQuantityReset } = ProductsListSlice.actions;
 export default ProductsListSlice;

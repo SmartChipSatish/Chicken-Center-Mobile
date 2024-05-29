@@ -21,6 +21,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCreateOrderMutation } from '../../orders/store/services/OrdersEndpoint';
 import { RootState } from '../../../store/store';
 import OrderConfirmationScreen from '../../orders/components/OrderConfirmationScreen';
+import { setShowQuantityReset } from '../../home/store/slices/ProductsListSlice';
 
 const Payment = ({ totalAmount, type }: { totalAmount: number, type: string}) => {
   const navigate = useNavigation<any>();
@@ -104,6 +105,7 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string}) =>
       console.log(res.data, 'verifypayment')
       if (res.data) {
         dispatch(setClearCart())
+        dispatch(setShowQuantityReset(''))
         setShow(true)
         // Dialog.show({
         //   type: ALERT_TYPE.SUCCESS,
