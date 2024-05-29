@@ -17,7 +17,8 @@ import axios from 'axios';
 import { BeforeLoginScreens } from './src/navigations/BeforeNavigation';
 function App() {
   const dispatch = useDispatch();
- const [login,setLogin]=useState(false);
+
+  const [login, setLogin] = useState(false);
   useEffect(() => {
     setTimeout(() => {
       SplashScreen.hide();
@@ -37,17 +38,6 @@ function App() {
   } = usePushNotification();
 
 
-  const sendFcmToken = async () => {
-    try {
-      const token = await AsyncStorage.getItem('fcmToken');
-
-      await axios.post('http://192.168.1.14:3000/register', { token });
-    } catch (err: any) {
-      //Do nothing
-      console.log(err);
-      return;
-    }
-  };
 
 
   useEffect(() => {
@@ -68,23 +58,21 @@ function App() {
   }, []);
 
 
-  useEffect(() => {
-    sendFcmToken();
-  }, []);
+
 
   const Checkuser = async () => {
     const login = await AsyncStorage.getItem('login');
     setLogin(Boolean(login));
-}
-useEffect(()=>{
-  Checkuser();
-},[])
+  }
+  useEffect(() => {
+    Checkuser();
+  }, [])
 
   return (
 
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
-       {login? <StackNavgation /> : <BeforeLoginScreens/>}
+        {login ? <StackNavgation /> : <BeforeLoginScreens />}
       </NavigationContainer>
     </GestureHandlerRootView>
 
