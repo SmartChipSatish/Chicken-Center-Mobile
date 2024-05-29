@@ -45,6 +45,7 @@ export default function Checkout({ route }: any) {
                 createdBy: uid,
                 updatedBy: uid,
                 addressId:'6655d6dff9c814266aef1d6e',
+                paymentType: paymentType,
                 items: items,
                 totals: {
                     quantity: totalQuantity,
@@ -53,14 +54,17 @@ export default function Checkout({ route }: any) {
             }).unwrap();
             console.log(response, 'response')
             setOrderId(response._id)
+            if(response && response._id){
+                navigation.navigate('orders')
+            }
         } catch (error) {
             console.error('Error:', error);
         }
 
     };
-    useEffect(() => {
-        createOrder()
-    }, [])
+    // useEffect(() => {
+    //     createOrder()
+    // }, [])
     return (
         <View style={style.container}>
             <ScrollView style={style.sub_container}
@@ -134,10 +138,10 @@ export default function Checkout({ route }: any) {
             
             <TouchableOpacity style={style.confirm_order}>
                 {paymentType === 'cash' ?
-                    <Text style={style.cashBtn} onPress={()=>navigation.navigate('orders')}>
+                    <Text style={style.cashBtn} onPress={createOrder}>
                         Confirm Order
                     </Text>:
-                    <Payment totalAmount={totalAmount} type={paymentType} myOrderId={orderId}/>}
+                    <Payment totalAmount={totalAmount} type={paymentType} />}
                     {/* {paymentType === 'upi' && <Payment totalAmount={totalAmount} type={'upi'} myOrderId={orderId}/>}
                    {paymentType === 'online' && <Payment totalAmount={totalAmount} type={'online'} myOrderId={orderId} />} */}
             </TouchableOpacity>
