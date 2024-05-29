@@ -10,13 +10,18 @@ import { useGetAllProductsQuery, useGetItemsDetailsMutation, useLazyGetAllProduc
 import { setAddProducts } from '../../home/store/slices/ProductsListSlice';
 import { useDispatch } from 'react-redux';
 import { openDatabase } from 'react-native-sqlite-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUpdateUserMutation } from '../../Auth/services/getUserDetailsService';
+
 const { height, width } = Dimensions.get('window')
 let db = openDatabase({ name: 'itemslist.db' });
 
 const HomePage = () => {
   const navigate = useNavigation<any>();
-  const [itemsData] =useGetItemsDetailsMutation();
-  const [getItems] =useLazyGetAllProductsQuery<any>();
+  const [itemsData] = useGetItemsDetailsMutation();
+  const [updateUser] = useUpdateUserMutation();
+
+  const [getItems] = useLazyGetAllProductsQuery<any>();
   const dispatch = useDispatch()
   const BackPressAlert = () => {
     Alert.alert('Exit App', 'Are you sure you want to exit', [
@@ -34,6 +39,27 @@ const HomePage = () => {
     return true;
   }
 
+  const sendFcmToken = async () => {
+    const token = await AsyncStorage.getItem('fcmToken');
+
+    try {
+      const storeduserId = await AsyncStorage.getItem('userId');
+
+
+      if (storeduserId) {
+        const userId = storeduserId.replace(/['"]/g, '').trim();
+        const response = await updateUser({
+          userId: userId,
+          deviceToken: token
+        }).unwrap();
+
+      }
+    } catch (error) {
+      console.log(error)
+
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       BackHandler.addEventListener('hardwareBackPress', BackPressAlert);
@@ -43,18 +69,20 @@ const HomePage = () => {
     }, [])
   );
 
-const handleGetItemData=async()=>{
-  getItems().then((data)=>{
-  dispatch(setAddProducts(data.data));
-  }).catch((error)=>{
-    console.log(error,'error');
-  })
-}
+  const handleGetItemData = async () => {
+    getItems().then((data) => {
+      dispatch(setAddProducts(data.data));
+    }).catch((error) => {
+      console.log(error, 'error');
+    })
+  }
 
-  useEffect(()=>{
-  handleGetItemData();
-  },[])
-
+  useEffect(() => {
+    handleGetItemData();
+  }, [])
+  useEffect(() => {
+    sendFcmToken()
+  }, [])
   return (
 
     <View style={styles.container}>
@@ -113,7 +141,7 @@ const styles = StyleSheet.create({
     marginTop: 15,
     borderColor: 'grey',
     borderWidth: 1,
-    marginBottom:'2%'
+    marginBottom: '2%'
   },
   searchBarText: {
     fontSize: 16,
