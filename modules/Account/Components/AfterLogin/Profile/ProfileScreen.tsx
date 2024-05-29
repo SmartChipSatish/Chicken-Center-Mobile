@@ -5,19 +5,99 @@ import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-pick
 import { style } from '../../../utlis/Styles';
 import { TEXT_COLORS } from '../../../../GlobalStyles/GlobalStyles';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useGetUserDetailsMutation } from '../../../../Auth/services/getUserDetailsService';
+import { useGetUserByUserIdMutation, useUpdateUserMutation } from '../../../../Auth/services/getUserDetailsService';
+import Loding from '../../../../Dashboard/components/Loding';
+import { useNavigation } from '@react-navigation/native';
 
 const ProfileScreen: React.FC = () => {
-    const [getUser] = useGetUserDetailsMutation();
+    const [getUser] = useGetUserByUserIdMutation();
+    const [updateUser] = useUpdateUserMutation();
+    const navigation = useNavigation<any>();
 
     const [name, setName] = useState<string>('user');
     const [email, setEmail] = useState<string>('user@gmail.com');
-    const [mobileNumber, setMobileNumber] = useState<number>(9999999999);
+    const [mobileNumber, setMobileNumber] = useState<string>('9999999999');
     const [avatarUri, setAvatarUri] = useState<string | null>(null);
     // const [password, setPassword] = useState<string>('');
     // const [confirmPassword, setConfirmPassword] = useState<string>('');
     // const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
     // const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState<boolean>(false);
+    const [canUpdateEmail, setCanUpdateEmail] = useState<boolean>(false);
+    const [canUpdatePhone, setCanUpdatePhone] = useState<boolean>(false);
+    const [nameError, setNameError] = useState<string | null>(null);
+    const [emailError, setEmailError] = useState<string | null>(null);
+    const [phoneError, setPhoneError] = useState<string | null>(null);
+    const [isFormValid, setIsFormValid] = useState<boolean>(false);
+    const [loding, setLoding] = useState<boolean>(false);
+
+    const validateName = (name: string) => {
+        return name.length >= 3;
+    };
+
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    const validatePhoneNumber = (number: string) => {
+        const phoneRegex = /^[0-9]{10}$/;
+        return phoneRegex.test(number);
+    };
+    const handleNameChange = (name: string) => {
+        if (validateName(name)) {
+            setNameError(null);
+        } else {
+            setNameError('Name should be at least 3 characters long');
+        }
+        setName(name);
+    };
+
+    const handleEmailChange = (email: string) => {
+        if (validateEmail(email)) {
+            setEmailError(null);
+        } else {
+            setEmailError('Invalid email format');
+        }
+        setEmail(email);
+    };
+
+    const handlePhoneChange = (number: string) => {
+        if (validatePhoneNumber(number)) {
+            setPhoneError(null);
+        } else {
+            setPhoneError('Phone number should be 10 digits');
+        }
+        setMobileNumber(number);
+    };
+    const handleSubmit = async () => {
+        setLoding(true);
+
+        try {
+            const storeduserId = await AsyncStorage.getItem('userId');
+
+
+            if (storeduserId) {
+                const userId = storeduserId.replace(/['"]/g, '').trim();
+                const response = await updateUser({
+                    userId: userId,
+                    name: name,
+                    primaryNumber: mobileNumber,
+                    email: email
+                }).unwrap();
+                setLoding(false);
+                if (response) {
+                    navigation.navigate('home');
+
+                }
+            }
+        } catch (error) {
+            console.log(error)
+            setLoding(false);
+
+        }
+
+
+    }
     const handleChoosePhoto = () => {
         const options: ImageLibraryOptions = {
             mediaType: 'photo',
@@ -66,18 +146,31 @@ const ProfileScreen: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const uid = await AsyncStorage.getItem('uid');
-                const response = await getUser(uid).unwrap();
-                setEmail(response?.email);
-                setName(response?.name);
-                setMobileNumber(response?.primaryNumber);
+                const storeduserId = await AsyncStorage.getItem('userId');
+
+
+                if (storeduserId) {
+                    const userId = storeduserId.replace(/['"]/g, '').trim();
+                    const response = await getUser(userId).unwrap();
+                    console.log(response.primaryNumber, "phone,", response?.email)
+                    setEmail(response?.email);
+                    setName(response?.name);
+                    setMobileNumber(response?.primaryNumber?.toString());
+                    setCanUpdateEmail(response?.primaryNumber ? true : false);
+                    setCanUpdatePhone(response?.email ? true : false);
+                } else {
+                    console.log('UID not found in AsyncStorage');
+                }
             } catch (error) {
                 console.log(error);
             }
         };
         fetchData();
     }, []);
-
+    useEffect(() => {
+        const isFormValid = (!nameError && !emailError) || (!nameError && !phoneError);
+        setIsFormValid(isFormValid);
+    }, [nameError, emailError, phoneError, name, email, mobileNumber]);
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -98,22 +191,31 @@ const ProfileScreen: React.FC = () => {
                     style={styles.input}
                     placeholder="Name"
                     value={name}
-                    onChangeText={setName}
+                    onChangeText={(e) => { handleNameChange(e) }}
                 />
+                {nameError && <Text style={styles.errorText}>{nameError}</Text>}
+
                 <TextInput
                     style={styles.input}
                     placeholder="Email"
                     value={email}
-                    onChangeText={setEmail}
+                    onChangeText={(e) => { handleEmailChange(e) }}
                     keyboardType="email-address"
+                    readOnly={canUpdateEmail ? false : true}
                 />
+                {emailError && <Text style={styles.errorText}>{emailError}</Text>}
+
                 <TextInput
                     style={styles.input}
                     placeholder="Mobile Number"
-                    value={mobileNumber.toString()}
-                    onChangeText={(number) => setMobileNumber(Number(number))}
+                    value={mobileNumber}
+                    maxLength={10}
+                    onChangeText={(e) => { handlePhoneChange(e) }}
+                    readOnly={canUpdatePhone ? false : true}
                     keyboardType="phone-pad"
                 />
+                {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
+
                 {/* 
                 <View style={styles.passwordContainer}>
                     <TextInput
@@ -146,8 +248,11 @@ const ProfileScreen: React.FC = () => {
                         <Icon name={isConfirmPasswordVisible ? "eye" : "eye-slash"} type="font-awesome" />
                     </TouchableOpacity>
                 </View> */}
+
             </ScrollView>
-            <TouchableOpacity style={style.login_button}>
+            {loding && <Loding />}
+
+            <TouchableOpacity style={style.login_button} onPress={handleSubmit} disabled={!isFormValid}>
                 <Text style={styles.buttonText}>Update Profile</Text>
             </TouchableOpacity>
         </View>
@@ -215,6 +320,11 @@ const styles = StyleSheet.create({
     showIcon: {
         position: 'absolute',
         right: 10,
+    },
+    errorText: {
+        color: 'red',
+        marginTop: 4,
+        textAlign: 'left'
     },
 });
 
