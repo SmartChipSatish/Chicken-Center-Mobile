@@ -2,10 +2,14 @@ import {createSlice} from '@reduxjs/toolkit';
 
 
 interface ProductList {
-    locations:any[]
+    locations:any[],
+    latitudes:{},
+    longitudes:{},
 }
 const initialState:ProductList ={
-    locations:[]
+    locations:[],
+    latitudes:{},
+    longitudes:{}
 }
 const locationsSlice = createSlice({
     name: 'location',
@@ -14,8 +18,14 @@ const locationsSlice = createSlice({
         setAddLocation: (state, action) => {
             state.locations.push(action.payload)
         },
+        setLatitudes: (state, action) => {
+            state.latitudes=action.payload
+        },
+        setLongitudes: (state, action) => {
+            state.longitudes=action.payload
+        },
     }
 });
 
-export const { setAddLocation } = locationsSlice.actions;
+export const { setAddLocation,setLatitudes,setLongitudes } = locationsSlice.actions;
 export default locationsSlice;

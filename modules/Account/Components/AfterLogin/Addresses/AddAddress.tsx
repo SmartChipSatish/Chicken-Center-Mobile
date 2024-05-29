@@ -5,28 +5,41 @@ import { StyleSheet } from 'react-native'
 import { saveAs } from '../../../utlis/constents'
 import Location from './Location'
 import { TEXT_COLORS, THEME_COLORS } from '../../../../GlobalStyles/GlobalStyles'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setAddLocation } from '../../../Store/LocationSlice'
+import { useCreateAddressMutation } from './store/AddressEndpoints'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { RootState } from '../../../../store/store'
 
-export default function AddAddress() {
+
+
+
+
+
+
+export default function AddAddress({navigation}:any) {
+  const userLatitudes=useSelector((store: RootState)=>store.locations.latitudes)
+  const userLongitudes=useSelector((store: RootState)=>store.locations.longitudes);
+  const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
+  const [addAddress] = useCreateAddressMutation();
   const [placeholderShow,setPlaceholderShow] =useState(false);
-  const [address,setAddress] = useState({city:'',country:'',address:'',flat:''});
+  const [address,setAddress] = useState({city:'',country:'',address:'',flat:'',pincode:0,street:'',state:''});
   const [checkData,setCheckData]=useState(false);
-  const [mobileNo,setMobileNo]=useState('');
+  const [mobile,setmobile]=useState<string>('')
   const [saveType,setSaveType]=useState<string>('');
+  const [button,setbutton]=useState<any>([])
+  const [landmark,setlandmark]=useState("")
   const dispatch =useDispatch()
   const handleAddress=(location:any)=>{
-   
    const flat=location?.address?.split(',')?.shift() || '';
   
-   setAddress({city:location.city,country:location.country,address:location.address,flat:flat});
+   setAddress({city:location.city,country:location.country,address:location.address,flat:flat,pincode:location.pincode,street:location.street,state:location.state});
   }
 
   const handeleSave=()=>{ 
   
     if(checkData){
-      console.log('sssss');
-      dispatch(setAddLocation({...address,saveAs:saveType,mobileNo:mobileNo}));
+      dispatch(setAddLocation({...address,saveAs:saveType}));
       Alert.alert('Address added');
     }else{
       Alert.alert('Enter all details');
@@ -34,10 +47,37 @@ export default function AddAddress() {
   }
 
   useEffect(()=>{
-    if(mobileNo!=='' && address.city !=='' && address.country !=='' && address.address!=='' && address.flat!=='' && saveType!==''){
+    if(mobile!=='' && address.city !=='' && address.country !=='' && address.address!=='' && address.flat!=='' && address.state!=='' && address.street!=='' && address.pincode!==0 && saveType!==''){
       setCheckData(true);
     }
-  },[address,mobileNo,saveType])
+  },[address,mobile,saveType])
+
+
+  const createAllAddresses = async (status:boolean) => {
+    const value = await AsyncStorage.getItem('userId');
+    const userId = value ? JSON.parse(value) : null;
+    let dataTosend = {
+      name:address.address,
+      houseNo:address.flat,
+      city:address.city,
+      pincode:address.pincode,
+      landmark: landmark,
+      state: address.state,
+      location:{coordinates:  [userLatitudes, userLongitudes]},
+      mobile:Number(mobile),
+      status:status, 
+    };
+    
+
+    try {
+        let savedData = await addAddress({id:userId,user:dataTosend}).unwrap();
+        console.log(savedData,"savedData")
+    } catch (error) {
+        console.log(error);
+    }
+
+};
+
 
   return (
     <ScrollView keyboardShouldPersistTaps='handled'
@@ -68,16 +108,15 @@ export default function AddAddress() {
                      placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
-
-        <View style={{marginBottom:10}}>
-        <Text style={Style.side_header}>Landmark (optional)</Text>
+        <View style={{ marginBottom: 10 }}>
+          <Text style={Style.side_header}>Landmark</Text>
           <TextInput style={Style.textInput}
-            placeholder='Landmark (optional)'
+           value={landmark}
+            onChangeText={(text)=>setlandmark(text)}
+            placeholder='Landmark'
             placeholderTextColor={TEXT_COLORS.secondary}
-            // keyboardType="phone-pad"
           />
         </View>
-
         <View style={{marginBottom:10}}>
         <Text style={Style.side_header}>City</Text>
           <TextInput style={Style.textInput}
@@ -87,16 +126,38 @@ export default function AddAddress() {
             placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
+        <View style={{marginBottom:10}}>
+        <Text style={Style.side_header}>State</Text>
+          <TextInput style={Style.textInput}
+            placeholder='State'
+            value={address.state}
+            onChangeText={(text)=>setAddress({...address,city:text})}
+            placeholderTextColor={TEXT_COLORS.secondary}
+          />
+        </View>
 
         <View style={{ marginBottom: 10 }}>
-          <Text style={Style.side_header}>Mobile</Text>
+          <Text style={Style.side_header}>Pincode</Text>
           <TextInput style={Style.textInput}
-            onChangeText={(text)=>setMobileNo(text)}
-            placeholder='Mobile'
+           value={address.pincode.toString()}
+            onChangeText={(text)=>setAddress({...address,city:text})}
+            placeholder='Pincode'
             keyboardType="phone-pad"
             placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
+
+        <View style={{ marginBottom: 10 }}>
+          <Text style={Style.side_header}>Mobile</Text>
+          <TextInput style={Style.textInput}
+           value={mobile.toString()}
+            onChangeText={(e)=>setmobile(e)}
+            placeholder='Mobile'
+            placeholderTextColor={TEXT_COLORS.secondary}
+          />
+        </View>
+
+        
 
         <View>
         <Text style={Style.side_header}>Save as</Text>
@@ -104,15 +165,15 @@ export default function AddAddress() {
           {saveAs.map((e,inedx)=>{
             return <TouchableOpacity style={[Style.savas_btn,{backgroundColor: saveType === e.title? `${THEME_COLORS.light_color}` : 'white'}]} 
                                      key={inedx} 
-                                     onPress={()=>setSaveType(e.title)}>
+                                     onPress={()=> {setSaveType(e.title); setbutton(e)}}>
                    <e.icon width={20} height={20} color={`${TEXT_COLORS.primary}`}/>
-                   <Text style={{marginLeft:5}}>{e.title}</Text>
+                   <Text  style={{marginLeft:5}}>{e.title}</Text>
                    </TouchableOpacity>
           })}
         </View>
       </View>
       <TouchableOpacity style={[Style.save_btn,{backgroundColor:checkData? `${THEME_COLORS.secondary}`: `${THEME_COLORS.light_color}`}]} >
-        <Text style={{color:'white'}} onPress={()=>handeleSave()}>Save</Text>
+        <Text style={{color:'white'}} onPress={()=>{handeleSave();navigation.navigate("addresses");createAllAddresses(true)}}>Save</Text>
       </TouchableOpacity>
       </View>
       
