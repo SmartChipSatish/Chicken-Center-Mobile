@@ -10,25 +10,21 @@ import { setAddLocation } from '../../../Store/LocationSlice'
 import { useCreateAddressMutation } from './store/AddressEndpoints'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { RootState } from '../../../../store/store'
+import { useNavigation } from '@react-navigation/native'
 
-
-
-
-
-
-
-export default function AddAddress({navigation}:any) {
+export default function AddAddress() {
+  const navigation = useNavigation<any>();
   const userLatitudes=useSelector((store: RootState)=>store.locations.latitudes)
   const userLongitudes=useSelector((store: RootState)=>store.locations.longitudes);
   const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
   const [addAddress] = useCreateAddressMutation();
   const [placeholderShow,setPlaceholderShow] =useState(false);
-  const [address,setAddress] = useState({city:'',country:'',address:'',flat:'',pincode:0,street:'',state:''});
+  const [address,setAddress] = useState({city:'',country:'',address:'',flat:'',pincode:"",street:'',state:''});
   const [checkData,setCheckData]=useState(false);
-  const [mobile,setmobile]=useState<string>('')
   const [saveType,setSaveType]=useState<string>('');
   const [button,setbutton]=useState<any>([])
   const [landmark,setlandmark]=useState("")
+  const [mobile,setmobile]=useState("")
   const dispatch =useDispatch()
   const handleAddress=(location:any)=>{
    const flat=location?.address?.split(',')?.shift() || '';
@@ -36,31 +32,32 @@ export default function AddAddress({navigation}:any) {
    setAddress({city:location.city,country:location.country,address:location.address,flat:flat,pincode:location.pincode,street:location.street,state:location.state});
   }
 
-  const handeleSave=()=>{ 
+  // const handeleSave=()=>{ 
   
-    if(checkData){
-      dispatch(setAddLocation({...address,saveAs:saveType}));
-      Alert.alert('Address added');
-    }else{
-      Alert.alert('Enter all details');
-    }
-  }
+  //   if(checkData){
+  //     dispatch(setAddLocation({...address,saveAs:saveType}));
+  //     Alert.alert('Address added');
+  //   }else{
+  //     Alert.alert('Enter all details');
+  //   }
+  // }
 
   useEffect(()=>{
-    if(mobile!=='' && address.city !=='' && address.country !=='' && address.address!=='' && address.flat!=='' && address.state!=='' && address.street!=='' && address.pincode!==0 && saveType!==''){
+    if( address.city !=='' && address.country !=='' && address.address!=='' && address.flat!=='' && address.state!=='' && address.street!=='' && address.pincode!=='' && saveType!==''){
       setCheckData(true);
     }
-  },[address,mobile,saveType])
+  },[address,saveType])
 
 
   const createAllAddresses = async (status:boolean) => {
     const value = await AsyncStorage.getItem('userId');
     const userId = value ? JSON.parse(value) : null;
+    console.log(userId,"userId")
     let dataTosend = {
       name:address.address,
       houseNo:address.flat,
       city:address.city,
-      pincode:address.pincode,
+      pincode:Number(address.pincode),
       landmark: landmark,
       state: address.state,
       location:{coordinates:  [userLatitudes, userLongitudes]},
@@ -71,7 +68,8 @@ export default function AddAddress({navigation}:any) {
 
     try {
         let savedData = await addAddress({id:userId,user:dataTosend}).unwrap();
-        console.log(savedData,"savedData")
+        navigation.navigate("addresses")
+       
     } catch (error) {
         console.log(error);
     }
@@ -131,7 +129,7 @@ export default function AddAddress({navigation}:any) {
           <TextInput style={Style.textInput}
             placeholder='State'
             value={address.state}
-            onChangeText={(text)=>setAddress({...address,city:text})}
+            onChangeText={(text)=>setAddress({...address,state:text})}
             placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
@@ -139,8 +137,8 @@ export default function AddAddress({navigation}:any) {
         <View style={{ marginBottom: 10 }}>
           <Text style={Style.side_header}>Pincode</Text>
           <TextInput style={Style.textInput}
-           value={address.pincode.toString()}
-            onChangeText={(text)=>setAddress({...address,city:text})}
+           value={address.pincode}
+            onChangeText={(text)=>setAddress({...address,pincode:text})}
             placeholder='Pincode'
             keyboardType="phone-pad"
             placeholderTextColor={TEXT_COLORS.secondary}
@@ -150,7 +148,7 @@ export default function AddAddress({navigation}:any) {
         <View style={{ marginBottom: 10 }}>
           <Text style={Style.side_header}>Mobile</Text>
           <TextInput style={Style.textInput}
-           value={mobile.toString()}
+           value={mobile}
             onChangeText={(e)=>setmobile(e)}
             placeholder='Mobile'
             placeholderTextColor={TEXT_COLORS.secondary}
@@ -167,13 +165,13 @@ export default function AddAddress({navigation}:any) {
                                      key={inedx} 
                                      onPress={()=> {setSaveType(e.title); setbutton(e)}}>
                    <e.icon width={20} height={20} color={`${TEXT_COLORS.primary}`}/>
-                   <Text  style={{marginLeft:5}}>{e.title}</Text>
+                   <Text  style={{marginLeft:5,color:"black"}}>{e.title}</Text>
                    </TouchableOpacity>
           })}
         </View>
       </View>
       <TouchableOpacity style={[Style.save_btn,{backgroundColor:checkData? `${THEME_COLORS.secondary}`: `${THEME_COLORS.light_color}`}]} >
-        <Text style={{color:'white'}} onPress={()=>{handeleSave();navigation.navigate("addresses");createAllAddresses(true)}}>Save</Text>
+        <Text style={{color:'white'}} onPress={()=>{createAllAddresses(true)}}>Save</Text>
       </TouchableOpacity>
       </View>
       
