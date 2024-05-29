@@ -9,9 +9,10 @@ import { RootState } from '../../../store/store';
 export default function OrderSummary({orderId}: any) {
     
     const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
-    const [priceList,setPriceList]=useState({itemsPrice:0,addons:0,discount:0,coupon:0,deliveryFee:100})
+    const [priceList,setPriceList]=useState({itemsPrice:0,addons:0,discount:0,coupon:0,deliveryFee:0})
     const [total,setTotal]=useState(0);
     const [ordersData, setOrdersData] = useState<any>()
+    const [totalOrder, setTotalOrder] = useState();
     const distach=useDispatch();
     const  [getOrders] = useGetOrderByIdMutation();
 
@@ -19,7 +20,8 @@ export default function OrderSummary({orderId}: any) {
         try{
             const response = await getOrders(orderId);
             setOrdersData(response.data.items)
-            console.log(response,'response')
+            setTotalOrder(response.data)
+            console.log(response.data,'ordersSummary')
         }catch(error){
             console.log(error)
         }
@@ -31,19 +33,14 @@ export default function OrderSummary({orderId}: any) {
     }, [orderId])
 
     
-    useEffect(()=>{
-        const data=cartItems.filter((e)=>{
-            return e.total
-        })
-
-        if (data) {
-            const totalprice = (data.reduce((a, b) => a + b.total, 0))
-            setPriceList({ ...priceList, itemsPrice: totalprice })
-            const total = totalprice + priceList.deliveryFee + priceList.addons - (priceList.coupon + priceList.discount);
-            setTotal(total)
+    useEffect(() => {
+        if (ordersData?.length > 0) {
+            const itemsPrice = ordersData.reduce((acc: any, item: { itemPrice: any; }) => acc + item.itemPrice, 0);
+            setPriceList(prevPriceList => ({ ...prevPriceList, itemsPrice }));
+            const total = itemsPrice + priceList.deliveryFee + priceList.addons - (priceList.coupon + priceList.discount);
+            setTotal(total);
         }
-        
-    },[cartItems])
+    }, [ordersData]);
 
     return (
        <View style={{width:"100%"}}>

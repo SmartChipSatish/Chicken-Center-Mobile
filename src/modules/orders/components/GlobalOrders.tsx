@@ -68,13 +68,16 @@ export default function GlobalOrders() {
 
                 <View style={styles.item_details}>
                   <Image style={styles.tinyLogo} source={{ uri: item?.items[0]?.imageUrl }} />
+                  <View>
+                    <Text style={styles.price1}> {item?.items[0]?.itemName}</Text>
                   <View style={styles.ordersPlace}>
-
                     <Text style={styles.price1}> ₹{item?.totals?.amount}</Text>
                     <Text> |</Text>
                     <Text style={styles.price1}> Qty.{item?.totals?.quantity}</Text>
 
                   </View>
+                  </View>
+                  
                 </View>
 
               <View style={styles.twoButtons}>

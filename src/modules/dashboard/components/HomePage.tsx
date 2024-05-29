@@ -11,7 +11,9 @@ import { setAddProducts } from '../../home/store/slices/ProductsListSlice';
 import { useDispatch } from 'react-redux';
 import { openDatabase } from 'react-native-sqlite-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useUpdateUserMutation } from '../../Auth/services/getUserDetailsService';
+import { useUpdateUserMutation } from '../../auth/store/services/getUserDetailsService';
+
+
 
 const { height, width } = Dimensions.get('window')
 let db = openDatabase({ name: 'itemslist.db' });
