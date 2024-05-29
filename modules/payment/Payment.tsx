@@ -17,6 +17,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { setClearCart } from '../Home/store/slices/CartProductsSlice';
 import { useInitiateOrderMutation, useVerifyOrderMutation } from './store/PaymentEndpoints';
+import OrderConfirmationScreen from '../Orders/OrderConfirmationScreen';
 
 const Payment = ({ totalAmount, type, myOrderId }: { totalAmount: number, type: string, myOrderId: string }) => {
   const navigate = useNavigation<any>();
@@ -51,19 +52,24 @@ const Payment = ({ totalAmount, type, myOrderId }: { totalAmount: number, type: 
     }
   };
   const dispatch = useDispatch()
-  const [paymentVerify] = useVerifyOrderMutation()
+  const [paymentVerify] = useVerifyOrderMutation();
+  const [show, setShow] = useState(true)
+  const handleClose = () => {
+    setShow(false)
+}
   const verifyPayment = async (orderID: string) => {
     try {
       let res = await paymentVerify({ orderId: orderID })
       console.log(res.data, 'verifypayment')
       if (res.data) {
         dispatch(setClearCart())
-        Dialog.show({
-          type: ALERT_TYPE.SUCCESS,
-          title: 'Success',
-          textBody: 'Payment Verified',
-          button: 'close',
-        })
+        setShow(true)
+        // Dialog.show({
+        //   type: ALERT_TYPE.SUCCESS,
+        //   title: 'Success',
+        //   textBody: 'Payment Verified',
+        //   button: 'close',
+        // })
       }
 
     } catch (error: any) {
@@ -177,6 +183,7 @@ const Payment = ({ totalAmount, type, myOrderId }: { totalAmount: number, type: 
             </View>
           </AlertNotificationRoot>
         </View>
+       {/* {show && <OrderConfirmationScreen show={show} handleClose={handleClose}/>} */}
       </View>
 
     </>

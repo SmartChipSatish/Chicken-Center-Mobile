@@ -9,6 +9,7 @@ import { RootState } from '../../../store/store'
 import { LocationIcon } from '../../../assets/svgimages/SaveAsIcons'
 import Payment from '../../../payment/Payment'
 import { useCreateOrderMutation } from '../../../Orders/store/OrdersEndpoint'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function Checkout({ route }: any) {
     const { totalAmount } = route.params;
@@ -18,20 +19,40 @@ export default function Checkout({ route }: any) {
     const [indexSelect, setInedx] = useState<number>(0);
     const [createData] = useCreateOrderMutation();
     const [orderId, setOrderId] = useState('')
+    const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
+
+    const items = cartItems.map(item =>  {
+        return({
+            itemId:item.id,
+            itemQty:item.quantity,
+            itemPrice:item.itemPrice,
+            amount:item.total,
+            imageUrl:item.imageUrl,
+            itemName: item.itemName
+        })
+    } );
+    console.log("items:",items);
+    const totalQuantity = cartItems.reduce((accumulator, item) => accumulator + item.quantity, 0);
+    // console.log(itemIds,'itemIds')
     const createOrder = async () => {
         try {
+            const storedUid = await AsyncStorage.getItem('userId');
+            console.log(storedUid)
+            const uid = storedUid?.replace(/['"]/g, '').trim();
+            console.log(uid,'uid')
             const response = await createData({
-                userId: "664de740835b08b634646088",
-                createdBy: "664de740835b08b634646088",
-                updatedBy: "664de740835b08b634646088",
-                items: [
-                    {
-                        itemId: "66509e96f5b94b86a246d978"
-                    }
-                ]
+                userId: uid,
+                createdBy: uid,
+                updatedBy: uid,
+                addressId:'6655d6dff9c814266aef1d6e',
+                items: items,
+                totals: {
+                    quantity: totalQuantity,
+                    amount: totalAmount
+                  }
             }).unwrap();
             console.log(response, 'response')
-            setOrderId(response.id)
+            setOrderId(response._id)
         } catch (error) {
             console.error('Error:', error);
         }

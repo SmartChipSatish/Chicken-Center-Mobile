@@ -1,16 +1,43 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { useDispatch, useSelector } from 'react-redux';
 import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../GlobalStyles/GlobalStyles';
 import { RootState } from '../store/store';
+import { useGetOrderByIdMutation } from './store/OrdersEndpoint';
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function OrderSummary() {
+export default function OrderSummary({orderId}: any) {
+    console.log("########",orderId)
     const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
     const [priceList,setPriceList]=useState({itemsPrice:0,addons:0,discount:0,coupon:0,deliveryFee:100})
     const [total,setTotal]=useState(0);
+    const [ordersData, setOrdersData] = useState<any>()
     const distach=useDispatch();
+    const  [getOrders] = useGetOrderByIdMutation();
+
+    const getOrderData=async()=>{
+        try{
+            const response = await getOrders(orderId);
+            setOrdersData(response.data.items)
+            console.log(response,'response')
+        }catch(error){
+            console.log(error)
+        }
+        
+    }
+   
+    useEffect(() => {
+        getOrderData();
+    }, [orderId])
+
+    console.log(ordersData,orderId,'ordersData')
+    // useFocusEffect(
+    //     useCallback(()=>{
+    //     setOrdersData(data)
+    //   },[data])
+    //   )
     
     useEffect(()=>{
         const data=cartItems.filter((e)=>{
@@ -29,16 +56,17 @@ export default function OrderSummary() {
     return (
        <View style={{width:"100%"}}>
         <Text style={styles.orderSummarys}>Order Summary</Text>
-        {cartItems.length>0 ? <ScrollView >
+        {ordersData?.length>0 ? <ScrollView >
             <View style={styles.container}>
              {/*displaying items here */}
-                {cartItems.map((item:any, index:number) => (
+                {ordersData.map((item:any, index:number) => (
                     <View key={index} style={styles.card}>
-                        <Image style={styles.tinyLogo} source={{ uri: item.imgUrl }} />
+                        <Image style={styles.tinyLogo} source={{ uri: item.imageUrl }} />
                         <View style={styles.cardContent}>
-                            <Text style={styles.title}>{item.title}</Text>
-                            <Text style={styles.price1}>Qty:{item.quantity}</Text>
-                            <Text style={styles.price}>₹{item.price* item.quantity}</Text>
+                            <Text style={styles.title}>{item.itemName}</Text>
+                            <Text style={styles.price1}>Qty:{item.itemQty}</Text>
+                            <Text style={styles.price}>₹{item.itemPrice}</Text>
+                            {/* <Text style={styles.price}>₹{item.price* item.quantity}</Text> */}
                             <View style={styles.rightAlign}>
                     
                             </View>
@@ -71,11 +99,11 @@ export default function OrderSummary() {
                         <Text style={[styles.rightAmount, styles.textColor]}>₹{total}</Text>
                     </View>
                 </View>
-                
-                <View style={styles.cards}>
-                <Text style={styles.Billdetails}>Order details</Text>
+                {/* {ordersData.length>0 && ordersData.map((item:any, index:number) => ( */}
+                    <View style={styles.cards}>
+                    <Text style={styles.Billdetails}>Order details</Text>
                     <Text style={styles.AlltextColors}>Order id</Text>
-                    <Text style={styles.AlltexFonts}>0RD458934</Text>
+                    <Text style={styles.AlltexFonts}>{orderId}</Text>
                     <Text style={styles.AlltextColors}>Payment</Text>
                     <Text style={styles.AlltexFonts}>Paid Online</Text>
                     <Text style={styles.AlltextColors}>Deliver to</Text>
@@ -83,6 +111,8 @@ export default function OrderSummary() {
                     <Text style={styles.AlltextColors}>Order placed</Text>
                     <Text style={styles.AlltexFonts}>placed on Fri,12 Apr24,11:43 PM</Text>
                 </View>
+                {/* ))} */}
+                
             </View>
         </ScrollView> : <Text>No Details</Text>}
        </View>
@@ -93,7 +123,8 @@ const styles = StyleSheet.create({
     container: {
         padding: 10,
         backgroundColor: '#fff',
-        marginTop:10
+        marginTop:10,
+        // height:'100%'
         
     },
     AlltextColors:{
