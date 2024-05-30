@@ -14,6 +14,9 @@
       <meta-data
     android:name="com.google.android.geo.API_KEY"
     android:value="AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY" />
+    <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@mipmap/ic_launcher" />
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"
