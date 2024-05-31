@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import React, { useEffect, useState } from 'react'
 import { TextInput } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { RootState } from '../../../../store/store'
 import { useCreateOrderMutation } from '../../../orders/store/services/OrdersEndpoint'
@@ -10,31 +10,39 @@ import { LocationIcon } from '../../../../assets/svgimages/SaveAsIcons'
 import { CashonDeliveryIcon, OnelineIcon, UpiIcon } from '../../../../assets/svgimages/HomeSvgs/svgsIcons'
 import { THEME_COLORS, TEXT_COLORS, TEXT_FONT_SIZE } from '../../../../globalStyle/GlobalStyles'
 import Payment from '../../../payment/components/Payment'
+import OrderConfirmationScreen from '../../../orders/components/OrderConfirmationScreen'
+import { setClearCart } from '../../store/slices/CartProductsSlice'
+import { setShowQuantityReset } from '../../store/slices/ProductsListSlice'
+import { ActivityIndicator } from 'react-native-paper'
 
 export default function Checkout({ route }: any) {
     const { totalAmount } = route.params;
+    const dispatch = useDispatch();
     const navigation = useNavigation<any>();
     const [paymentType, setpaymentType] = useState('cash');
     const locations = useSelector((store: RootState) => store.locations.locations);
     const [indexSelect, setInedx] = useState<number>(0);
     const [createData] = useCreateOrderMutation();
-    const [orderId, setOrderId] = useState('')
+    const [orderId, setOrderId] = useState('');
     const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
-
+    const [show, setShow] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+ 
     const items = cartItems.map(item =>  {
         return({
-            itemId:item.id,
-            itemQty:item.quantity,
-            itemPrice:item.itemPrice,
-            amount:item.total,
-            imageUrl:item.imageUrl,
-            itemName: item.itemName
+            itemId:item?.id,
+            itemQty:item?.quantity,
+            itemPrice:item?.itemPrice,
+            amount:item?.total,
+            imageUrl:item?.imageUrl,
+            itemName: item?.itemName
         })
     } );
     console.log("items:",items);
-    const totalQuantity = cartItems.reduce((accumulator, item) => accumulator + item.quantity, 0);
-    // console.log(itemIds,'itemIds')
+    const totalQuantity = cartItems.reduce((accumulator, item) => accumulator + item?.quantity, 0);
+
     const createOrder = async () => {
+        setIsLoading(true)
         try {
             const storedUid = await AsyncStorage.getItem('userId');
             console.log(storedUid)
@@ -53,18 +61,23 @@ export default function Checkout({ route }: any) {
                   }
             }).unwrap();
             console.log(response, 'response')
-            setOrderId(response._id)
-            if(response && response._id){
-                navigation.navigate('orders')
+            setOrderId(response?._id)
+            if(response && response?._id){
+                dispatch(setClearCart())
+                dispatch(setShowQuantityReset(''))
+                setShow(true)
             }
+            setTimeout(() => { setIsLoading(false); }, 1000);
         } catch (error) {
             console.error('Error:', error);
         }
 
     };
-    // useEffect(() => {
-    //     createOrder()
-    // }, [])
+
+    const handleClose = () => {
+        setShow(false)
+    }
+ 
     return (
         <View style={style.container}>
             <ScrollView style={style.sub_container}
@@ -135,16 +148,16 @@ export default function Checkout({ route }: any) {
                         style={style.note} />
                 </View>
             </ScrollView>
-            
-            <TouchableOpacity style={style.confirm_order}>
+                    
                 {paymentType === 'cash' ?
-                    <Text style={style.cashBtn} onPress={createOrder}>
+                <TouchableOpacity style={isLoading ? style.disableContainer : style.confirm_order}>
+                    <Text style={style.cashBtn} onPress={isLoading ? () => {} : createOrder} disabled={isLoading}>
                         Confirm Order
-                    </Text>:
-                    <Payment totalAmount={totalAmount} type={paymentType} />}
-                    {/* {paymentType === 'upi' && <Payment totalAmount={totalAmount} type={'upi'} myOrderId={orderId}/>}
-                   {paymentType === 'online' && <Payment totalAmount={totalAmount} type={'online'} myOrderId={orderId} />} */}
-            </TouchableOpacity>
+                    </Text>
+                    {isLoading && <ActivityIndicator size="small" color={THEME_COLORS.primary} />}
+                    </TouchableOpacity>:
+                    <Payment totalAmount={totalAmount} type={paymentType} />}       
+            {show && <OrderConfirmationScreen show={show} handleClose={handleClose} totalAmount={totalAmount} orderId={orderId}/>}
         </View>
     )
 }
@@ -237,6 +250,16 @@ const style = StyleSheet.create({
         width: '50%',
         left: '25%',
     },
+    disableContainer: {
+        marginBottom: 20,
+        backgroundColor: THEME_COLORS.light_color,
+        height: 45,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '50%',
+        left: '25%',
+      },
     paymentmode_text: {
         color: `${TEXT_COLORS.primary}`,
         fontSize: 16,

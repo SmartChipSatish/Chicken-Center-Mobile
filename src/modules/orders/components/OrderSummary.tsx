@@ -1,110 +1,114 @@
 
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
 import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 import { useGetOrderByIdMutation } from '../store/services/OrdersEndpoint';
-import { RootState } from '../../../store/store';
+import Loding from '../../dashboard/components/Loding';
 
-export default function OrderSummary({orderId}: any) {
-    
-    const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
-    const [priceList,setPriceList]=useState({itemsPrice:0,addons:0,discount:0,coupon:0,deliveryFee:0})
-    const [total,setTotal]=useState(0);
+export default function OrderSummary({ orderId }: any) {
+
     const [ordersData, setOrdersData] = useState<any>()
-    const [totalOrder, setTotalOrder] = useState();
-    const distach=useDispatch();
-    const  [getOrders] = useGetOrderByIdMutation();
+    const [totalOrder, setTotalOrder] = useState<any>();
+    const [isLoading, setIsLoading] = useState(false)
+    const [getOrders] = useGetOrderByIdMutation();
 
-    const getOrderData=async()=>{
-        try{
+    const getOrderData = async () => {
+        setIsLoading(true)
+        try {
+            setIsLoading(true)
             const response = await getOrders(orderId);
-            setOrdersData(response.data.items)
-            setTotalOrder(response.data)
-            console.log(response.data,'ordersSummary')
-        }catch(error){
+            setOrdersData(response?.data?.items)
+            setTotalOrder(response?.data)
+            console.log(response?.data, 'ordersSummary')
+            setIsLoading(false)
+        } catch (error) {
             console.log(error)
+            setIsLoading(false)
         }
-        
+        setIsLoading(false)
     }
-   
+
     useEffect(() => {
         getOrderData();
     }, [orderId])
 
-    
-    useEffect(() => {
-        if (ordersData?.length > 0) {
-            const itemsPrice = ordersData.reduce((acc: any, item: { itemPrice: any; }) => acc + item.itemPrice, 0);
-            setPriceList(prevPriceList => ({ ...prevPriceList, itemsPrice }));
-            const total = itemsPrice + priceList.deliveryFee + priceList.addons - (priceList.coupon + priceList.discount);
-            setTotal(total);
-        }
-    }, [ordersData]);
+
+    const calculateTotalPrice = (items: any[]) => {
+        return items?.reduce((acc: number, item: { itemPrice: number; itemQty: number; }) => acc + item?.itemPrice * item?.itemQty, 0);
+    };
+    const formatDate = (dateString: string | number | Date) => {
+        const options: any = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', options);
+    };
+
+    const itemsPrice = totalOrder?.totals ? totalOrder?.totals?.amount : calculateTotalPrice(ordersData);
+    const deliveryFee = totalOrder?.deliveryFee || 0;
+    const addons = totalOrder?.addons || 0;
+    const discount = totalOrder?.discount || 0;
+    const coupon = totalOrder?.coupon || 0;
+    const total = itemsPrice + deliveryFee + addons - (coupon + discount);
 
     return (
-       <View style={{width:"100%"}}>
-        <Text style={styles.orderSummarys}>Order Summary</Text>
-        {ordersData?.length>0 ? <ScrollView >
-            <View style={styles.container}>
-             {/*displaying items here */}
-                {ordersData.map((item:any, index:number) => (
-                    <View key={index} style={styles.card}>
-                        <Image style={styles.tinyLogo} source={{ uri: item.imageUrl }} />
-                        <View style={styles.cardContent}>
-                            <Text style={styles.title}>{item.itemName}</Text>
-                            <Text style={styles.price1}>Qty:{item.itemQty}</Text>
-                            <Text style={styles.price}>₹{item.itemPrice}</Text>
-                            {/* <Text style={styles.price}>₹{item.price* item.quantity}</Text> */}
-                            <View style={styles.rightAlign}>
-                    
+        <View style={{ width: "100%" }}>
+            <Text style={styles.orderSummarys}>Order Summary</Text>
+            {ordersData?.length > 0 &&
+                <ScrollView style={{ height: '92%' }}>
+                    <View style={styles.container}>
+                        {ordersData.map((item: any, index: number) => (
+                            <View key={index} style={styles.card}>
+                                <Image style={styles.tinyLogo} source={{ uri: item?.imageUrl }} />
+                                <View style={styles.cardContent}>
+                                    <Text style={styles.title}>{item?.itemName}</Text>
+                                    <Text style={styles.price1}>Qty:{item?.itemQty}</Text>
+                                    <Text style={styles.price}>₹{item?.itemPrice}</Text>
+                                    <View style={styles.rightAlign}>
+
+                                    </View>
+                                </View>
+                            </View>
+                        ))}
+
+
+                        <View style={[styles.containers, styles.cards]}>
+                            <Text style={styles.Billdetails}>Bill details</Text>
+                            <View style={styles.row}>
+                                <Text style={styles.leftTexts}>MRP</Text>
+                                <Text style={styles.rightAmount}>₹{itemsPrice}</Text>
+                            </View>
+
+                            <View style={styles.row}>
+                                <Text style={styles.leftTexts}>Product discount</Text>
+                                <Text style={styles.rightAmount}>₹{discount}</Text>
+                            </View>
+                            <View style={styles.row}>
+                                <Text style={styles.leftTexts}>Item total</Text>
+                                <Text style={styles.rightAmount}>₹{coupon}</Text>
+                            </View>
+                            <View style={styles.row}>
+                                <Text style={styles.leftTexts}>Handling charges</Text>
+                                <Text style={styles.rightAmount}>₹{deliveryFee}</Text>
+                            </View>
+                            <View style={styles.row}>
+                                <Text style={[styles.leftTexts, styles.textColor]}>Bill total</Text>
+                                <Text style={[styles.rightAmount, styles.textColor]}>₹{total}</Text>
                             </View>
                         </View>
+                        <View style={styles.cards}>
+                            <Text style={styles.Billdetails}>Order details</Text>
+                            <Text style={styles.AlltextColors}>Order id</Text>
+                            <Text style={styles.AlltexFonts}>{orderId}</Text>
+                            <Text style={styles.AlltextColors}>Payment</Text>
+                            <Text style={styles.AlltexFonts}>Paid Online</Text>
+                            <Text style={styles.AlltextColors}>Deliver to</Text>
+                            <Text style={styles.AlltexFonts}>Ramesh Nakka coalmine nilayam 1.N.R.R PURAM,ganesh nilayam madhapur hyderabad</Text>
+                            <Text style={styles.AlltextColors}>Order placed</Text>
+                            <Text style={styles.AlltexFonts}>placed on {formatDate(totalOrder?.updatedAt)}</Text>
+                        </View>
                     </View>
-                ))}
-               
-               
-                <View style={[styles.containers,styles.cards]}>
-                <Text style={styles.Billdetails}>Bill details</Text>
-                    <View style={styles.row}>
-                        <Text style={styles.leftTexts}>MRP</Text>
-                        <Text style={styles.rightAmount}>₹{priceList.itemsPrice}</Text>
-                    </View>
-                   
-                    <View style={styles.row}>
-                        <Text style={styles.leftTexts}>Product discount</Text>
-                        <Text style={styles.rightAmount}>₹{priceList.discount}</Text>
-                    </View>
-                    <View style={styles.row}>
-                        <Text style={styles.leftTexts}>Item total</Text>
-                        <Text style={styles.rightAmount}>₹{priceList.coupon}</Text>
-                    </View>
-                    <View style={styles.row}>
-                        <Text style={styles.leftTexts}>Handling charges</Text>
-                        <Text style={styles.rightAmount}>₹{priceList.deliveryFee}</Text>
-                    </View>
-                    <View style={styles.row}>
-                        <Text style={[styles.leftTexts, styles.textColor]}>Bill total</Text>
-                        <Text style={[styles.rightAmount, styles.textColor]}>₹{total}</Text>
-                    </View>
-                </View>
-                {/* {ordersData.length>0 && ordersData.map((item:any, index:number) => ( */}
-                    <View style={styles.cards}>
-                    <Text style={styles.Billdetails}>Order details</Text>
-                    <Text style={styles.AlltextColors}>Order id</Text>
-                    <Text style={styles.AlltexFonts}>{orderId}</Text>
-                    <Text style={styles.AlltextColors}>Payment</Text>
-                    <Text style={styles.AlltexFonts}>Paid Online</Text>
-                    <Text style={styles.AlltextColors}>Deliver to</Text>
-                    <Text style={styles.AlltexFonts}>Ramesh Nakka coalmine nilayam 1.N.R.R PURAM,ganesh nilayam madhapur hyderabad</Text>
-                    <Text style={styles.AlltextColors}>Order placed</Text>
-                    <Text style={styles.AlltexFonts}>placed on Fri,12 Apr24,11:43 PM</Text>
-                </View>
-                {/* ))} */}
-                
-            </View>
-        </ScrollView> : <Text>No Details</Text>}
-       </View>
+                </ScrollView>}
+            {isLoading && <Loding />}
+        </View>
     );
 }
 
@@ -112,49 +116,49 @@ const styles = StyleSheet.create({
     container: {
         padding: 10,
         backgroundColor: '#fff',
-        marginTop:10,
+        marginTop: 10,
         // height:'100%'
-        
+
     },
-    AlltextColors:{
-        color:"grey",
-        fontWeight:"bold",
-        margin:5
+    AlltextColors: {
+        color: "grey",
+        fontWeight: "bold",
+        margin: 5
     },
-    orderSummarys:{
-        color:TEXT_COLORS.primary,
-        fontSize:TEXT_FONT_SIZE.large,
-        marginLeft:15,
-        fontWeight:"bold",
-        marginTop:-5
+    orderSummarys: {
+        color: TEXT_COLORS.primary,
+        fontSize: TEXT_FONT_SIZE.large,
+        marginLeft: 15,
+        fontWeight: "bold",
+        marginTop: -5
 
     },
 
     cards: {
-        
+
         backgroundColor: '#fff',
         marginBottom: 10,
         shadowOffset: { width: 0, height: 2 },
         elevation: 2,
         padding: 10,
-      },
-    AlltexFonts:{
-        color:"black",
-        fontWeight:"bold",
-        margin:5
     },
-    Billdetails:{fontWeight:"bold",color:"black",margin:5,fontSize:20},
+    AlltexFonts: {
+        color: "black",
+        fontWeight: "bold",
+        margin: 5
+    },
+    Billdetails: { fontWeight: "bold", color: "black", fontSize: 20,marginBottom:10 },
     discounts: {
         color: "green",
         fontSize: 8,
         fontWeight: "bold"
     },
-    OrderDetails:{
-        display:'flex',
-        flexDirection:"column",
-        justifyContent:"space-between",
-        padding:5,
-      
+    OrderDetails: {
+        display: 'flex',
+        flexDirection: "column",
+        justifyContent: "space-between",
+        padding: 5,
+
     },
     input: {
         color: TEXT_COLORS.primary,
@@ -203,7 +207,7 @@ const styles = StyleSheet.create({
     },
     textColor: {
         color: THEME_COLORS.secondary,
-        fontWeight: "bold",   
+        fontWeight: "bold",
     },
     card: {
         flexDirection: 'row',
@@ -241,7 +245,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color: TEXT_COLORS.secondary,
         marginVertical: 5,
-        
+
     },
     rightAlign: {
         flexDirection: 'row',
@@ -297,7 +301,7 @@ const styles = StyleSheet.create({
         fontSize: TEXT_FONT_SIZE.small,
         textAlign: 'right',
         color: TEXT_COLORS.primary,
-        
+
     },
     separator: {
         borderBottomWidth: 1,
