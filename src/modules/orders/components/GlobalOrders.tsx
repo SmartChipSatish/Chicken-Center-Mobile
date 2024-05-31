@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Image, ScrollView, Modal, TouchableOpacity, Alert } from 'react-native';
 import Rating from './Rating';
 import OrderSummary from './OrderSummary';
@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CrossMark from '../../../assets/svgimages/util';
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 import { useGetOrdersByUserIdMutation } from '../store/services/OrdersEndpoint';
+import { useFocusEffect } from '@react-navigation/native';
+import Loding from '../../dashboard/components/Loding';
 
 export default function GlobalOrders() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -15,10 +17,13 @@ export default function GlobalOrders() {
   const appLogo = require('../../../assets/Images/app-logo.png');
   const [ordersData, setOrdersData] = useState([])
   const [myOrderId, setMyOrderId] = useState()
+  const [isLoading, setIsLoading] = useState(false)
   const [getOrdersByUserId] = useGetOrdersByUserIdMutation();
 
   const getOrderData = async () => {
+    setIsLoading(true)
     try {
+      setIsLoading(true)
       const storedUid = await AsyncStorage.getItem('userId');
       console.log(storedUid)
       const uid = storedUid?.replace(/['"]/g, '').trim();
@@ -26,10 +31,12 @@ export default function GlobalOrders() {
       const response = await getOrdersByUserId(uid);
       setOrdersData(response.data)
       console.log(response, 'orderbyuserid')
+      setIsLoading(false)
     } catch (error) {
       console.log(error)
+      setIsLoading(false)
     }
-
+    setIsLoading(false)
   }
 
 
@@ -49,65 +56,73 @@ export default function GlobalOrders() {
     }, 2000);
   };
 
-  useEffect(() => {
-    getOrderData()
-  }, [])
+  useFocusEffect(
+    useCallback(() => {
+      getOrderData()
+    }, [])
+  )
 
   return (
     <View>
+      {isLoading ? <Loding /> : 
       <ScrollView>
-          {ordersData && ordersData.length > 0 && ordersData.map((item: any, index: any) => (
-            <TouchableOpacity key={item._id} 
-                              onPress={() => { setMyOrderId(item._id); setModalVisible1(true); }}
-                              style={styles.main_card}>
-              <View style={styles.card}>
-                <View>
-                  <Text style={styles.price1}>ORDER ID: {item.id}</Text>
-                  <Text style={styles.price1}>Status: {item.orderStatus}</Text>
-                </View>
+        {ordersData && ordersData.length > 0 ? ordersData.map((item: any, index: any) => (
+          <TouchableOpacity key={item._id}
+            onPress={() => { setMyOrderId(item._id); setModalVisible1(true); }}
+            style={styles.main_card}>
+            <View style={styles.card}>
+              <View>
+                <Text style={styles.price1}>ORDER ID: {item.id}</Text>
+                <Text style={styles.price1}>Status: {item.orderStatus}</Text>
+              </View>
 
-                <View style={styles.item_details}>
-                  <Image style={styles.tinyLogo} source={{ uri: item?.items[0]?.imageUrl }} />
-                  <View>
-                    <Text style={styles.price1}> {item?.items[0]?.itemName}</Text>
+              <View style={styles.item_details}>
+                <Image style={styles.tinyLogo} source={{ uri: item?.items[0]?.imageUrl }} />
+                <View>
+                  <Text style={styles.price1}> {item?.items[0]?.itemName}</Text>
                   <View style={styles.ordersPlace}>
                     <Text style={styles.price1}> ₹{item?.totals?.amount}</Text>
                     <Text> |</Text>
                     <Text style={styles.price1}> Qty.{item?.totals?.quantity}</Text>
 
                   </View>
-                  </View>
-                  
                 </View>
+
+              </View>
 
               <View style={styles.twoButtons}>
                 <View>
-                <Text style={styles.RepeatColor}>Repeat</Text>
+                  <Text style={styles.RepeatColor}>Repeat</Text>
                 </View>
-                  {ratings[item.id] ? (
-                    <View style={styles.ratingContainer}>
-                      {[...Array(ratings[item.id])].map((_, index) => (
-                        <Image
-                          key={index}
-                          style={styles.tinyLogo2}
-                          source={{
-                            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyYPvs1xPs_hTJQp1pKDhBqoP9NPso4AOTOMYqTAKVrA&s",
-                          }}
-                        />
-                      ))}
-                      <Text style={styles.Ratings}>Rating submitted</Text>
-                    </View>
-                  ) : (
-                    <TouchableOpacity onPress={() => handleRateOrder(item)}>
-                      <Text style={styles.RepeatColor1}>Rate order</Text>
-                    </TouchableOpacity>
-                    
-                  )}
-                </View>
+                {ratings[item.id] ? (
+                  <View style={styles.ratingContainer}>
+                    {[...Array(ratings[item.id])].map((_, index) => (
+                      <Image
+                        key={index}
+                        style={styles.tinyLogo2}
+                        source={{
+                          uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyYPvs1xPs_hTJQp1pKDhBqoP9NPso4AOTOMYqTAKVrA&s",
+                        }}
+                      />
+                    ))}
+                    <Text style={styles.Ratings}>Rating submitted</Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity onPress={() => handleRateOrder(item)}>
+                    <Text style={styles.RepeatColor1}>Rate order</Text>
+                  </TouchableOpacity>
+
+                )}
               </View>
-            </TouchableOpacity>
-          ))}
+            </View>
+          </TouchableOpacity>
+        )):<Text>No Data Found</Text>}
       </ScrollView>
+      }
+      
+      
+
+
       {/* Rate order modal */}
 
       <View style={styles.centeredView}>
@@ -210,13 +225,13 @@ const styles = StyleSheet.create({
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop:'4%',
-    height:30
+    marginTop: '4%',
+    height: 30
   },
   tinyLogo2: {
-     height: 13, 
-     width: 13 
-    },
+    height: 13,
+    width: 13
+  },
   buttonSubmit: {
     backgroundColor: THEME_COLORS.secondary,
     color: THEME_COLORS.primary,
@@ -275,11 +290,11 @@ const styles = StyleSheet.create({
     display: "flex",
     width: '100%',
     flexDirection: 'row',
-    justifyContent:'center',
-    alignItems:'center',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: '5%',
-    borderTopWidth:0.5,
-    borderTopColor:TEXT_COLORS.secondary
+    borderTopWidth: 0.5,
+    borderTopColor: TEXT_COLORS.secondary
   },
   modalView: {
     margin: 0,
@@ -306,8 +321,8 @@ const styles = StyleSheet.create({
     padding: 5,
     borderRadius: 5,
     marginRight: '8%',
-    marginTop:'4%',
-    height:30
+    marginTop: '4%',
+    height: 30
 
   },
   RepeatColor1: {
@@ -319,7 +334,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: THEME_COLORS.secondary,
-    marginTop:'5%'
+    marginTop: '5%'
   },
   orderId: {
     marginTop: 5,
@@ -334,8 +349,8 @@ const styles = StyleSheet.create({
   },
   ordersPlace: {
     flexDirection: "row",
-    marginLeft:'5%',
-    alignItems:'center'
+    marginLeft: '5%',
+    alignItems: 'center'
   },
   ordersPlace1: {
     display: "flex",
@@ -355,7 +370,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     padding: 10,
-    width:'95%'
+    width: '95%'
   },
   card1: {
     flexDirection: 'row',
@@ -397,13 +412,13 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.primary,
     marginHorizontal: 10,
   },
-item_details:{
+  item_details: {
     flexDirection: 'row',
-    alignItems:'center'
-  },main_card:{
-    width:'100%',
-    justifyContent:'center',
-    alignItems:'center'
+    alignItems: 'center'
+  }, main_card: {
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 
 });
