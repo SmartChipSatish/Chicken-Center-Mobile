@@ -6,7 +6,8 @@ import { itemData } from '../../utils/constents';
 import { handelAddToCart, handleCartQuantity } from '../../utils/AddTocartAndQuantity';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../store/store';
-
+import { RealmContext } from '../../../../database/schemas/cartItemsShema';
+const { useRealm } = RealmContext
 interface productsinfo {
     type: string
     item: itemData
@@ -19,23 +20,24 @@ const ProductsCard: React.FC<productsinfo> = ({ item,
     type,
  }) => {
 const dispatch=useDispatch();
+const realm = useRealm();
 const products = useSelector((store: RootState) => store.products.addProducts);
 
 const addtocart=(id:string)=>{
     const cartItem= products.filter((e)=>(e.id===id))[0];
-    handelAddToCart(id,dispatch,cartItem);
+    handelAddToCart(id,dispatch,cartItem,realm);
 }
 
     return (
         <>
             <View key={item.id} style={styles.card_items} >
                 <View style={styles.items_subCard} >
-                    <Image
+                    {item.imageUrl !==null &&<Image
                         source={{
                             uri: item.imageUrl
                         }}
                         style={styles.image}
-                    />
+                    />}
                     <View >
                         <Text style={styles.item_text}>{item.itemName + ' ' + item.itemQty}</Text>
                         <Text style={styles.item_price}>₹ {type === 'cart' ? item.total : item.itemPrice}</Text>
@@ -51,9 +53,9 @@ const addtocart=(id:string)=>{
                             onPress={() => handleFav?.(item)} />
                     </View>}
                     {(item.showQuantity || type === 'cart') && <View style={styles.quantityContainer}>
-                        <Text style={styles.quantityButton} onPress={() => handleCartQuantity('remove', item,dispatch)}>-</Text>
+                        <Text style={styles.quantityButton} onPress={() => handleCartQuantity('remove', item,dispatch,realm)}>-</Text>
                         <Text style={styles.quantity}>{item.quantity}</Text>
-                        <Text style={styles.quantityButton} onPress={() => handleCartQuantity('add', item, dispatch)}>+</Text>
+                        <Text style={styles.quantityButton} onPress={() => handleCartQuantity('add', item, dispatch,realm)}>+</Text>
                     </View>}
                     {!item.showQuantity && type === 'product' && item.globalItemStatus &&<TouchableOpacity
                         onPress={() => addtocart(item.id)}>

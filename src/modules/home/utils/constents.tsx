@@ -29,6 +29,7 @@ export interface cartProducts {
 }
 
 export interface itemData{
+  _id?:string,
   globalItemStatus: boolean,
   id: string,
   itemName: string,

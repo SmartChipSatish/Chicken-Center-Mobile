@@ -12,11 +12,14 @@ import { useDispatch } from 'react-redux';
 import { openDatabase } from 'react-native-sqlite-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUpdateUserMutation } from '../../auth/store/services/getUserDetailsService';
+import { CartItems, RealmContext } from '../../../database/schemas/cartItemsShema';
+import { setCartItems } from '../../home/store/slices/CartProductsSlice';
 
-
-
+const { useQuery,useRealm } =RealmContext
 const { height, width } = Dimensions.get('window')
 let db = openDatabase({ name: 'itemslist.db' });
+
+
 
 const HomePage = () => {
   const navigate = useNavigation<any>();
@@ -25,6 +28,8 @@ const HomePage = () => {
 
   const [getItems] = useLazyGetAllProductsQuery<any>();
   const dispatch = useDispatch()
+  const cartItems = useQuery(CartItems);
+  const realm = useRealm();
   const BackPressAlert = () => {
     Alert.alert('Exit App', 'Are you sure you want to exit', [
       {
@@ -79,12 +84,24 @@ const HomePage = () => {
     })
   }
 
+  const handleCartItemsGet=()=>{
+    if (cartItems.length>0){
+      dispatch(setCartItems(cartItems));
+    }
+  }
+
   useEffect(() => {
     handleGetItemData();
-  }, [])
-  useEffect(() => {
+    handleCartItemsGet();
     sendFcmToken()
-  }, [])
+  }, []);
+
+  useEffect(()=>{
+    realm.subscriptions.update(mutableSubs=>{
+      mutableSubs.add(realm.objects(CartItems))
+    })
+    },[realm]);
+
   return (
 
     <View style={styles.container}>
