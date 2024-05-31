@@ -63,8 +63,9 @@ export default function GlobalOrders() {
   )
 
   return (
+    <>
     <View>
-      {isLoading ? <Loding /> : 
+      {!isLoading &&
       <ScrollView>
         {ordersData && ordersData.length > 0 ? ordersData.map((item: any, index: any) => (
           <TouchableOpacity key={item._id}
@@ -215,6 +216,9 @@ export default function GlobalOrders() {
         </Modal>
       </View>
     </View>
+    {isLoading && <Loding /> }
+    </>
+    
   );
 }
 

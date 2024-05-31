@@ -50,7 +50,8 @@ export default function OrderSummary({ orderId }: any) {
     const total = itemsPrice + deliveryFee + addons - (coupon + discount);
 
     return (
-        <View style={{ width: "100%" }}>
+        <>
+         <View style={{ width: "100%" }}>
             <Text style={styles.orderSummarys}>Order Summary</Text>
             {ordersData?.length > 0 &&
                 <ScrollView style={{ height: '92%' }}>
@@ -107,8 +108,10 @@ export default function OrderSummary({ orderId }: any) {
                         </View>
                     </View>
                 </ScrollView>}
-            {isLoading && <Loding />}
         </View>
+        {isLoading && <Loding />}
+        </>
+       
     );
 }
 
