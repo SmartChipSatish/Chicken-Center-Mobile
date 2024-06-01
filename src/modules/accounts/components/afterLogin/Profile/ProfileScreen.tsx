@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert 
 import { Avatar, Icon } from 'react-native-elements';
 import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
 import { style } from '../../../utlis/Styles';
-import { TEXT_COLORS } from '../../../../../globalStyle/GlobalStyles';
+import { TEXT_COLORS, THEME_COLORS } from '../../../../../globalStyle/GlobalStyles';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGetUserByUserIdMutation, useUpdateUserMutation } from '../../../../auth/store/services/getUserDetailsService';
 import Loding from '../../../../dashboard/components/Loding';
@@ -14,9 +14,9 @@ const ProfileScreen: React.FC = () => {
     const [updateUser] = useUpdateUserMutation();
     const navigation = useNavigation<any>();
 
-    const [name, setName] = useState<string>('user');
-    const [email, setEmail] = useState<string>('user@gmail.com');
-    const [mobileNumber, setMobileNumber] = useState<string>('9999999999');
+    const [name, setName] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [mobileNumber, setMobileNumber] = useState<string>('');
     const [avatarUri, setAvatarUri] = useState<string | null>(null);
     // const [password, setPassword] = useState<string>('');
     // const [confirmPassword, setConfirmPassword] = useState<string>('');
@@ -28,6 +28,7 @@ const ProfileScreen: React.FC = () => {
     const [emailError, setEmailError] = useState<string | null>(null);
     const [phoneError, setPhoneError] = useState<string | null>(null);
     const [isFormValid, setIsFormValid] = useState<boolean>(false);
+    const [isEdited, setIsEdited] = useState<boolean>(false);
     const [loding, setLoding] = useState<boolean>(false);
 
     const validateName = (name: string) => {
@@ -50,6 +51,8 @@ const ProfileScreen: React.FC = () => {
             setNameError('Name should be at least 3 characters long');
         }
         setName(name);
+        setIsEdited(true);
+
     };
 
     const handleEmailChange = (email: string) => {
@@ -59,6 +62,8 @@ const ProfileScreen: React.FC = () => {
             setEmailError('Invalid email format');
         }
         setEmail(email);
+        setIsEdited(true);
+
     };
 
     const handlePhoneChange = (number: string) => {
@@ -68,6 +73,8 @@ const ProfileScreen: React.FC = () => {
             setPhoneError('Phone number should be 10 digits');
         }
         setMobileNumber(number);
+        setIsEdited(true);
+
     };
     const handleSubmit = async () => {
         setLoding(true);
@@ -170,7 +177,7 @@ const ProfileScreen: React.FC = () => {
     useEffect(() => {
         const isFormValid = (!nameError && !emailError) || (!nameError && !phoneError);
         setIsFormValid(isFormValid);
-    }, [nameError, emailError, phoneError, name, email, mobileNumber]);
+    }, [nameError, emailError, phoneError, name, mobileNumber, email]);
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -187,6 +194,7 @@ const ProfileScreen: React.FC = () => {
                     </TouchableOpacity>
                 </View>
                 <Text style={styles.name}>{name}</Text>
+                <Text style={styles.side_header}>Name</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Name"
@@ -194,6 +202,7 @@ const ProfileScreen: React.FC = () => {
                     onChangeText={(e) => { handleNameChange(e) }}
                 />
                 {nameError && <Text style={styles.errorText}>{nameError}</Text>}
+                <Text style={styles.side_header}>Email</Text>
 
                 <TextInput
                     style={styles.input}
@@ -204,6 +213,7 @@ const ProfileScreen: React.FC = () => {
                     readOnly={canUpdateEmail ? false : true}
                 />
                 {emailError && <Text style={styles.errorText}>{emailError}</Text>}
+                <Text style={styles.side_header}>Phone Number</Text>
 
                 <TextInput
                     style={styles.input}
@@ -249,12 +259,13 @@ const ProfileScreen: React.FC = () => {
                     </TouchableOpacity>
                 </View> */}
 
+                <TouchableOpacity style={[styles.button, { backgroundColor: isFormValid && isEdited ? `${THEME_COLORS.secondary}` : `${THEME_COLORS.light_color}` }
+                ]} onPress={handleSubmit} disabled={!isFormValid}>
+                    <Text style={styles.buttonText}>Update Profile</Text>
+                </TouchableOpacity>
             </ScrollView>
             {loding && <Loding />}
 
-            <TouchableOpacity style={style.login_button} onPress={handleSubmit} disabled={!isFormValid}>
-                <Text style={styles.buttonText}>Update Profile</Text>
-            </TouchableOpacity>
         </View>
     );
 };
@@ -289,6 +300,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
     },
+    side_header: {
+        color: TEXT_COLORS.primary,
+        fontSize: 15,
+        fontWeight: '500',
+        textAlign: 'left',
+        alignSelf: 'flex-start',
+        marginLeft: 16,
+        marginBottom: 5
+    },
     input: {
         width: '100%',
         padding: 12,
@@ -300,13 +320,17 @@ const styles = StyleSheet.create({
     },
     button: {
         width: '100%',
-        padding: 16,
-        backgroundColor: '#d32f2f',
+        height: 50,
         alignItems: 'center',
-        borderRadius: 8,
-        marginTop: 20,
-        position: 'absolute',
-        bottom: 0,
+        justifyContent: 'center',
+        borderRadius: 10,
+        marginTop: 10
+    },
+    buttonEnabled: {
+        backgroundColor: `${THEME_COLORS.primary}`,
+    },
+    buttonDisabled: {
+        backgroundColor: `${THEME_COLORS.light_color}`,
     },
     buttonText: {
         color: '#fff',
@@ -323,8 +347,12 @@ const styles = StyleSheet.create({
     },
     errorText: {
         color: 'red',
-        marginTop: 4,
-        textAlign: 'left'
+        textAlign: 'left',
+        marginLeft: 16,
+        alignSelf: 'flex-start',
+        marginBottom: 16,
+
+
     },
 });
 
