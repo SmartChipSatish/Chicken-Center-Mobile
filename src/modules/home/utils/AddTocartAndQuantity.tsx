@@ -22,16 +22,17 @@ const realmCartDetails = async(item:itemData,realm:any) => {
                 quantity: item.quantity,
                 imageUrl: item.imageUrl,
                 total: item.total,
-                userId: userId
+                userId: userId?JSON.parse( userId ) : null,
             }
         )
     })
 }
 
 //Incress and decress the quantity in cart using realm
-const handleUpdateCartRealm=(id:string,realm:any,item:itemData)=>{
+const handleUpdateCartRealm= async(id:string,realm:any,item:itemData)=>{
+    const  userId = await AsyncStorage.getItem('userId');
     realm.write(() => {
-        let taskToUpdate = realm.objects('CartItems').filtered('id == $0', id);
+        let taskToUpdate = realm.objects('CartItems').filtered('id == $0 AND userId == $1', id, userId?JSON.parse( userId ) : null);
         if (taskToUpdate) {
             taskToUpdate[0].quantity = item.quantity;
             taskToUpdate[0].total = item.total;
@@ -40,30 +41,14 @@ const handleUpdateCartRealm=(id:string,realm:any,item:itemData)=>{
 }
 
 //Remove cart item in Realm
-const handleRemoveItemRealm=(id:string,realm:any,item:any)=>{
-//     console.log('dddd');
-//     Realm.open({schema: [CartItems]})
-//   .then(realm => {
-//     const tasks = realm.objects('CartItems').filtered(`id == $0`, id);
-    
-//     realm.write(() => {
-//       if (tasks.length > 0) {
-//         realm.delete(tasks);
-//         console.log('Item(s) removed');
-//       } else {
-//         console.log('No items found with the given id');
-//       }
-//     });
-//   })
-//   .catch(error => {
-//     console.log('Error opening realm:', error);
-//   });
-realm.write(() => {
-    // if (tasks.length > 0) {
-      realm.delete(item);
-      console.log('Item(s) removed');
-
-  });
+const handleRemoveItemRealm=async(id:string,realm:any,item:any)=>{
+    const  userId = await AsyncStorage.getItem('userId');
+    realm.write(() => {
+        let itemData = realm.objects('CartItems').filtered('id == $0 AND userId == $1', id, userId?JSON.parse( userId ) : null);
+        if (itemData.length>0) {
+            realm.delete(itemData);
+        }
+      });
 }
 
 
@@ -84,7 +69,6 @@ export const handleCartQuantity = (type: string, item: itemData, dispatch: any, 
         dispatch(setcardQuantity({ id: item.id, quantity: quantity, total: amount === 0 ? item.itemPrice : amount }));
         handleUpdateCartRealm(item.id,realm,{...item,quantity: quantity, total: amount});
     } else if (item.quantity === 1 && type === 'remove') {
-        console.log('cartttt');
         dispatch(setRemoveItem({ id: item.id }));
         dispatch(setShowQuantity({ id: item.id }));
         handleRemoveItemRealm(item.id,realm,item);

@@ -7,15 +7,16 @@ import ProductsList from '../../home/components/productsList/ProductsList';
 import HeaderLocation from '../../home/components/location/HeaderLocation'
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 import { useGetAllProductsQuery, useGetItemsDetailsMutation, useLazyGetAllProductsQuery } from '../../home/store/services/getAllProductsService';
-import { setAddProducts } from '../../home/store/slices/ProductsListSlice';
-import { useDispatch } from 'react-redux';
+import { setAddProducts, setQuantity, setShowQuantity } from '../../home/store/slices/ProductsListSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { openDatabase } from 'react-native-sqlite-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUpdateUserMutation } from '../../auth/store/services/getUserDetailsService';
 import { CartItems, RealmContext } from '../../../database/schemas/cartItemsShema';
 import { setCartItems } from '../../home/store/slices/CartProductsSlice';
+import { RootState } from '../../../store/store';
 
-const { useQuery,useRealm } =RealmContext
+const { useQuery, useRealm } = RealmContext
 const { height, width } = Dimensions.get('window')
 let db = openDatabase({ name: 'itemslist.db' });
 
@@ -29,6 +30,7 @@ const HomePage = () => {
   const [getItems] = useLazyGetAllProductsQuery<any>();
   const dispatch = useDispatch()
   const cartItems = useQuery(CartItems);
+  const products = useSelector((store: RootState) => store.products.addProducts);
   const realm = useRealm();
   const BackPressAlert = () => {
     Alert.alert('Exit App', 'Are you sure you want to exit', [
@@ -77,22 +79,45 @@ const HomePage = () => {
   );
 
   const handleGetItemData = async () => {
+    const userId = await AsyncStorage.getItem('userId');
     getItems().then((data) => {
-      dispatch(setAddProducts(data.data));
+    let cartItemData = realm.objects('CartItems').filtered('userId == $0', userId ? JSON.parse(userId) : null);
+    const response=data.data
+    if (cartItemData.length > 0 && response) {
+      dispatch(setCartItems(cartItemData));
+      const updatedList = response.map(product => {
+        const cartItem = cartItemData.find(item => item.id === product.id);
+        if (cartItem) {
+          return {
+            ...product,
+            quantity: cartItem.quantity,
+            showQuantity:true
+          };
+        }
+        return {...product,quantity:1,showQuantity:false};
+      });
+  
+      dispatch(setAddProducts({data:updatedList,type:'cart'}));
+    }else{
+      dispatch(setAddProducts({data:response,type:'products'}));
+    }
+
     }).catch((error) => {
       console.log(error, 'error');
     })
   }
 
-  const handleCartItemsGet=()=>{
-    if (cartItems.length>0){
-      dispatch(setCartItems(cartItems));
+  const handleCartItemsGet = async () => {
+    const userId = await AsyncStorage.getItem('userId');
+    let cartItemData = realm.objects('CartItems').filtered('userId == $0', userId ? JSON.parse(userId) : null);
+    if (cartItemData.length > 0) {
+      dispatch(setCartItems(cartItemData));
     }
   }
 
   useEffect(() => {
     handleGetItemData();
-    handleCartItemsGet();
+    // handleCartItemsGet();
     sendFcmToken()
   }, []);
 
@@ -101,6 +126,7 @@ const HomePage = () => {
       mutableSubs.add(realm.objects(CartItems))
     })
     },[realm]);
+
 
   return (
 

@@ -1,6 +1,6 @@
 import { createRealmContext } from "@realm/react";
 import Realm from 'realm';
-
+// const Realm = require('realm');
 export class CartItems extends Realm.Object {
   _id!: Realm.BSON.ObjectId;
   id!:string;

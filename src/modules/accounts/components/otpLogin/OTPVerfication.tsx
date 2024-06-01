@@ -9,11 +9,13 @@ import auth from '@react-native-firebase/auth';
 import Loding from '../../../dashboard/components/Loding'
 import { Keyboard } from 'react-native'
 import { useGetUserDetailsMutation } from '../../../auth/store/services/getUserDetailsService'
+import { useAuth } from '../../../auth/components/AuthProvider'
 
 export default function OTPVerfication({ navigation, route }:any) {
   const [otp, setOTP] = useState(['', '', '', '', '', '']);
   const inputRefs:any[] = [];
   const [timer,setTimer]=useState(60);
+  const {login} =useAuth();
   const [getUser] =useGetUserDetailsMutation();
   const [loding,setLoding]=useState<boolean>(false);
   const handleInputChange = (index:number, value:any) => {
@@ -73,7 +75,12 @@ export default function OTPVerfication({ navigation, route }:any) {
               AsyncStorage.setItem('userId',JSON.stringify(userId));
               AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
               AsyncStorage.setItem('login', 'true');
-              navigation.navigate('main');
+              // navigation.navigate('main');
+              login(JSON.stringify(idToken));
+              navigation.reset({
+                index: 0,
+                routes: [{ name: 'main' }],
+              });
           }
           setLoding(false);
         } else {

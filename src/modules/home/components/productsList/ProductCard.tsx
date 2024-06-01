@@ -15,7 +15,7 @@ interface productsinfo {
 
 }
 
-const ProductsCard: React.FC<productsinfo> = ({ item,
+const ProductsCard: React.FC<productsinfo> = ({ item, 
     handleFav,
     type,
  }) => {

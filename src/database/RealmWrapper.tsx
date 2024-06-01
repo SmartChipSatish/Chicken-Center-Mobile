@@ -1,13 +1,9 @@
-import { View, Text, SafeAreaView, ActivityIndicator } from 'react-native';
+import { ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useApp } from '@realm/react';
 import { OpenRealmBehaviorType } from 'realm';
 import { RealmContext } from './schemas/cartItemsShema';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { NavigationContainer } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { StackNavgation } from '../navigations/ScreensNavigations';
-import { BeforeLoginScreens } from '../navigations/BeforeNavigation';
 import MainApp from '../../App';
 const { RealmProvider } = RealmContext
 

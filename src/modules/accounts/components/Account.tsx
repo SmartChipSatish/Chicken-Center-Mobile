@@ -9,12 +9,17 @@ import { GoogleSignin } from 'react-native-google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ForwardArrowIcon, LogoutIcon } from '../../../assets/svgimages/AccountsSvgs/accountsSvgs';
 import { Image } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { setClearCart } from '../../home/store/slices/CartProductsSlice';
+import { setShowQuantityReset } from '../../home/store/slices/ProductsListSlice';
+import { useAuth } from '../../auth/components/AuthProvider';
 const appLogo = require('../../../assets/Images/app-logo.png');
 
  export default function Account({ navigation }: any) {
 
     const [show, setShow] = useState<boolean>(false);
-
+    const {logout} =useAuth();
+    const dispatch=useDispatch();
     const handleClose = () => {
         setShow(!show);
     }
@@ -25,7 +30,14 @@ const appLogo = require('../../../assets/Images/app-logo.png');
 
     const handleLogout=async()=>{
         await AsyncStorage.clear();
-        navigation.navigate('login');
+        dispatch(setClearCart())
+        dispatch(setShowQuantityReset(''))
+        // navigation.navigate('login');
+        logout();
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'login' }],
+          });
     }
 
     const handlePress = async () => {

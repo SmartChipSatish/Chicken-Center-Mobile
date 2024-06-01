@@ -53,6 +53,7 @@ export const TabNav = () => {
                 tabBarInactiveTintColor: `${TEXT_COLORS.secondary}`,
                 tabBarHideOnKeyboard: true
             }}
+            initialRouteName='home'
         >
             <Tab.Screen name="home"
                 component={HomePage}

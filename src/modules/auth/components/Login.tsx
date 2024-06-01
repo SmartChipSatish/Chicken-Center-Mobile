@@ -9,6 +9,7 @@ import { GoogleSignin } from 'react-native-google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loding from '../../dashboard/components/Loding';
 import { useGetUserDetailsMutation } from '../store/services/getUserDetailsService';
+import { useAuth } from './AuthProvider';
 
 export default function LoginPage() {
 
@@ -16,6 +17,7 @@ export default function LoginPage() {
     const [numberCheck, setNumberCheck] = useState<boolean>(false);
     const [loding, setLoding] = useState<boolean>(false);
     const navigation = useNavigation<any>();
+    const { login } = useAuth();
     const [getUser] = useGetUserDetailsMutation();
     const NumberValidation = (number: string) => {
         setNumber(number);
@@ -116,7 +118,11 @@ export default function LoginPage() {
                     AsyncStorage.setItem('userId',JSON.stringify(userId));
                     AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
                     AsyncStorage.setItem('login', 'true');
-                    navigation.navigate('main');
+                    login(JSON.stringify(idTokens));
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'main' }],
+                      });
                 }
 
             } catch (error) {

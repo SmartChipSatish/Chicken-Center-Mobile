@@ -21,9 +21,9 @@ export const BeforeLoginScreens = () => {
                     )
                 }
             }} />
-            <Stack.Screen name='main' component={StackNavgation} options={{
+            {/* <Stack.Screen name='main' component={StackNavgation} options={{
                 headerShown: false
-            }} />
+            }} /> */}
         </Stack.Navigator>
     )
 }

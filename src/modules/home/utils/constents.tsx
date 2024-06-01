@@ -30,17 +30,17 @@ export interface cartProducts {
 
 export interface itemData{
   _id?:string,
-  globalItemStatus: boolean,
+  globalItemStatus?: boolean,
   id: string,
   itemName: string,
   itemPrice: number,
   itemQty: string,
-  favourite: boolean,
+  favourite?: boolean,
   quantity:number,
   imageUrl:string
   total?:number,
   showQuantity?:boolean,
-
+  userId?:string
 }
 
 export const QUANTITY_LIMIT = 10
