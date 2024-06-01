@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ToastAndroid } from 'react-native';
-import axios from 'axios';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ToastAndroid, ActivityIndicator } from 'react-native';
 import { CFErrorResponse, CFPaymentGatewayService } from 'react-native-cashfree-pg-sdk';
 import {
   CFDropCheckoutPayment,
@@ -11,8 +10,7 @@ import {
   CFThemeBuilder,
   CFUPIIntentCheckoutPayment,
 } from 'cashfree-pg-api-contract';
-import { ALERT_TYPE, Dialog, AlertNotificationRoot, Toast } from 'react-native-alert-notification';
-import { useNavigation } from '@react-navigation/native';
+import { ALERT_TYPE, Dialog, AlertNotificationRoot } from 'react-native-alert-notification';
 import { useDispatch, useSelector } from 'react-redux';
 import { useInitiateOrderMutation, useVerifyOrderMutation } from '../store/services/PaymentEndpoints';
 import { setClearCart } from '../../home/store/slices/CartProductsSlice';
@@ -23,60 +21,70 @@ import { RootState } from '../../../store/store';
 import OrderConfirmationScreen from '../../orders/components/OrderConfirmationScreen';
 import { setShowQuantityReset } from '../../home/store/slices/ProductsListSlice';
 
-const Payment = ({ totalAmount, type }: { totalAmount: number, type: string}) => {
-  const navigate = useNavigation<any>();
+const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) => {
+  const dispatch = useDispatch();
   const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
-  const cartPriceDetails =useSelector((state:RootState)=> state.cartProducts.cartPriceDetails);
   const totalQuantity = cartItems.reduce((accumulator, item) => accumulator + item.quantity, 0);
-  const [orderId, setOrderId] = useState('')
-  console.log(type, 'paymentType')
-  const [createData] = useCreateOrderMutation();
-  const items = cartItems.map(item =>  {
-    return({
-        itemId:item.id,
-        itemQty:item.quantity,
-        itemPrice:item.itemPrice,
-        amount:item.total,
-        imageUrl:item.imageUrl,
-        itemName: item.itemName
-    })
-} );
-  const createOrder1 = async () => {
-    try {
-        const storedUid = await AsyncStorage.getItem('userId');
-        console.log(storedUid)
-        const uid = storedUid?.replace(/['"]/g, '').trim();
-        console.log(uid,'uid')
-        const response = await createData({
-            userId: uid,
-            createdBy: uid,
-            updatedBy: uid,
-            addressId:'6655d6dff9c814266aef1d6e',
-            paymentType: type,
-            items: items,
-            totals: {
-                quantity: totalQuantity,
-                amount: cartPriceDetails.total
-              }
-        }).unwrap();
-       console.log(response, 'response')
-        const orderId=response._id;
-        if(response && orderId){
-          if(type === 'online'){
-            startCheckout(orderId)
-          }else if(type === 'upi'){
-            startUPICheckout(orderId)
-          }
-        }else{
-          updateStatus('OrderId Not Found')
-        }
-    } catch (error) {
-        console.error('Error:', error);
-    }
 
-};
+  const [summaryOrderId, setSummaryOrderId] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [show, setShow] = useState(false);
+
+  const [createData] = useCreateOrderMutation();
   const [initiateOrder] = useInitiateOrderMutation();
-  const createOrder = async (orderId:string) => {
+  const [paymentVerify] = useVerifyOrderMutation();
+ 
+  const items = cartItems.map(item => {
+    return ({
+      itemId: item.id,
+      itemQty: item.quantity,
+      itemPrice: item.itemPrice,
+      amount: item.total,
+      imageUrl: item.imageUrl,
+      itemName: item.itemName
+    })
+  });
+  const createOrder = async () => {
+    setIsLoading(true)
+    try {
+      // setIsLoading(true)
+      const storedUid = await AsyncStorage.getItem('userId');
+      console.log(storedUid)
+      const uid = storedUid?.replace(/['"]/g, '').trim();
+      console.log(uid, 'uid')
+      const response = await createData({
+        userId: uid,
+        createdBy: uid,
+        updatedBy: uid,
+        addressId: '6655d6dff9c814266aef1d6e',
+        paymentType: type,
+        items: items,
+        totals: {
+          quantity: totalQuantity,
+          amount: totalAmount
+        }
+      }).unwrap();
+      console.log(response, 'response')
+      setSummaryOrderId(response._id)
+      const orderId = response._id;
+      if (response && orderId) {
+        if (type === 'online') {
+          startCheckout(orderId)
+        } else if (type === 'upi') {
+          startUPICheckout(orderId)
+        }
+        setTimeout(() => { setIsLoading(false); }, 2000);
+      } else {
+        updateStatus('OrderId Not Found')
+        setTimeout(() => { setIsLoading(false); }, 1000);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setIsLoading(false);
+    }
+  };
+  
+  const initOrder = async (orderId: string) => {
     try {
       const response = await initiateOrder({
         customerName: 'Nasa2',
@@ -93,12 +101,11 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string}) =>
       return null;
     }
   };
-  const dispatch = useDispatch()
-  const [paymentVerify] = useVerifyOrderMutation();
-  const [show, setShow] = useState(false)
+ 
+
   const handleClose = () => {
     setShow(false)
-}
+  };
   const verifyPayment = async (orderID: string) => {
     try {
       let res = await paymentVerify({ orderId: orderID })
@@ -107,12 +114,6 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string}) =>
         dispatch(setClearCart())
         dispatch(setShowQuantityReset(''))
         setShow(true)
-        // Dialog.show({
-        //   type: ALERT_TYPE.SUCCESS,
-        //   title: 'Success',
-        //   textBody: 'Payment Verified',
-        //   button: 'close',
-        // })
       }
 
     } catch (error: any) {
@@ -124,11 +125,11 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string}) =>
         button: 'close',
       })
     }
-  }
+  };
 
-  const startCheckout = async (orderId:string) => {
+  const startCheckout = async (orderId: string) => {
     try {
-      const orderData = await createOrder(orderId);
+      const orderData = await initOrder(orderId);
       const session = getSession(orderData);
       const paymentModes = new CFPaymentComponentBuilder()
         .add(CFPaymentModes.CARD)
@@ -156,9 +157,9 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string}) =>
     }
   };
 
-  const startUPICheckout = async (orderId:string) => {
+  const startUPICheckout = async (orderId: string) => {
     try {
-      const orderData = await createOrder(orderId);
+      const orderData = await initOrder(orderId);
       const session = getSession(orderData);
       const theme = new CFThemeBuilder()
         .setNavigationBarBackgroundColor('#E64A19')
@@ -170,7 +171,7 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string}) =>
         .build();
       const upiPayment = new CFUPIIntentCheckoutPayment(session, theme);
       CFPaymentGatewayService.doUPIPayment(upiPayment);
-      
+
     } catch (e: any) {
       console.log(e.message);
     }
@@ -212,19 +213,19 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string}) =>
 
   return (
     <>
-      <View style={styles.container}>
+      <View style={isLoading ? styles.disableContainer : styles.container}>
 
         <View>
-          <TouchableOpacity onPress={createOrder1}>
+          <TouchableOpacity style={styles.confirm_order} onPress={isLoading ? () => {} : createOrder} disabled={isLoading}>
             <Text style={styles.text}>Confirm Order</Text>
+            {isLoading && <ActivityIndicator size="small" color={THEME_COLORS.primary} />}
           </TouchableOpacity>
           <AlertNotificationRoot>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-              {/* No button needed since the verifyPayment is triggered by the useEffect */}
             </View>
           </AlertNotificationRoot>
         </View>
-       {/* {show && <OrderConfirmationScreen show={show} handleClose={handleClose}/>} */}
+        {show && <OrderConfirmationScreen show={show} handleClose={handleClose} totalAmount={totalAmount} orderId={summaryOrderId} />}
       </View>
 
     </>
@@ -233,8 +234,24 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string}) =>
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    marginBottom: 20,
+    backgroundColor: THEME_COLORS.secondary,
+    height: 45,
+    borderRadius: 10,
+    justifyContent: 'center',
     alignItems: 'center',
+    width: '50%',
+    left: '25%',
+  },
+  disableContainer: {
+    marginBottom: 20,
+    backgroundColor: THEME_COLORS.light_color,
+    height: 45,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '50%',
+    left: '25%',
   },
   image: {
     width: 200,
@@ -242,20 +259,24 @@ const styles = StyleSheet.create({
   },
   btn: {
     margin: 20,
-    // backgroundColor: THEME_COLORS.secondary,
     width: '50%',
     padding: 10,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
-    // color: TEXT_COLORS.primary
   },
   text: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold'
-  }
+  },
+  confirm_order: {
+    height: 45,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default Payment;
