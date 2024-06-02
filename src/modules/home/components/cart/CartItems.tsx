@@ -118,7 +118,8 @@ const styles = StyleSheet.create({
     inputAndButton: {
         flexDirection: "row",
         justifyContent:'center',
-        width:'100%'
+        width:'100%',
+        marginTop:'4%'
     },
     ApplyButton: {
         backgroundColor: THEME_COLORS.secondary,
@@ -159,7 +160,8 @@ const styles = StyleSheet.create({
 
     containers: {
         padding: 20,
-        backgroundColor:THEME_COLORS.primary
+        backgroundColor:THEME_COLORS.primary,
+        marginTop:'2%'
     },
     row: {
         flexDirection: 'row',
