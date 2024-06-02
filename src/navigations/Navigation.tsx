@@ -3,14 +3,18 @@ import { useAuth } from '../modules/auth/components/AuthProvider';
 import { NavigationContainer } from '@react-navigation/native';
 import { StackNavgation } from './ScreensNavigations';
 import { BeforeLoginScreens } from './BeforeNavigation';
+import Loding from '../modules/dashboard/components/Loding';
 
 const Navigation = () => {
-    const { userToken } = useAuth();
+    const { userToken, loading } = useAuth();
     
     return (
-        <NavigationContainer>
+        <>
+        {!loading &&<NavigationContainer>
             {userToken ? <StackNavgation /> : <BeforeLoginScreens />}
-        </NavigationContainer>
+        </NavigationContainer>}
+        {loading && <Loding/>}
+        </>
     );
 };
 

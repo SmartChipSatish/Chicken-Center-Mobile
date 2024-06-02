@@ -58,7 +58,9 @@ const cartProductsSlice = createSlice({
 
         }, setCartItems: (state, action) => {
             const payload= action.payload
-            if(payload.length>0){
+            if(state.cartProducts.length>0){
+                return
+            }else if(payload.length>0){
                 payload.map((e:any)=>{
                     state.cartProducts.push({
                         id: e.id,
