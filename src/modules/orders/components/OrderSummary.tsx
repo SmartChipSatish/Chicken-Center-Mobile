@@ -4,11 +4,12 @@ import { StyleSheet, Text, View, Image, ScrollView } from 'react-native';
 import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 import { useGetOrderByIdMutation } from '../store/services/OrdersEndpoint';
 import Loding from '../../dashboard/components/Loding';
+import { Order, OrderItem } from '../utils/constants';
 
-export default function OrderSummary({ orderId }: any) {
+export default function OrderSummary({ orderId }: {orderId:string}) {
 
-    const [ordersData, setOrdersData] = useState<any>()
-    const [totalOrder, setTotalOrder] = useState<any>();
+    const [ordersData, setOrdersData] = useState<OrderItem[]>()
+    const [totalOrder, setTotalOrder] = useState<Order>();
     const [isLoading, setIsLoading] = useState(false)
     const [getOrders] = useGetOrderByIdMutation();
 
@@ -33,19 +34,19 @@ export default function OrderSummary({ orderId }: any) {
     }, [orderId])
 
 
-    const calculateTotalPrice = (items: any[]) => {
-        return items?.reduce((acc: number, item: { itemPrice: number; itemQty: number; }) => acc + item?.itemPrice * item?.itemQty, 0);
+    const calculateTotalPrice = (items: OrderItem[] | undefined)  => {
+        return items?.reduce((acc: number, item: OrderItem) => acc + item?.itemPrice *  Number(item.itemQty), 0);
     };
-    const formatDate = (dateString: string | number | Date) => {
+    const formatDate = (dateString: string | number | Date ) => {
         const options: any = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', options);
     };
 
-    const itemsPrice = totalOrder?.totals ? totalOrder?.totals?.amount : calculateTotalPrice(ordersData);
+    const itemsPrice =( totalOrder?.totals ? totalOrder?.totals?.amount : calculateTotalPrice(ordersData)) || 0;
     const deliveryFee = totalOrder?.deliveryFee || 0;
     const addons = totalOrder?.addons || 0;
-    const discount = totalOrder?.discount || 0;
+    const discount = totalOrder?.discountPercentage || 0;
     const coupon = totalOrder?.coupon || 0;
     const total = itemsPrice + deliveryFee + addons - (coupon + discount);
 
@@ -53,11 +54,11 @@ export default function OrderSummary({ orderId }: any) {
         <>
          <View style={{ width: "100%" }}>
             <Text style={styles.orderSummarys}>Order Summary</Text>
-            {ordersData?.length > 0 &&
+            {ordersData && ordersData?.length > 0 &&
                 <ScrollView style={{ height: '92%' }}>
                     <View style={styles.container}>
-                        {ordersData.map((item: any, index: number) => (
-                            <View key={index} style={styles.card}>
+                        {ordersData.map((item: OrderItem) => (
+                            <View key={item?._id} style={styles.card}>
                                 <Image style={styles.tinyLogo} source={{ uri: item?.imageUrl }} />
                                 <View style={styles.cardContent}>
                                     <Text style={styles.title}>{item?.itemName}</Text>
@@ -104,7 +105,7 @@ export default function OrderSummary({ orderId }: any) {
                             <Text style={styles.AlltextColors}>Deliver to</Text>
                             <Text style={styles.AlltexFonts}>Ramesh Nakka coalmine nilayam 1.N.R.R PURAM,ganesh nilayam madhapur hyderabad</Text>
                             <Text style={styles.AlltextColors}>Order placed</Text>
-                            <Text style={styles.AlltexFonts}>placed on {formatDate(totalOrder?.updatedAt)}</Text>
+                            <Text style={styles.AlltexFonts}>placed on {formatDate((totalOrder?.updatedAt) || '')}</Text>
                         </View>
                     </View>
                 </ScrollView>}

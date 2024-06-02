@@ -73,7 +73,7 @@ export const TabNav = () => {
             <Tab.Screen name='orders'
                 component={Orders}
                 options={{
-                    title: 'Your orders',
+                    title: 'My Orders',
                     tabBarIcon: ({ color, size }) => (
                         <CustomTabBarLabel label={'Orders'} color={color} />
                     ),

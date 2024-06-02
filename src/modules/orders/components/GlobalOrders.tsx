@@ -1,22 +1,25 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, Modal, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, Modal, TouchableOpacity, Alert, Button } from 'react-native';
 import Rating from './Rating';
 import OrderSummary from './OrderSummary';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CrossMark from '../../../assets/svgimages/util';
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
-import { useGetOrdersByUserIdMutation } from '../store/services/OrdersEndpoint';
-import { useFocusEffect } from '@react-navigation/native';
+import { useGetOrdersByUserIdMutation, useLazyGetOrdersByUserId1Query } from '../store/services/OrdersEndpoint';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Loding from '../../dashboard/components/Loding';
+import { Order } from '../utils/constants';
+
 
 export default function GlobalOrders() {
+  const navigation = useNavigation<any>()
   const [modalVisible, setModalVisible] = useState(false);
   const [currentRatedItem, setCurrentRatedItem] = useState<any>(null);
   const [ratings, setRatings] = useState<any>({});
   const [modalVisible1, setModalVisible1] = useState(false)
   const appLogo = require('../../../assets/Images/app-logo.png');
-  const [ordersData, setOrdersData] = useState([])
-  const [myOrderId, setMyOrderId] = useState()
+  const [ordersData, setOrdersData] = useState<Order[]>([])
+  const [myOrderId, setMyOrderId] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
   const [getOrdersByUserId] = useGetOrdersByUserIdMutation();
 
@@ -61,13 +64,14 @@ export default function GlobalOrders() {
       getOrderData()
     }, [])
   )
+  const NoOrders = require('../../../assets/Images/NoOrders.png')
 
   return (
     <>
     <View>
       {!isLoading &&
       <ScrollView>
-        {ordersData && ordersData.length > 0 ? ordersData.map((item: any, index: any) => (
+        {ordersData && ordersData.length > 0 ? ordersData.map((item: Order) => (
           <TouchableOpacity key={item._id}
             onPress={() => { setMyOrderId(item._id); setModalVisible1(true); }}
             style={styles.main_card}>
@@ -117,7 +121,20 @@ export default function GlobalOrders() {
               </View>
             </View>
           </TouchableOpacity>
-        )):<Text>No Data Found</Text>}
+        )): 
+        <View  style={styles.orderContainer}>
+           <Image source={NoOrders} style={styles.orderImg}/>
+           <Text style={styles.orderHeader}>No Orders Found</Text>
+                 <Text style={styles.orderBody}>
+                  Looks like you haven't made {"\n"} 
+                  {'            '}your order yet...
+                 </Text>
+           <TouchableOpacity style={styles.orderButton} onPress={()=>navigation.navigate('home')}>
+            <Text style={styles.noOrderText}>Back To Home</Text>
+           </TouchableOpacity>
+
+        </View>
+        }
       </ScrollView>
       }
       
@@ -423,6 +440,36 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center'
-  }
+  },
+  orderContainer:{
+    justifyContent:'center',
+    alignItems:'center',
+   flex:1
+},
+orderImg:{
+  height:300,
+  width:300,
+  objectFit:'contain',
+  top:50
+},
+orderHeader:{
+  fontSize:18,
+  fontWeight:'bold',
+  color:TEXT_COLORS.primary,
+  margin:10
+},
+orderBody:{
+  fontSize:14,
+  fontWeight:'600',
+  marginBottom:20
+},
+orderButton:{
+  backgroundColor:THEME_COLORS.secondary,
+  borderRadius:5,
+  padding:10
+},
+noOrderText:{
+  color:TEXT_COLORS.whiteColor
+}
 
 });
