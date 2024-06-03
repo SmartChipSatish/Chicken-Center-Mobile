@@ -11,7 +11,12 @@ export const ordersService = ordersApi.injectEndpoints({
             // transformErrorResponse: (response: any) => console.log('Error: \n', response),
             providesTags: ['orders'],
         }),
-
+        getOrdersByUserId1: builder.query<any, any>({
+            query: ({id,page,pageSize}) => `/getOrdersByUserId?userId=${id}&page=${page}&pageSize=${pageSize}`,
+            transformResponse: (response) => {
+              return response;
+            },
+          }), 
         getOrdersByUserId: builder.mutation({
             query: (id) => ({
                 url: `/getOrdersByUserId?userId=${id}`,
@@ -49,10 +54,13 @@ export const ordersService = ordersApi.injectEndpoints({
 
 });
 
+
 export const {
     useGetAllOrdersQuery,
     useCreateOrderMutation,
     useGetOrderByIdMutation,
     useGetOrdersByUserIdMutation,
-    useUpdateOrderMutation
+    useUpdateOrderMutation,
+    useLazyGetOrdersByUserId1Query
+    
 } = ordersService;

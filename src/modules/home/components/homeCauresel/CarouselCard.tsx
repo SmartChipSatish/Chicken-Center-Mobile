@@ -15,7 +15,7 @@ const CarouselCards = () => {
     { title: 'Coldcuts', imgUrl: require('../../../../assets/svgimages/HomeSvgs/carouselimages/Chickenimg.png') },
   ];
   return (
-    <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center', marginTop: 20 }}>
+    <View style={{ width:'98%',justifyContent: 'center', alignItems: 'center' }}>
       <Carousel
         data={data}
         renderItem={CarouselCardItem}
