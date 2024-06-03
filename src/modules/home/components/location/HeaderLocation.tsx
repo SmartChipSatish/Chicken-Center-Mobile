@@ -19,21 +19,27 @@ import CrossMark from '../../../../assets/svgimages/util';
 import { AddressesIcon } from '../../../../assets/svgimages/AccountsSvgs/accountsSvgs';
 import { TEXT_COLORS, THEME_COLORS } from "../../../../globalStyle/GlobalStyles";
 import { Image } from "react-native";
-import { NotificationDotIcon } from "../../../../assets/svgimages/SvgIcons";
+import { LocationIconHome } from "../../../../assets/svgimages/SvgIcons";
 import { LocationIcon } from "../../../../assets/svgimages/SaveAsIcons";
 import AppTitle from "./AppTitle";
 const appLogo = require('../../../../assets/Images/app-logo.png');
-import {useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLatitudes, setLongitudes } from "../../../accounts/store/slices/LocationSlice";
+import { useGetUserByUserIdMutation } from "../../../auth/store/services/getUserDetailsService";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ProfileAvatar from "../../utils/ProfileAvatar";
 
 
 const HeaderLocation = () => {
+  const [getUser] = useGetUserByUserIdMutation();
   const [userInput, setUserInput] = useState<any>('');
   const [suggestions, setSuggestions] = useState<any>([]);
-  const [previousLocation, setPreviousLocation] = useState(''); 
+  const [previousLocation, setPreviousLocation] = useState('');
   const [useloc, setUserLoc] = useState({});
-  const dispatch=useDispatch();
-  
+  const [userName, setUserName] = useState('');
+  const [imageUri, setImgageUri] = useState('')
+  const dispatch = useDispatch();
+
   const mapKey = 'AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY'
   const fetchSuggestions = async (text: any) => {
     const apiKey = mapKey; // Replace with your API key
@@ -109,11 +115,11 @@ const HeaderLocation = () => {
 
   useEffect(() => {
     Geocoder.init(mapKey);
-    
- 
+
+
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(setLatitudes(latitude))
     dispatch(setLongitudes(longitude))
   })
@@ -200,37 +206,58 @@ const HeaderLocation = () => {
       setModalVisible(false); // Close the modal
     }
   };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const storeduserId = await AsyncStorage.getItem('userId');
 
+
+        if (storeduserId) {
+          const userId = storeduserId.replace(/['"]/g, '').trim();
+          const response = await getUser(userId).unwrap();
+          setUserName(response?.name);
+          setImgageUri(response?.profileUrl)
+
+
+        } else {
+          console.log('UserId not found in AsyncStorage');
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
 
 
 
   return (
     <View>
       <View style={styles.locationImg}>
-      <View style={styles.displayLocation}>
-        <Image source={appLogo}
-          style={styles.logo} />
-
-          {/* <TouchableOpacity onPress={() => {
+        <View style={styles.displayLocation}>
+          {/* <Image source={LocationIcon}
+            style={styles.logo} /> */}
+          <LocationIconHome color={`${THEME_COLORS.secondary}`} />
+          <TouchableOpacity onPress={() => {
             setPreviousLocation(userInput || displayAddress);
             setvisible(!visibles)
-          }} style={{marginLeft:10}}>
+          }} >
             <Text style={styles.locationText}>Location</Text>
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"
-              style={[styles.locationText,{width:200}]}>
-              {displayAddress!==''?displayAddress: 'Fetching location...'} 
+              style={[styles.locationText, { width: 200 }]}>
+              {displayAddress !== '' ? displayAddress : 'Fetching location...'}
             </Text>
-          </TouchableOpacity> */}
-          <View style={{marginLeft:10}}>
-            {/* <Text style={{color:TEXT_COLORS.primary,fontWeight:'bold'}}>Maalasa My Chicken</Text> */}
-            <AppTitle/>
+          </TouchableOpacity>
+          <View style={{ marginLeft: 80 }}>
+            <ProfileAvatar name={userName} imgUrl={imageUri} width={40} height={40} profileView={true} onPress={() => navigation.navigate('account')} />
           </View>
         </View>
-        <NotificationDotIcon onPress={()=>navigation.navigate('notifications')}/>
+
+
       </View>
-      
+
       <View style={styles.centeredView1}>
         <Modal
           animationType="slide"
@@ -424,7 +451,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 10,
+    // marginTop: 10,
     marginLeft: '3%',
     marginRight: '3%'
   },
@@ -525,8 +552,8 @@ const styles = StyleSheet.create({
     padding: 15,
   }, displayLocation: {
     flexDirection: 'row',
-    justifyContent:'center',
-    alignItems:'center'
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   logo: {
     backgroundColor: THEME_COLORS.secondary,

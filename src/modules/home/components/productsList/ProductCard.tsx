@@ -17,14 +17,14 @@ interface productsinfo {
 const ProductsCard: React.FC<productsinfo> = ({ item,
     handleFav,
     type,
- }) => {
-const dispatch=useDispatch();
-const products = useSelector((store: RootState) => store.products.addProducts);
+}) => {
+    const dispatch = useDispatch();
+    const products = useSelector((store: RootState) => store.products.addProducts);
 
-const addtocart=(id:string)=>{
-    const cartItem= products.filter((e)=>(e.id===id))[0];
-    handelAddToCart(id,dispatch,cartItem);
-}
+    const addtocart = (id: string) => {
+        const cartItem = products.filter((e) => (e.id === id))[0];
+        handelAddToCart(id, dispatch, cartItem);
+    }
 
     return (
         <>
@@ -39,11 +39,11 @@ const addtocart=(id:string)=>{
                     <View >
                         <Text style={styles.item_text}>{item.itemName + ' ' + item.itemQty}</Text>
                         {/* <Text style={styles.item_price}>₹ {type === 'cart' ? item.total : item.itemPrice}</Text> */}
-                        <Text style={styles.item_price}>₹ { item.itemPrice}</Text>
+                        <Text style={styles.item_price}>₹ {item.itemPrice}</Text>
                         <Text style={{ textDecorationLine: 'line-through' }}>₹ 250</Text>
                     </View>
                 </View>
-                <View style={type === 'cart'? styles.add_cart:styles.add_fav}>
+                <View style={type === 'cart' ? styles.add_cart : styles.add_fav}>
                     {type === 'product' && <View >
                         <FavouriteIcon color={`${THEME_COLORS.secondary}`}
                             height={25}
@@ -52,17 +52,17 @@ const addtocart=(id:string)=>{
                             onPress={() => handleFav?.(item)} />
                     </View>}
                     {(item.showQuantity || type === 'cart') && <View style={styles.quantityContainer}>
-                        <Text style={styles.quantityButton} onPress={() => handleCartQuantity('remove', item,dispatch)}>-</Text>
+                        <Text style={styles.quantityButton} onPress={() => handleCartQuantity('remove', item, dispatch)}>-</Text>
                         <Text style={styles.quantity}>{item.quantity}</Text>
                         <Text style={styles.quantityButton} onPress={() => handleCartQuantity('add', item, dispatch)}>+</Text>
                     </View>}
-                    {!item.showQuantity && type === 'product' && item.globalItemStatus &&<TouchableOpacity
+                    {!item.showQuantity && type === 'product' && item.globalItemStatus && <TouchableOpacity
                         onPress={() => addtocart(item.id)}>
                         <Text style={styles.addBtn}>Add</Text>
                     </TouchableOpacity>}
-                    {!item.showQuantity && type === 'product' && !item.globalItemStatus &&<View
-                        >
-                        <Text style={[styles.addBtn,{color:THEME_COLORS.secondary,backgroundColor:TEXT_COLORS.whiteColor}]}>Not Available</Text>
+                    {!item.showQuantity && type === 'product' && !item.globalItemStatus && <View
+                    >
+                        <Text style={[styles.addBtn, { color: THEME_COLORS.secondary, backgroundColor: TEXT_COLORS.whiteColor }]}>Not Available</Text>
                     </View>}
                 </View>
             </View>
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         height: 100,
-        marginBottom:'0%'
+        marginBottom: '0%'
     },
     image: {
         width: 85,
@@ -124,8 +124,8 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     quantityButton: {
-        fontSize: 16,
-        color: 'maroon',
+        fontSize: 20,
+        color: `${THEME_COLORS.secondary}`,
         paddingHorizontal: 10,
     },
     quantity: {
@@ -142,8 +142,8 @@ const styles = StyleSheet.create({
         color: TEXT_COLORS.whiteColor,
         borderRadius: 10,
         padding: 5,
-    },add_cart: {
+    }, add_cart: {
         justifyContent: 'center',
-        alignItems:'center',
+        alignItems: 'center',
     }
 })

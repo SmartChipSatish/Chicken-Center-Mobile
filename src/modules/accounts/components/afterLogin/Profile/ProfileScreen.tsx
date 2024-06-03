@@ -159,7 +159,7 @@ const ProfileScreen: React.FC = () => {
                 if (storeduserId) {
                     const userId = storeduserId.replace(/['"]/g, '').trim();
                     const response = await getUser(userId).unwrap();
-                    console.log(response.primaryNumber, "phone,", response?.email)
+                    console.log(response, 'sai')
                     setEmail(response?.email);
                     setName(response?.name);
                     setMobileNumber(response?.primaryNumber?.toString());

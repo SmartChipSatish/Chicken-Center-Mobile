@@ -92,15 +92,15 @@ const HomePage = () => {
         <HeaderLocation></HeaderLocation>
       </View>
       <View style={styles.search_MainContainer}>
-      <TouchableOpacity onPress={() => navigate.navigate('searchPage')}
-        style={styles.searchBarContainer}>
-        <Icon name="search1" size={20} color={TEXT_COLORS.secondary}  style={styles.searchIcon}/>
-        <TextInput style={styles.searchBar}
-                   placeholder='Search'
-                   editable={false}
-                   placeholderTextColor={TEXT_COLORS.secondary}
-                   ></TextInput>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigate.navigate('searchPage')}
+          style={styles.searchBarContainer}>
+          <Icon name="search1" size={20} color={TEXT_COLORS.secondary} style={styles.searchIcon} />
+          <TextInput style={styles.searchBar}
+            placeholder='Search'
+            editable={false}
+            placeholderTextColor={TEXT_COLORS.secondary}
+          ></TextInput>
+        </TouchableOpacity>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.carouselContainer}>
@@ -123,9 +123,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: `${THEME_COLORS.primary}`
-  }, search_MainContainer:{
-    justifyContent:'center',
-    alignItems:'center'
+  },
+  search_MainContainer: {
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   searchBarContainer: {
     flexDirection: 'row',
@@ -142,8 +143,8 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
     marginBottom: '2%',
-    height:60,
-    paddingLeft:'5%'
+    height: 60,
+    paddingLeft: '5%'
   },
   banner: {
     backgroundColor: '#007bff',
@@ -160,9 +161,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   searchBar: {
-    marginRight:'2%'
-  },searchIcon:{
-    marginRight:10,
+    marginRight: '2%'
+  }, searchIcon: {
+    marginRight: 10,
   },
   searchBarText: {
     fontSize: 16,
@@ -222,7 +223,9 @@ const styles = StyleSheet.create({
   },
   HomePageBackground: {
     backgroundColor: "white",
-    height: "7%"
+    height: "12%",
+
+
   }
 });
 
