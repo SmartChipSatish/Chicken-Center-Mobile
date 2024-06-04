@@ -97,3 +97,20 @@ export const saveAs = [{
   title: "Other",
 }
 ]
+
+export interface UserDetails {
+  _id: string;
+  userName: string;
+  uId: string;
+  userType: string;
+  name: string;
+  email: string;
+  password: string;
+  primaryNumber: number;
+  walletBalance: number;
+  favouriteItems: any[];
+  secondaryAddress: any[];
+  deviceToken: string,
+  profileUrl: string
+
+}

@@ -1,4 +1,4 @@
-import {createSlice} from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { itemData, itemsDetails } from '../../utils/constents';
 
 interface ProductList {
@@ -12,14 +12,14 @@ const ProductsListSlice = createSlice({
     initialState,
     reducers: {
         setAddProducts: (state, action) => {
-            let payload=action.payload;
+            let payload = action.payload;
             let data;
-            if(action.payload){
-                 data=payload.map((e:any)=>{
-                    return {...e,quantity:1,showQuantity:false}
+            if (action.payload) {
+                data = payload.map((e: any) => {
+                    return { ...e, quantity: 1, showQuantity: false }
                 })
             }
-           
+
             state.addProducts = data;
         },
         setFavourite: (state, action) => {
@@ -33,33 +33,33 @@ const ProductsListSlice = createSlice({
             })
             state.addProducts = data
         },
-        setQuantity:(state, action)=>{
-          const payload = action.payload
-          const data=state.addProducts.map((e)=>{
-            if(e.id === payload.id){
-                return {...e,quantity:payload.quantity}
-            }else{
-                return e
-            }
-          })
-          state.addProducts = data
+        setQuantity: (state, action) => {
+            const payload = action.payload
+            const data = state.addProducts.map((e) => {
+                if (e.id === payload.id) {
+                    return { ...e, quantity: payload.quantity }
+                } else {
+                    return e
+                }
+            })
+            state.addProducts = data
         },
-        setShowQuantity:(state,action)=>{
-          const playload=action.payload
-          console.log(playload.id,'fff')
-          const newDetails=state.addProducts.map((e)=>{
-            if(e.id === playload.id){
-                return {...e,showQuantity: !e.showQuantity}
-            }else{
-                return e
-            }
-          })
-          state.addProducts = newDetails
-        },setShowQuantityReset:(state,action)=>{
-            const newDetails=state.addProducts.map((e)=>{
-                    return {...e,showQuantity: false}
-              })
-              state.addProducts = newDetails
+        setShowQuantity: (state, action) => {
+            const playload = action.payload
+            console.log(playload.id, 'fff')
+            const newDetails = state.addProducts.map((e) => {
+                if (e.id === playload.id) {
+                    return { ...e, showQuantity: !e.showQuantity }
+                } else {
+                    return e
+                }
+            })
+            state.addProducts = newDetails
+        }, setShowQuantityReset: (state, action) => {
+            const newDetails = state.addProducts.map((e) => {
+                return { ...e, showQuantity: false }
+            })
+            state.addProducts = newDetails
         }
     }
 });

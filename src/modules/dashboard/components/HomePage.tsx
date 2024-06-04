@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView, Alert, BackHandler, Platform, TextInput } from 'react-native';
 import CarouselCards from '../../home/components/homeCauresel/CarouselCard';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -8,18 +9,21 @@ import HeaderLocation from '../../home/components/location/HeaderLocation'
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 import { useGetAllProductsQuery, useGetItemsDetailsMutation, useLazyGetAllProductsQuery } from '../../home/store/services/getAllProductsService';
 import { setAddProducts } from '../../home/store/slices/ProductsListSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { openDatabase } from 'react-native-sqlite-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUpdateUserMutation } from '../../auth/store/services/getUserDetailsService';
 import { red100 } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import Icon from 'react-native-vector-icons/AntDesign';
+import { setUser } from '../../accounts/store/slices/UserSlice';
+import { RootState } from '../../../store/store'
 
 const { height, width } = Dimensions.get('window')
 let db = openDatabase({ name: 'itemslist.db' });
 
 const HomePage = () => {
   const navigate = useNavigation<any>();
+
   const [itemsData] = useGetItemsDetailsMutation();
   const [updateUser] = useUpdateUserMutation();
 
@@ -54,6 +58,8 @@ const HomePage = () => {
           userId: userId,
           deviceToken: token
         }).unwrap();
+        dispatch(setUser(response.data));
+
 
       }
     } catch (error) {

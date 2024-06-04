@@ -3,15 +3,18 @@ import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import ProfileAvatar from '../../home/utils/ProfileAvatar';
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
-
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
 const ProfileCard = () => {
+  const user = useSelector((store: RootState) => store.user.user);
+
   return (
     <View style={styles.header}>
       {/* <Image source={{ uri: 'https://via.placeholder.com/100' }} style={styles.profileImage} /> */}
-      <ProfileAvatar name={'sai'} imgUrl={'https://va.placeholder.com/100'} width={80} height={80} profileView={true} />
+      <ProfileAvatar name={user?.name ?? ''} imgUrl={user?.profileUrl} width={80} height={80} profileView={true} />
 
-      <Text style={styles.nameText}>Saiprakash</Text>
-      <Text style={styles.emailText}>talakantisaiprakash@gmail.com</Text>
+      <Text style={styles.nameText}>{user?.name}</Text>
+      <Text style={styles.emailText}>{user?.email}</Text>
     </View>
   );
 };

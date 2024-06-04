@@ -10,11 +10,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ForwardArrowIcon, LogoutIcon } from '../../../assets/svgimages/AccountsSvgs/accountsSvgs';
 import { Image } from 'react-native';
 import ProfileCard from '../utlis/ProfileCard';
+import { setUser } from '../store/slices/UserSlice';
+import { useDispatch } from 'react-redux';
 const appLogo = require('../../../assets/Images/app-logo.png');
 
 export default function Account({ navigation }: any) {
 
     const [show, setShow] = useState<boolean>(false);
+    const dispatch = useDispatch()
 
     const handleClose = () => {
         setShow(!show);
@@ -27,6 +30,8 @@ export default function Account({ navigation }: any) {
     const handleLogout = async () => {
         await AsyncStorage.clear();
         navigation.navigate('login');
+        dispatch(setUser(''));
+
     }
 
     const handlePress = async () => {
