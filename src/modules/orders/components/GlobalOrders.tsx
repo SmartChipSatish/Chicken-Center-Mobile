@@ -9,6 +9,8 @@ import { useGetOrdersByUserIdMutation, useLazyGetOrdersByUserId1Query } from '..
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Loding from '../../dashboard/components/Loding';
 import { Order } from '../utils/constants';
+import StatusButton from './StatusButton';
+import TabButton from './TabButton';
 
 
 export default function GlobalOrders() {
@@ -21,8 +23,15 @@ export default function GlobalOrders() {
   const [ordersData, setOrdersData] = useState<Order[]>([])
   const [myOrderId, setMyOrderId] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
+  const [orderStatus, setOrderStatus] = useState('')
+  const TABS = {
+    PLACED: 'Received',
+    CANCELLED: 'CANCELLED',
+    DELIVERED: 'DELIVERED'
+  };
+  const [selectedTab, setSelectedTab] = useState(TABS.PLACED);
   const [getOrdersByUserId] = useGetOrdersByUserIdMutation();
-
+  const NoOrders = require('../../../assets/Images/NoOrders.png');
   const getOrderData = async () => {
     setIsLoading(true)
     try {
@@ -59,26 +68,36 @@ export default function GlobalOrders() {
     }, 2000);
   };
 
+   
+  const filterOrders = () => {
+    return ordersData.filter((item) => item.orderStatus == selectedTab)
+  }
+
   useFocusEffect(
     useCallback(() => {
       getOrderData()
     }, [])
   )
-  const NoOrders = require('../../../assets/Images/NoOrders.png')
-
+  
   return (
     <>
-    <View>
+    <View style={{marginTop:-10,flex:1}}>
+    <View style={styles.tabsContainer}>
+    <TabButton label={TABS.PLACED} isSelected={selectedTab === TABS.PLACED} onPress={()=>setSelectedTab(TABS.PLACED)}/>
+    <TabButton label={TABS.DELIVERED} isSelected={selectedTab === TABS.DELIVERED} onPress={()=>setSelectedTab(TABS.DELIVERED)}/>
+    <TabButton label={TABS.CANCELLED} isSelected={selectedTab === TABS.CANCELLED} onPress={()=>setSelectedTab(TABS.CANCELLED)}/>
+    </View>
       {!isLoading &&
-      <ScrollView>
-        {ordersData && ordersData.length > 0 ? ordersData.map((item: Order) => (
+      <ScrollView >
+        {filterOrders() && filterOrders().length > 0 ? filterOrders().map((item: Order) => (
           <TouchableOpacity key={item._id}
-            onPress={() => { setMyOrderId(item._id); setModalVisible1(true); }}
+            onPress={() => { setMyOrderId(item._id); setOrderStatus(item?.orderStatus); setModalVisible1(true); }}
             style={styles.main_card}>
             <View style={styles.card}>
-              <View>
-                <Text style={styles.price1}>ORDER ID: {item.id}</Text>
-                <Text style={styles.price1}>Status: {item.orderStatus}</Text>
+              <View style={{flex:1,flexDirection:'row',justifyContent:'space-around'}}>
+                <Text style={styles.orderIdHeader}>ORDER ID: {item?.id}</Text>
+                <StatusButton status='PLACED'/>
+                {/* <StatusButton status={orderStatus}/> */}
               </View>
 
               <View style={styles.item_details}>
@@ -214,19 +233,12 @@ export default function GlobalOrders() {
           visible={modalVisible1}
           onRequestClose={() => {
             setModalVisible1(!modalVisible1);
-          }}>
+          }}
+          >
           <View>
             <View style={styles.centeredView}>
               <View style={styles.modalView}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setModalVisible1(false);
-                  }}>
-                  <View style={styles.crossMark}>
-                    <CrossMark color={'black'} width={25} height={25}></CrossMark>
-                  </View>
-                </TouchableOpacity>
-                <OrderSummary orderId={myOrderId}></OrderSummary>
+                <OrderSummary orderId={myOrderId} setModalVisible1={ ()=>setModalVisible1(false)} orderStatus={orderStatus}></OrderSummary>
               </View>
             </View>
           </View>
@@ -391,7 +403,8 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     padding: 10,
-    width: '95%'
+    width: '97%',
+    top:10
   },
   card1: {
     flexDirection: 'row',
@@ -428,6 +441,13 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.primary,
     fontWeight: "bold",
   },
+  orderIdHeader:{
+    fontSize: 13,
+    color: THEME_COLORS.secondary,
+    fontWeight: "bold",
+    paddingTop:5,
+    left:-7
+  },
   quantity: {
     fontSize: 16,
     color: TEXT_COLORS.primary,
@@ -436,10 +456,14 @@ const styles = StyleSheet.create({
   item_details: {
     flexDirection: 'row',
     alignItems: 'center'
-  }, main_card: {
+  }, 
+  main_card: {
     width: '100%',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor:'rgba(0, 0, 0, 0.1)',
+    paddingVertical:2,
+
   },
   orderContainer:{
     justifyContent:'center',
@@ -470,6 +494,12 @@ orderButton:{
 },
 noOrderText:{
   color:TEXT_COLORS.whiteColor
-}
+},
+tabsContainer: {
+  flexDirection: 'row',
+  justifyContent: 'space-around',
+  backgroundColor: '#f2f2f2',
+  paddingVertical: 10,
+},
 
 });

@@ -52,7 +52,7 @@ export default function Checkout({ route }: any) {
                 userId: uid,
                 createdBy: uid,
                 updatedBy: uid,
-                addressId:'6655d6dff9c814266aef1d6e',
+                addressId:'665db0e25c3a072b32177942',
                 paymentType: paymentType,
                 items: items,
                 totals: {
