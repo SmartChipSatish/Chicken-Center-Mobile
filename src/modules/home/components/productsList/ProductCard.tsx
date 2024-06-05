@@ -36,7 +36,7 @@ const ProductsCard: React.FC<productsinfo> = ({ item,
                         }}
                         style={styles.image}
                     />
-                    <View >
+                    <View style={{width:'50%'}}>
                         <Text style={styles.item_text}>{item.itemName + ' ' + item.itemQty}</Text>
                         {/* <Text style={styles.item_price}>₹ {type === 'cart' ? item.total : item.itemPrice}</Text> */}
                         <Text style={styles.item_price}>₹ {item.itemPrice}</Text>
@@ -104,17 +104,17 @@ const styles = StyleSheet.create({
         marginRight: 10
     },
     item_text: {
-        color: `${TEXT_COLORS.primary}`,
-        fontSize: 14,
+        color: '#626364',
+        fontSize: 15,
         marginBottom: 3,
-        fontWeight: 'bold',
+        fontWeight: '700',
     }, item_price: {
         color: `${THEME_COLORS.secondary}`,
         fontSize: 15,
         fontWeight: 'bold',
     }, items_subCard: {
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     quantityContainer: {
         flexDirection: 'row',

@@ -183,6 +183,7 @@ const styles = StyleSheet.create({
   },
   carouselContainer: {
     paddingHorizontal: 20,
+    marginTop:'2%',
     height: 200,
     justifyContent: 'center',
     alignItems: 'center',
@@ -222,10 +223,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   header: {
-    fontSize: 17,
-    color: `${TEXT_COLORS.primary}`,
+    fontSize: 18,
+    color: THEME_COLORS.secondary,
     marginBottom: 10,
-    marginLeft: '2%'
+    marginLeft: '2%',
+    fontWeight:'bold'
   },
   HomePageBackground: {
     backgroundColor: "white",

@@ -69,6 +69,7 @@ export const TabNav = () => {
                     tabBarIcon: ({ color, size }) => (
                         <CustomTabBarLabel label={'Cart'} color={color} />
                     ),
+                    headerShown: false,
                 }} />
             <Tab.Screen name='orders'
                 component={Orders}
