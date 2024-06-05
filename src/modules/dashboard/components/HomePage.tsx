@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+
 import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView, Alert, BackHandler, Platform, TextInput } from 'react-native';
 import CarouselCards from '../../home/components/homeCauresel/CarouselCard';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -8,18 +9,21 @@ import HeaderLocation from '../../home/components/location/HeaderLocation'
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 import { useGetAllProductsQuery, useGetItemsDetailsMutation, useLazyGetAllProductsQuery } from '../../home/store/services/getAllProductsService';
 import { setAddProducts } from '../../home/store/slices/ProductsListSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { openDatabase } from 'react-native-sqlite-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUpdateUserMutation } from '../../auth/store/services/getUserDetailsService';
 import { red100 } from 'react-native-paper/lib/typescript/styles/themes/v2/colors';
 import Icon from 'react-native-vector-icons/AntDesign';
+import { setUser } from '../../accounts/store/slices/UserSlice';
+import { RootState } from '../../../store/store'
 
 const { height, width } = Dimensions.get('window')
 let db = openDatabase({ name: 'itemslist.db' });
 
 const HomePage = () => {
   const navigate = useNavigation<any>();
+
   const [itemsData] = useGetItemsDetailsMutation();
   const [updateUser] = useUpdateUserMutation();
 
@@ -54,6 +58,8 @@ const HomePage = () => {
           userId: userId,
           deviceToken: token
         }).unwrap();
+        dispatch(setUser(response.data));
+
 
       }
     } catch (error) {
@@ -92,15 +98,15 @@ const HomePage = () => {
         <HeaderLocation></HeaderLocation>
       </View>
       <View style={styles.search_MainContainer}>
-      <TouchableOpacity onPress={() => navigate.navigate('searchPage')}
-        style={styles.searchBarContainer}>
-        <Icon name="search1" size={20} color={TEXT_COLORS.secondary}  style={styles.searchIcon}/>
-        <TextInput style={styles.searchBar}
-                   placeholder='Search'
-                   editable={false}
-                   placeholderTextColor={TEXT_COLORS.secondary}
-                   ></TextInput>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigate.navigate('searchPage')}
+          style={styles.searchBarContainer}>
+          <Icon name="search1" size={20} color={TEXT_COLORS.secondary} style={styles.searchIcon} />
+          <TextInput style={styles.searchBar}
+            placeholder='Search'
+            editable={false}
+            placeholderTextColor={TEXT_COLORS.secondary}
+          ></TextInput>
+        </TouchableOpacity>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.carouselContainer}>
@@ -123,9 +129,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: `${THEME_COLORS.primary}`
-  }, search_MainContainer:{
-    justifyContent:'center',
-    alignItems:'center'
+  },
+  search_MainContainer: {
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   searchBarContainer: {
     flexDirection: 'row',
@@ -142,8 +149,8 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
     marginBottom: '2%',
-    height:60,
-    paddingLeft:'5%'
+    height: 60,
+    paddingLeft: '5%'
   },
   banner: {
     backgroundColor: '#007bff',
@@ -160,9 +167,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   searchBar: {
-    marginRight:'2%'
-  },searchIcon:{
-    marginRight:10,
+    marginRight: '2%'
+  }, searchIcon: {
+    marginRight: 10,
   },
   searchBarText: {
     fontSize: 16,
@@ -222,7 +229,9 @@ const styles = StyleSheet.create({
   },
   HomePageBackground: {
     backgroundColor: "white",
-    height: "7%"
+    height: "12%",
+
+
   }
 });
 

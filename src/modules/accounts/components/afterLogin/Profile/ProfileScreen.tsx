@@ -3,32 +3,35 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert 
 import { Avatar, Icon } from 'react-native-elements';
 import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
 import { style } from '../../../utlis/Styles';
-import { TEXT_COLORS } from '../../../../../globalStyle/GlobalStyles';
+import { TEXT_COLORS, THEME_COLORS } from '../../../../../globalStyle/GlobalStyles';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGetUserByUserIdMutation, useUpdateUserMutation } from '../../../../auth/store/services/getUserDetailsService';
 import Loding from '../../../../dashboard/components/Loding';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../../../../store/store';
+import { setUser } from '../../../store/slices/UserSlice';
 
 const ProfileScreen: React.FC = () => {
-    const [getUser] = useGetUserByUserIdMutation();
+    const user = useSelector((store: RootState) => store.user.user);
+
     const [updateUser] = useUpdateUserMutation();
     const navigation = useNavigation<any>();
+    const dispatch = useDispatch()
 
-    const [name, setName] = useState<string>('user');
-    const [email, setEmail] = useState<string>('user@gmail.com');
-    const [mobileNumber, setMobileNumber] = useState<string>('9999999999');
+    const [name, setName] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [mobileNumber, setMobileNumber] = useState<string>('');
     const [avatarUri, setAvatarUri] = useState<string | null>(null);
-    // const [password, setPassword] = useState<string>('');
-    // const [confirmPassword, setConfirmPassword] = useState<string>('');
-    // const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
-    // const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState<boolean>(false);
     const [canUpdateEmail, setCanUpdateEmail] = useState<boolean>(false);
     const [canUpdatePhone, setCanUpdatePhone] = useState<boolean>(false);
     const [nameError, setNameError] = useState<string | null>(null);
     const [emailError, setEmailError] = useState<string | null>(null);
     const [phoneError, setPhoneError] = useState<string | null>(null);
     const [isFormValid, setIsFormValid] = useState<boolean>(false);
+    const [isEdited, setIsEdited] = useState<boolean>(false);
     const [loding, setLoding] = useState<boolean>(false);
+    const [avatarError, setAvatarError] = useState<string | null>(null);
 
     const validateName = (name: string) => {
         return name.length >= 3;
@@ -43,6 +46,7 @@ const ProfileScreen: React.FC = () => {
         const phoneRegex = /^[0-9]{10}$/;
         return phoneRegex.test(number);
     };
+
     const handleNameChange = (name: string) => {
         if (validateName(name)) {
             setNameError(null);
@@ -50,6 +54,7 @@ const ProfileScreen: React.FC = () => {
             setNameError('Name should be at least 3 characters long');
         }
         setName(name);
+        setIsEdited(true);
     };
 
     const handleEmailChange = (email: string) => {
@@ -59,6 +64,7 @@ const ProfileScreen: React.FC = () => {
             setEmailError('Invalid email format');
         }
         setEmail(email);
+        setIsEdited(true);
     };
 
     const handlePhoneChange = (number: string) => {
@@ -68,13 +74,14 @@ const ProfileScreen: React.FC = () => {
             setPhoneError('Phone number should be 10 digits');
         }
         setMobileNumber(number);
+        setIsEdited(true);
     };
+
     const handleSubmit = async () => {
         setLoding(true);
 
         try {
             const storeduserId = await AsyncStorage.getItem('userId');
-
 
             if (storeduserId) {
                 const userId = storeduserId.replace(/['"]/g, '').trim();
@@ -82,22 +89,22 @@ const ProfileScreen: React.FC = () => {
                     userId: userId,
                     name: name,
                     primaryNumber: mobileNumber,
-                    email: email
+                    email: email,
+                    profileUrl: avatarUri
                 }).unwrap();
                 setLoding(false);
+                dispatch(setUser(response.data));
+
                 if (response) {
                     navigation.navigate('home');
-
                 }
             }
         } catch (error) {
-            console.log(error)
+            console.log(error);
             setLoding(false);
-
         }
+    };
 
-
-    }
     const handleChoosePhoto = () => {
         const options: ImageLibraryOptions = {
             mediaType: 'photo',
@@ -122,6 +129,8 @@ const ProfileScreen: React.FC = () => {
                 const source = response.assets[0].uri;
                 if (source) {
                     setAvatarUri(source);
+                    setAvatarError(null);
+                    setIsEdited(true);
                 }
             }
         });
@@ -138,39 +147,29 @@ const ProfileScreen: React.FC = () => {
         }).then(res => res.json())
             .then(data => {
                 setAvatarUri(data.secure_url);
+                setAvatarError(null);
             }).catch(err => {
                 Alert.alert("An Error Occured While Uploading");
+                setAvatarError("Failed to upload image");
             });
     };
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const storeduserId = await AsyncStorage.getItem('userId');
+        if (user) {
+            setEmail(user?.email);
+            setName(user?.name);
+            setMobileNumber(user?.primaryNumber?.toString());
+            setCanUpdateEmail(user?.primaryNumber ? true : false);
+            setCanUpdatePhone(user?.email ? true : false);
+            setAvatarUri(user?.profileUrl);
+        }
+    }, [user]);
 
-
-                if (storeduserId) {
-                    const userId = storeduserId.replace(/['"]/g, '').trim();
-                    const response = await getUser(userId).unwrap();
-                    console.log(response.primaryNumber, "phone,", response?.email)
-                    setEmail(response?.email);
-                    setName(response?.name);
-                    setMobileNumber(response?.primaryNumber?.toString());
-                    setCanUpdateEmail(response?.primaryNumber ? true : false);
-                    setCanUpdatePhone(response?.email ? true : false);
-                } else {
-                    console.log('UID not found in AsyncStorage');
-                }
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchData();
-    }, []);
     useEffect(() => {
-        const isFormValid = (!nameError && !emailError) || (!nameError && !phoneError);
+        const isFormValid = (!nameError && !emailError && !phoneError && !avatarError) && (name !== user?.name || email !== user?.email || mobileNumber !== user?.primaryNumber?.toString() || avatarUri !== user?.profileUrl);
         setIsFormValid(isFormValid);
-    }, [nameError, emailError, phoneError, name, email, mobileNumber]);
+    }, [nameError, emailError, phoneError, avatarError, name, mobileNumber, email, avatarUri, user]);
+
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
@@ -186,7 +185,9 @@ const ProfileScreen: React.FC = () => {
                         <Icon name="edit" type="font-awesome" color="#fff" />
                     </TouchableOpacity>
                 </View>
+                {avatarError && <Text style={styles.errorText}>{avatarError}</Text>}
                 <Text style={styles.name}>{name}</Text>
+                <Text style={styles.side_header}>Name</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Name"
@@ -194,67 +195,36 @@ const ProfileScreen: React.FC = () => {
                     onChangeText={(e) => { handleNameChange(e) }}
                 />
                 {nameError && <Text style={styles.errorText}>{nameError}</Text>}
-
+                <Text style={styles.side_header}>Email</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Email"
                     value={email}
                     onChangeText={(e) => { handleEmailChange(e) }}
                     keyboardType="email-address"
-                    readOnly={canUpdateEmail ? false : true}
+                    editable={canUpdateEmail}
                 />
                 {emailError && <Text style={styles.errorText}>{emailError}</Text>}
-
+                <Text style={styles.side_header}>Phone Number</Text>
                 <TextInput
                     style={styles.input}
                     placeholder="Mobile Number"
                     value={mobileNumber}
-                    maxLength={12}
+                    maxLength={10}
                     onChangeText={(e) => { handlePhoneChange(e) }}
-                    readOnly={canUpdatePhone ? false : true}
+                    editable={canUpdatePhone}
                     keyboardType="phone-pad"
                 />
                 {phoneError && <Text style={styles.errorText}>{phoneError}</Text>}
-
-                {/* 
-                <View style={styles.passwordContainer}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Password"
-                        value={password}
-                        onChangeText={setPassword}
-                        secureTextEntry={!isPasswordVisible}
-                    />
-                    <TouchableOpacity
-                        style={styles.showIcon}
-                        onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-                    >
-                        <Icon name={isPasswordVisible ? "eye" : "eye-slash"} type="font-awesome" />
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.passwordContainer}>
-                    <TextInput
-                        style={styles.input}
-                        placeholder="Confirm Password"
-                        value={confirmPassword}
-                        onChangeText={setConfirmPassword}
-                        secureTextEntry={!isConfirmPasswordVisible}
-                    />
-                    <TouchableOpacity
-                        style={styles.showIcon}
-                        onPress={() => setIsConfirmPasswordVisible(!isConfirmPasswordVisible)}
-                    >
-                        <Icon name={isConfirmPasswordVisible ? "eye" : "eye-slash"} type="font-awesome" />
-                    </TouchableOpacity>
-                </View> */}
-
+                <TouchableOpacity
+                    style={[styles.button, { backgroundColor: isFormValid ? THEME_COLORS.secondary : THEME_COLORS.light_color }]}
+                    onPress={handleSubmit}
+                    disabled={!isFormValid}
+                >
+                    <Text style={styles.buttonText}>Update Profile</Text>
+                </TouchableOpacity>
             </ScrollView>
             {loding && <Loding />}
-
-            <TouchableOpacity style={style.login_button} onPress={handleSubmit} disabled={!isFormValid}>
-                <Text style={styles.buttonText}>Update Profile</Text>
-            </TouchableOpacity>
         </View>
     );
 };
@@ -289,6 +259,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 20,
     },
+    side_header: {
+        color: TEXT_COLORS.primary,
+        fontSize: 15,
+        fontWeight: '500',
+        textAlign: 'left',
+        alignSelf: 'flex-start',
+        marginLeft: 10,
+        marginBottom: 5,
+    },
     input: {
         width: '100%',
         padding: 12,
@@ -296,35 +275,32 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderRadius: 8,
         marginBottom: 16,
-        color: `${TEXT_COLORS.primary}`,
+        color: TEXT_COLORS.primary,
     },
     button: {
         width: '100%',
-        padding: 16,
-        backgroundColor: '#d32f2f',
+        height: 50,
         alignItems: 'center',
-        borderRadius: 8,
-        marginTop: 20,
-        position: 'absolute',
-        bottom: 0,
+        justifyContent: 'center',
+        borderRadius: 10,
+        marginTop: 10,
+    },
+    buttonEnabled: {
+        backgroundColor: THEME_COLORS.primary,
+    },
+    buttonDisabled: {
+        backgroundColor: THEME_COLORS.light_color,
     },
     buttonText: {
         color: '#fff',
         fontWeight: 'bold',
     },
-    passwordContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        width: '100%',
-    },
-    showIcon: {
-        position: 'absolute',
-        right: 10,
-    },
     errorText: {
         color: 'red',
-        marginTop: 4,
-        textAlign: 'left'
+        textAlign: 'left',
+        marginLeft: 16,
+        alignSelf: 'flex-start',
+        marginBottom: 16,
     },
 });
 

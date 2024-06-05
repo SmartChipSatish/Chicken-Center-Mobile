@@ -2,7 +2,7 @@ import * as React from "react";
 import Svg, { Circle, Defs, G, LinearGradient, Path, Polyline, Rect, Stop, SvgProps } from "react-native-svg";
 import { THEME_COLORS } from "../../globalStyle/GlobalStyles";
 
-export const AccountIcon = (props:any) => (
+export const AccountIcon = (props: any) => (
   <Svg
     width="25px"
     height="25px"
@@ -34,7 +34,7 @@ export const AccountIcon = (props:any) => (
 
 );
 
-export const CategoriesIcon = (props:any) => (
+export const CategoriesIcon = (props: any) => (
   <Svg
     xmlns="http://www.w3.org/2000/svg"
     width="30px"
@@ -55,7 +55,7 @@ export const CategoriesIcon = (props:any) => (
   </Svg>
 );
 
-export const PercentageIcon = (props:any) => (
+export const PercentageIcon = (props: any) => (
   <Svg
     id="Capa_1"
     xmlns="http://www.w3.org/2000/svg"
@@ -82,7 +82,7 @@ export const PercentageIcon = (props:any) => (
   </Svg>
 );
 
-export const SearchIcon = (props:any) => (
+export const SearchIcon = (props: any) => (
   <Svg
     width="30px"
     height="30px"
@@ -98,34 +98,49 @@ export const SearchIcon = (props:any) => (
   </Svg>
 )
 
-export const HomeIcon = (props:any) => (
+export const HomeIcon = (props: any) => (
   <Svg
-  id="Layer_1"
-  xmlns="http://www.w3.org/2000/svg"
-  xmlnsXlink="http://www.w3.org/1999/xlink"
-  viewBox="0 0 32 32"
-  enableBackground="new 0 0 32 32"
-  xmlSpace="preserve"
-  width='25px'
-  height='25px'
-  {...props}
->
-  <Polyline
-    fill={props.color}
-    stroke={props.color}
-    strokeWidth={1.5}
-    strokeMiterlimit={10}
-    points="3,17 16,4 29,17 "
-  />
-  <Polyline
-    fill={props.color}
-    stroke={props.color}
-    strokeWidth={1.5}
-    strokeMiterlimit={10}
-    points="6,14 6,27 13,27 13,17 19,17 19,27 26,27  26,14 "
-  />
-</Svg>
+    id="Layer_1"
+    xmlns="http://www.w3.org/2000/svg"
+    xmlnsXlink="http://www.w3.org/1999/xlink"
+    viewBox="0 0 32 32"
+    enableBackground="new 0 0 32 32"
+    xmlSpace="preserve"
+    width='25px'
+    height='25px'
+    {...props}
+  >
+    <Polyline
+      fill={props.color}
+      stroke={props.color}
+      strokeWidth={1.5}
+      strokeMiterlimit={10}
+      points="3,17 16,4 29,17 "
+    />
+    <Polyline
+      fill={props.color}
+      stroke={props.color}
+      strokeWidth={1.5}
+      strokeMiterlimit={10}
+      points="6,14 6,27 13,27 13,17 19,17 19,27 26,27  26,14 "
+    />
+  </Svg>
 );
+export const LocationIconHome = (props: any) => (
+  <Svg
+    width="30px"
+    height="30px"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    {...props}
+  >
+    <Path
+      d="M12 2c-4.4 0-8 3.6-8 8 0 5.4 7 11.5 7.3 11.8.2.1.5.2.7.2.2 0 .5-.1.7-.2.3-.3 7.3-6.4 7.3-11.8 0-4.4-3.6-8-8-8zm0 17.7c-2.1-2-6-6.3-6-9.7 0-3.3 2.7-6 6-6s6 2.7 6 6-3.9 7.7-6 9.7zM12 6c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 6c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"
+      fill={props.color}
+    />
+  </Svg>
+)
 
 export const CartIcon = (props: SvgProps) => (
   <Svg

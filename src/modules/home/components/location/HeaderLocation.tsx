@@ -19,21 +19,35 @@ import CrossMark from '../../../../assets/svgimages/util';
 import { AddressesIcon } from '../../../../assets/svgimages/AccountsSvgs/accountsSvgs';
 import { TEXT_COLORS, THEME_COLORS } from "../../../../globalStyle/GlobalStyles";
 import { Image } from "react-native";
-import { NotificationDotIcon } from "../../../../assets/svgimages/SvgIcons";
+import { LocationIconHome } from "../../../../assets/svgimages/SvgIcons";
 import { LocationIcon } from "../../../../assets/svgimages/SaveAsIcons";
 import AppTitle from "./AppTitle";
 const appLogo = require('../../../../assets/Images/app-logo.png');
-import {useDispatch,useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLatitudes, setLongitudes } from "../../../accounts/store/slices/LocationSlice";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import ProfileAvatar from "../../utils/ProfileAvatar";
+import { RootState } from "../../../../store/store";
 
 const HeaderLocation = () => {
+  const user = useSelector((store: RootState) => store.user.user);
+
   const [userInput, setUserInput] = useState<any>('');
   const [suggestions, setSuggestions] = useState<any>([]);
-  const [previousLocation, setPreviousLocation] = useState(''); 
+  const [previousLocation, setPreviousLocation] = useState('');
   const [useloc, setUserLoc] = useState({});
-  const dispatch=useDispatch();
-  
+  const [userName, setUserName] = useState('');
+  const [imageUri, setImgageUri] = useState('')
+  const dispatch = useDispatch();
+  const navigation = useNavigation<any>();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [visibles, setvisible] = useState<any>(false)
+
+  const [latitude, setLatitude] = useState<any>(null);
+  const [longitude, setLongitude] = useState<any>(null);
+  const [displayAddress, setDisplayAddress] = useState('');
+  const [error, setError] = useState<any>(null);
   const mapKey = 'AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY'
   const fetchSuggestions = async (text: any) => {
     const apiKey = mapKey; // Replace with your API key
@@ -43,16 +57,6 @@ const HeaderLocation = () => {
     const data = await response.json();
     setSuggestions(data.predictions);
   };
-
-  useEffect(() => {
-    if (userInput) {
-      fetchSuggestions(userInput);
-    } else {
-      setSuggestions([]);
-    }
-  }, [userInput]);
-
-
 
   const handleSelectLocation = async (item: any) => {
     setUserInput(item.description);
@@ -93,30 +97,36 @@ const HeaderLocation = () => {
     }
   };
 
+  const handleUseCurrentLocation = async () => {
+    const granted = await requestLocationPermissionIfNeeded();
+    if (granted) {
+      Geolocation.getCurrentPosition(
+        async location => {
+          setLatitude(location.coords.latitude);
+          setLongitude(location.coords.longitude);
 
-  const navigation = useNavigation<any>();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [visibles, setvisible] = useState<any>(false)
-
-  const [latitude, setLatitude] = useState<any>(null);
-  const [longitude, setLongitude] = useState<any>(null);
-  const [displayAddress, setDisplayAddress] = useState('');
-  const [error, setError] = useState<any>(null);
-  // console.log(latitude,longitude,"baipalli....")
-
-
-
-  useEffect(() => {
-    Geocoder.init(mapKey);
-    
- 
-  }, []);
-
-  useEffect(()=>{
-    dispatch(setLatitudes(latitude))
-    dispatch(setLongitudes(longitude))
-  })
+          try {
+            const response = await Geocoder.from(
+              location.coords.latitude,
+              location.coords.longitude,
+            );
+            const address = response.results[0].formatted_address;
+            setDisplayAddress(address);
+            setUserInput(address);
+            setUserLoc({
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude
+            });
+          } catch (error: any) {
+            setError(error.message);
+          }
+        },
+        error => setError(error.message),
+        { timeout: 10000, maximumAge: 60000 }
+      );
+      setModalVisible(false); // Close the modal
+    }
+  };
 
   const requestLocation = async () => {
     if (Platform.OS === 'android') {
@@ -164,73 +174,63 @@ const HeaderLocation = () => {
       }
     }
   };
+  // useEffect(() => {
+  //   setUserName(user?.name)
+  // }, [])
+
+  useEffect(() => {
+    Geocoder.init(mapKey);
+  }, []);
+
+  useEffect(() => {
+    dispatch(setLatitudes(latitude))
+    dispatch(setLongitudes(longitude))
+  })
+  useEffect(() => {
+    if (userInput) {
+      fetchSuggestions(userInput);
+    } else {
+      setSuggestions([]);
+    }
+  }, [userInput]);
 
   useEffect(() => {
     requestLocation();
   }, []);
-
-
-  const handleUseCurrentLocation = async () => {
-    const granted = await requestLocationPermissionIfNeeded();
-    if (granted) {
-      Geolocation.getCurrentPosition(
-        async location => {
-          setLatitude(location.coords.latitude);
-          setLongitude(location.coords.longitude);
-
-          try {
-            const response = await Geocoder.from(
-              location.coords.latitude,
-              location.coords.longitude,
-            );
-            const address = response.results[0].formatted_address;
-            setDisplayAddress(address);
-            setUserInput(address);
-            setUserLoc({
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude
-            });
-          } catch (error: any) {
-            setError(error.message);
-          }
-        },
-        error => setError(error.message),
-        { timeout: 10000, maximumAge: 60000 }
-      );
-      setModalVisible(false); // Close the modal
+  useEffect(() => {
+    if (user) {
+      setUserName(user.name ?? '');
+      setImgageUri(user.profileUrl)
     }
-  };
-
-
-
-
+  }, [user]);
+  console.log(userName, imageUri)
   return (
     <View>
       <View style={styles.locationImg}>
-      <View style={styles.displayLocation}>
-        <Image source={appLogo}
-          style={styles.logo} />
-
-          {/* <TouchableOpacity onPress={() => {
+        <View style={styles.displayLocation}>
+          {/* <Image source={LocationIcon}
+            style={styles.logo} /> */}
+          <LocationIconHome color={`${THEME_COLORS.secondary}`} />
+          <TouchableOpacity onPress={() => {
             setPreviousLocation(userInput || displayAddress);
             setvisible(!visibles)
-          }} style={{marginLeft:10}}>
+          }} >
             <Text style={styles.locationText}>Location</Text>
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"
-              style={[styles.locationText,{width:200}]}>
-              {displayAddress!==''?displayAddress: 'Fetching location...'} 
+              style={[styles.locationText, { width: 200 }]}>
+              {displayAddress !== '' ? displayAddress : 'Fetching location...'}
             </Text>
-          </TouchableOpacity> */}
-          <View style={{marginLeft:10}}>
-            {/* <Text style={{color:TEXT_COLORS.primary,fontWeight:'bold'}}>Maalasa My Chicken</Text> */}
-            <AppTitle/>
+          </TouchableOpacity>
+          <View style={{ marginLeft: 80 }}>
+            <ProfileAvatar name={userName} imgUrl={imageUri} width={40} height={40} profileView={true} onPress={() => navigation.navigate('account')} />
           </View>
         </View>
-        <NotificationDotIcon onPress={()=>navigation.navigate('notifications')}/>
+
+
       </View>
-      
+
       <View style={styles.centeredView1}>
         <Modal
           animationType="slide"
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 10,
+    // marginTop: 10,
     marginLeft: '3%',
     marginRight: '3%'
   },
@@ -525,8 +525,8 @@ const styles = StyleSheet.create({
     padding: 15,
   }, displayLocation: {
     flexDirection: 'row',
-    justifyContent:'center',
-    alignItems:'center'
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   logo: {
     backgroundColor: THEME_COLORS.secondary,
