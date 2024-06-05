@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { THEME_COLORS } from '../../../../globalStyle/GlobalStyles';
+import { TEXT_COLORS, THEME_COLORS } from '../../../../globalStyle/GlobalStyles';
+import { Platform } from 'react-native';
 
 export const SLIDER_WIDTH = Dimensions.get('window').width;
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.5);
@@ -29,23 +30,22 @@ const CarouselCardItem = ({ item, index }: any) => {
 
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
-    borderRadius: 8,
-    width: '100%',
-    height: '100%', 
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    shadowOpacity: 0.29,
-    shadowRadius: 4.65,
-    elevation: 7,
-    borderWidth: 1,
-    borderColor: 'gray',
+    backgroundColor: '#fff',
+    // width:'100%',
+    borderRadius: 10,
+    marginVertical: 10,
+    ...Platform.select({
+      ios: {
+        shadowColor: TEXT_COLORS.primary,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 6,
+      },
+      android: {
+        elevation: 5,
+        shadowColor: TEXT_COLORS.primary
+      },
+    }),
   },
   image: {
     width: '100%',

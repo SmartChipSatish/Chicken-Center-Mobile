@@ -40,11 +40,12 @@ const addtocart=(id:string)=>{
                     />}
                     <View >
                         <Text style={styles.item_text}>{item.itemName + ' ' + item.itemQty}</Text>
-                        <Text style={styles.item_price}>₹ {type === 'cart' ? item.total : item.itemPrice}</Text>
+                        {/* <Text style={styles.item_price}>₹ {type === 'cart' ? item.total : item.itemPrice}</Text> */}
+                        <Text style={styles.item_price}>₹ { item.itemPrice}</Text>
                         <Text style={{ textDecorationLine: 'line-through' }}>₹ 250</Text>
                     </View>
                 </View>
-                <View style={styles.add_fav}>
+                <View style={type === 'cart'? styles.add_cart:styles.add_fav}>
                     {type === 'product' && <View >
                         <FavouriteIcon color={`${THEME_COLORS.secondary}`}
                             height={25}
@@ -94,7 +95,8 @@ const styles = StyleSheet.create({
         elevation: 5,
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: 100
+        height: 100,
+        marginBottom:'0%'
     },
     image: {
         width: 85,
@@ -142,5 +144,8 @@ const styles = StyleSheet.create({
         color: TEXT_COLORS.whiteColor,
         borderRadius: 10,
         padding: 5,
+    },add_cart: {
+        justifyContent: 'center',
+        alignItems:'center',
     }
 })

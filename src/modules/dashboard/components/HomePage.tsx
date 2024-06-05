@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView, Alert, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView, Alert, BackHandler, Platform, TextInput } from 'react-native';
 import CarouselCards from '../../home/components/homeCauresel/CarouselCard';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Searchbar } from 'react-native-paper';
@@ -15,8 +15,9 @@ import { useUpdateUserMutation } from '../../auth/store/services/getUserDetailsS
 import { CartItems, RealmContext } from '../../../database/schemas/cartItemsShema';
 import { setCartItems } from '../../home/store/slices/CartProductsSlice';
 import { RootState } from '../../../store/store';
-
 const { useRealm } = RealmContext
+import Icon from 'react-native-vector-icons/AntDesign';
+
 const { height, width } = Dimensions.get('window')
 let db = openDatabase({ name: 'itemslist.db' });
 
@@ -121,14 +122,17 @@ const HomePage = () => {
       <View style={styles.HomePageBackground}>
         <HeaderLocation></HeaderLocation>
       </View>
-      <TouchableOpacity onPress={() => navigate.navigate('searchPage')}>
-        <Searchbar
-          placeholder="Search"
-          value={''}
-          style={styles.searchBar}
-          editable={false}
-        />
+      <View style={styles.search_MainContainer}>
+      <TouchableOpacity onPress={() => navigate.navigate('searchPage')}
+        style={styles.searchBarContainer}>
+        <Icon name="search1" size={20} color={TEXT_COLORS.secondary}  style={styles.searchIcon}/>
+        <TextInput style={styles.searchBar}
+                   placeholder='Search'
+                   editable={false}
+                   placeholderTextColor={TEXT_COLORS.secondary}
+                   ></TextInput>
       </TouchableOpacity>
+      </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.carouselContainer}>
           <CarouselCards />
@@ -150,6 +154,27 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: `${THEME_COLORS.primary}`
+  }, search_MainContainer:{
+    justifyContent:'center',
+    alignItems:'center'
+  },
+  searchBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: '2%',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    width: '93%',
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    shadowColor: `${TEXT_COLORS.primary}`,
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
+    elevation: 5,
+    marginBottom: '2%',
+    height:60,
+    paddingLeft:'5%'
   },
   banner: {
     backgroundColor: '#007bff',
@@ -166,14 +191,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   searchBar: {
-    borderRadius: 10,
-    marginRight: 10,
-    marginLeft: 10,
-    backgroundColor: '#EBF6FA',
-    marginTop: 15,
-    borderColor: 'grey',
-    borderWidth: 1,
-    marginBottom: '2%'
+    marginRight:'2%'
+  },searchIcon:{
+    marginRight:10,
   },
   searchBarText: {
     fontSize: 16,
@@ -188,7 +208,13 @@ const styles = StyleSheet.create({
   carouselContainer: {
     paddingHorizontal: 20,
     height: 200,
-    // objectFit:'cover'
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: TEXT_COLORS.primary,
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 5,
   },
   carouselItem: {
     backgroundColor: '#eee',
@@ -220,10 +246,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   header: {
-    fontSize: 16,
-    // fontWeight: 'bold',
+    fontSize: 17,
     color: `${TEXT_COLORS.primary}`,
-    marginBottom: 10
+    marginBottom: 10,
+    marginLeft: '2%'
   },
   HomePageBackground: {
     backgroundColor: "white",
