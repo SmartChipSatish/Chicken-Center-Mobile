@@ -56,7 +56,7 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
         userId: uid,
         createdBy: uid,
         updatedBy: uid,
-        addressId: '6655d6dff9c814266aef1d6e',
+        addressId: '665db0e25c3a072b32177942',
         paymentType: type,
         items: items,
         totals: {
@@ -86,14 +86,19 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
   
   const initOrder = async (orderId: string) => {
     try {
+      const storedUid = await AsyncStorage.getItem('userId');
+      console.log(storedUid)
+      const uid = storedUid?.replace(/['"]/g, '').trim();
+      console.log(uid, 'uid')
       const response = await initiateOrder({
         customerName: 'Nasa2',
         customerEmail: 'Nasa2@gmail.com',
         customerPhone: '+919876243167',
         orderId: orderId,
+        userId: uid,
         totalAmount: totalAmount
       });
-      console.log(response.data, 'createOrders');
+      console.log(response, 'createOrders');
       return response.data;
     } catch (err) {
       console.log(err, 'createOrderError');
