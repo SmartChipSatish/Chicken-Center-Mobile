@@ -55,6 +55,7 @@
     "react-native-snap-carousel": "^3.9.1",
     "react-native-splash-screen": "^3.3.0",
     "react-native-sqlite-storage": "^6.0.1",
+    "react-native-step-indicator": "^1.0.3",
     "react-native-svg": "^15.2.0",
     "react-native-tab-view": "^3.5.2",
     "react-native-table-component": "^1.2.2",
