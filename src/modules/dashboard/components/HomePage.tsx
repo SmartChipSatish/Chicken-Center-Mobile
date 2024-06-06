@@ -124,7 +124,7 @@ const HomePage = () => {
         </View>
         <View style={styles.freshMeats}>
           <Text style={styles.header}>Fresh Meats</Text>
-          <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+          <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom:'10%' }}>
             <ProductsList />
           </View>
         </View>
