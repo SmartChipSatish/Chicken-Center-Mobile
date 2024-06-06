@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect,useCallback } from "react"
 import {
   View,
   Text,
@@ -28,14 +28,18 @@ import { setLatitudes, setLongitudes } from "../../../accounts/store/slices/Loca
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProfileAvatar from "../../utils/ProfileAvatar";
 import { RootState } from "../../../../store/store";
-
+import { useCreateAddressMutation, useGetAddressByuserMutation } from "../../../accounts/components/afterLogin/Addresses/store/AddressEndpoints";
+import { useFocusEffect } from '@react-navigation/native';
 const HeaderLocation = () => {
   const user = useSelector((store: RootState) => store.user.user);
-
+  const [getAddressByUser] = useGetAddressByuserMutation()
+  const [alltheAddress, setAllTheAddress] = useState<any>([]);
+  const [location, setLocation] = useState({ city: '', country: '', address: '', pincode: "", street: "", state: "", landmark: "", mobile: "" });
+  const [addAddress] = useCreateAddressMutation();
   const [userInput, setUserInput] = useState<any>('');
   const [suggestions, setSuggestions] = useState<any>([]);
   const [previousLocation, setPreviousLocation] = useState('');
-  const [useloc, setUserLoc] = useState({});
+  const [useloc, setUserLoc] = useState<any>({});
   const [userName, setUserName] = useState('');
   const [imageUri, setImgageUri] = useState('')
   const dispatch = useDispatch();
@@ -153,6 +157,35 @@ const HeaderLocation = () => {
                   location.coords.longitude,
                 );
                 const address = response.results[0].formatted_address;
+                const addressComponents = response.results[0].address_components;
+                const flatComponent = addressComponents.find(component =>
+                  component.types.includes('subpremise')
+                );
+                const cityComponent = addressComponents.find(component =>
+                  component.types.includes('locality')
+                );
+                const countryComponent = addressComponents.find(component =>
+                  component.types.includes('country')
+                );
+                const pincodecomponent = addressComponents.find(component =>
+                  component.types.includes('postal_code')
+                );
+                const streetComponent = addressComponents.find(component =>
+                  component.types.includes('route')
+                );
+                const stateComponent = addressComponents.find(component =>
+                  component.types.includes('administrative_area_level_1')
+                );
+
+                const flat = flatComponent ? flatComponent.long_name : '';
+                const city = cityComponent ? cityComponent.long_name : '';
+                const country = countryComponent ? countryComponent.long_name : '';
+                const pincode = pincodecomponent ? pincodecomponent.long_name : '';
+                const street = streetComponent ? streetComponent.long_name : '';
+                const state = stateComponent ? stateComponent.long_name : '';
+                const landmark = flatComponent ? flatComponent.long_name : '';
+                const mobile = flatComponent ? flatComponent.long_name : '';
+                setLocation({ city, country, address, pincode, street, state, landmark, mobile })
                 setDisplayAddress(address);
                 setUserLoc({
                   latitude: location.coords.latitude,
@@ -174,9 +207,7 @@ const HeaderLocation = () => {
       }
     }
   };
-  // useEffect(() => {
-  //   setUserName(user?.name)
-  // }, [])
+
 
   useEffect(() => {
     Geocoder.init(mapKey);
@@ -204,6 +235,80 @@ const HeaderLocation = () => {
     }
   }, [user]);
   console.log(userName, imageUri)
+
+  // const getAllAddresses = async () => {
+  //   const value = await AsyncStorage.getItem('userId');
+  //   const userId = value ? JSON.parse(value) : null;
+  //   try {
+  //     const getdata = await getAddressByUser(userId).unwrap();
+  //     setAllTheAddress(getdata.secondaryAddress);
+
+  //     if (getdata.secondaryAddress.length > 0) {
+  //       setAllTheAddress(getdata.secondaryAddress);
+  //     } else {
+  //       createAllAddressesSecond(true);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+
+  const getAllAddresses = async () => {
+    const value = await AsyncStorage.getItem('userId');
+    const userId = value ? JSON.parse(value) : null;
+    try {
+      const getdata = await getAddressByUser(userId).unwrap();
+      setAllTheAddress(getdata.secondaryAddress);
+  
+      if (getdata.secondaryAddress.length === 0) {
+        createAllAddressesSecond(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const createAllAddressesSecond = async (status: boolean) => {
+    const value = await AsyncStorage.getItem('userId');
+    const userId = value ? JSON.parse(value) : null;
+    let dataTosend = {
+      name: location?.address,
+      houseNo: location?.address,
+      city: location?.city,
+      pincode: Number(location?.pincode),
+      landmark: location.landmark,
+      state: location?.state,
+      location: { coordinates: [useloc.latitude, useloc.longitude] },
+      mobile: Number(location.mobile),
+      status: status,
+    };
+    try {
+      if (location?.address && location?.city && location?.pincode && location?.state) {
+        await addAddress({ id: userId, user: dataTosend }).unwrap();
+        getAllAddresses(); // Refresh addresses after adding
+        
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+ useFocusEffect(useCallback(()=>{{
+  getAllAddresses();
+  }},[]))
+
+  // useFocusEffect(useCallback(()=>{{
+  //   dispatch(setDisplayAddressAll(alltheAddress));
+  // }},[alltheAddress, dispatch]))
+
+
+  
+  
+  
+
+
+
   return (
     <View>
       <View style={styles.locationImg}>

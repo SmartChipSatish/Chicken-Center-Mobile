@@ -17,6 +17,9 @@ import { red100 } from 'react-native-paper/lib/typescript/styles/themes/v2/color
 import Icon from 'react-native-vector-icons/AntDesign';
 import { setUser } from '../../accounts/store/slices/UserSlice';
 import { RootState } from '../../../store/store'
+import { promptForEnableLocationIfNeeded } from 'react-native-android-location-enabler';
+
+
 
 const { height, width } = Dimensions.get('window')
 let db = openDatabase({ name: 'itemslist.db' });
@@ -87,10 +90,29 @@ const HomePage = () => {
 
   useEffect(() => {
     handleGetItemData();
+    handleEnabledPressed();
   }, [])
   useEffect(() => {
     sendFcmToken()
   }, [])
+
+
+  const handleEnabledPressed = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const enableResult = await promptForEnableLocationIfNeeded();
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+          Alert.alert('Error Enabling Location Services', error.message);
+
+        }
+      }
+    } else {
+      Alert.alert('This functionality is only available on Android.');
+    }
+  };
+
   return (
 
     <View style={styles.container}>
@@ -108,6 +130,8 @@ const HomePage = () => {
           ></TextInput>
         </TouchableOpacity>
       </View>
+      {/* <Text>Enable Location Services</Text> */}
+      {/* <Button title="Enable Location" onPress={handleEnabledPressed} /> */}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.carouselContainer}>
           <CarouselCards />

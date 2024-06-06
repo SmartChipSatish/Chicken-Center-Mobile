@@ -1,20 +1,18 @@
 import { View, Text, ViewBase, TextInput, TouchableOpacity, Alert } from 'react-native'
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ScrollView } from 'react-native'
 import { StyleSheet } from 'react-native'
 import { saveAs } from '../../../utlis/constents'
 import Location from './Location'
 import { useDispatch, useSelector } from 'react-redux'
-import { useCreateAddressMutation, useGetAddressByuserMutation } from './store/AddressEndpoints'
+import { useCreateAddressMutation } from './store/AddressEndpoints'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import { RootState } from '../../../../../store/store'
 import { TEXT_COLORS, THEME_COLORS } from '../../../../../globalStyle/GlobalStyles'
-import { setDisplayAddressAll } from '../../../store/slices/LocationSlice'
-import { useFocusEffect } from '@react-navigation/native';
 
-export default function AddAddress() {
-  const navigation = useNavigation<any>();
+export default function PaymentAddress({navigation}:any) {
+//   const navigation = useNavigation<any>();
   const userLatitudes = useSelector((store: RootState) => store.locations.latitudes)
   const userLongitudes = useSelector((store: RootState) => store.locations.longitudes);
   const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
@@ -28,16 +26,14 @@ export default function AddAddress() {
   const [mobile, setmobile] = useState("")
   const dispatch = useDispatch()
   const [notifyname, setnotifyname] = useState(false)
-  const [notifyLand, setnotifyLand] = useState(false)
   const [citynotify, setcitynotify] = useState(false)
   const [statenotify, setstatenotify] = useState(false)
   const [mobilenotify, setmobilenotify] = useState(false)
-  const [getAddressByUser] = useGetAddressByuserMutation()
-  const [alltheAddress, setAllTheAddress] = useState<any>([]);
   const handleAddress = (location: any) => {
     const flat = location?.address?.split(',')?.shift() || '';
     setAddress({ city: location.city, country: location.country, address: location.address, flat: flat, pincode: location.pincode, street: location.street, state: location.state });
   }
+
   useEffect(() => {
     if (address.city !== '' && address.country !== '' && address.address !== '' && address.flat !== '' && address.state !== '' && address.street !== '' && address.pincode !== '' && saveType !== '') {
       setCheckData(true);
@@ -60,25 +56,13 @@ export default function AddAddress() {
       mobile: Number(mobile),
       status: status,
     };
-
-
     try {
       if (address.address && address.flat && landmark && address.city && address.state && address.pincode && mobile) {
-
-        try {
-          const savedData = await addAddress({ id: userId, user: dataTosend }).unwrap();
-          console.log(savedData, 'saveddata');
-          Alert.alert("Successfully added address");
-          // setDisplayAddress(prevAddresses => [savedData, ...prevAddresses]);
-          getAllAddresses();
-          navigation.navigate("addresses");
-          setmobile('');
-          setlandmark('');
-        } catch (apiError) {
-          console.error('API call failed:', apiError);
-
-        }
-
+        let savedData = await addAddress({ id: userId, user: dataTosend });
+        Alert.alert("successfully added address")
+        navigation.navigate("checkout")
+        setmobile('')
+        setlandmark('')
       }
       else {
         Alert.alert("Enter all the fields...")
@@ -91,29 +75,8 @@ export default function AddAddress() {
 
   };
 
-
-  const getAllAddresses = async () => {
-    const value = await AsyncStorage.getItem('userId');
-    const userId = value ? JSON.parse(value) : null;
-    try {
-      const getData = await getAddressByUser(userId).unwrap();
-
-      setAllTheAddress(getData.secondaryAddress);
-
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useFocusEffect(useCallback(() => {
-    {
-      dispatch(setDisplayAddressAll(alltheAddress));
-    }
-  }, []))
-
-
-
   const pincodeValidation = (e: any) => {
-    if (e.length >= 6 && e.length < 7) {
+    if (e.length == 6) {
       setnotifyname(false)
     }
     else (
@@ -122,10 +85,10 @@ export default function AddAddress() {
   }
   const Lankmark = (e: any) => {
     if (e.length > 10) {
-      setnotifyLand(false)
+      setnotifyname(false)
     }
     else (
-      setnotifyLand(true)
+      setnotifyname(true)
     )
   }
 
@@ -148,7 +111,7 @@ export default function AddAddress() {
   }
 
   const mobileavalidation = (e: any) => {
-    if (e.length >= 10 && e.length < 11) {
+    if (e.length >= 10) {
       setmobilenotify(false)
     }
     else (
@@ -161,6 +124,7 @@ export default function AddAddress() {
     <ScrollView keyboardShouldPersistTaps='handled'
       showsVerticalScrollIndicator={false}>
       <View style={{ height: 300, width: '100%' }}>
+        {/* <Text>Address</Text> */}
         <Location handleAddress={handleAddress} />
       </View>
 
@@ -195,7 +159,7 @@ export default function AddAddress() {
             placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
-        {notifyLand && <Text style={Style.textstyles}>Enter minimum 10 characters</Text>}
+        {notifyname && <Text style={Style.textstyles}>Enter minimum 10 characters</Text>}
         <View style={{ marginBottom: 10 }}>
           <Text style={Style.side_header}>City</Text>
           <TextInput style={Style.textInput}
@@ -257,11 +221,10 @@ export default function AddAddress() {
           </View>
         </View>
         {/* style={[Style.save_btn,{backgroundColor:checkData? `${THEME_COLORS.secondary}`: `${THEME_COLORS.light_color}`}]} */}
-
-        <TouchableOpacity style={Style.textsave} onPress={() => createAllAddresses(true)} >
-          <Text style={{ color: 'white', fontWeight: "bold", fontSize: 20 }} >Save</Text>
+        <TouchableOpacity style={Style.textsave}  >
+          <Text style={{ color: 'white', fontWeight: "bold", fontSize: 20 }} onPress={() => { createAllAddresses(true) }}>Save</Text>
         </TouchableOpacity>
-
+       
       </View>
 
 
