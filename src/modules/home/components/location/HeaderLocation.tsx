@@ -234,7 +234,6 @@ const HeaderLocation = () => {
       setImgageUri(user.profileUrl)
     }
   }, [user]);
-  console.log(userName, imageUri)
 
   // const getAllAddresses = async () => {
   //   const value = await AsyncStorage.getItem('userId');
@@ -313,8 +312,6 @@ const HeaderLocation = () => {
     <View>
       <View style={styles.locationImg}>
         <View style={styles.displayLocation}>
-          {/* <Image source={LocationIcon}
-            style={styles.logo} /> */}
           <LocationIconHome color={`${THEME_COLORS.secondary}`} />
           <TouchableOpacity onPress={() => {
             setPreviousLocation(userInput || displayAddress);
@@ -328,11 +325,10 @@ const HeaderLocation = () => {
               {displayAddress !== '' ? displayAddress : 'Fetching location...'}
             </Text>
           </TouchableOpacity>
-          <View style={{ marginLeft: 80 }}>
-            <ProfileAvatar name={userName} imgUrl={imageUri} width={40} height={40} profileView={true} onPress={() => navigation.navigate('account')} />
-          </View>
         </View>
-
+        <View style={styles.profile_Container}>
+          <ProfileAvatar name={userName} imgUrl={imageUri} width={45} height={45} profileView={true} onPress={() => navigation.navigate('account')} />
+        </View>
 
       </View>
 
@@ -522,16 +518,13 @@ const styles = StyleSheet.create({
     color: 'black',
     fontWeight: 'bold',
     marginLeft: 5,
-    width: '90%',
   },
   locationImg: {
-    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    // marginTop: 10,
-    marginLeft: '3%',
-    marginRight: '3%'
+    height: 65,
+    width:'100%'
   },
   locationImg1: {
     display: 'flex',
@@ -626,17 +619,21 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     rowGap: 10,
-    width: '100%',
     padding: 15,
   }, displayLocation: {
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   logo: {
     backgroundColor: THEME_COLORS.secondary,
     width: 40,
     height: 40,
     borderRadius: 25,
+  },profile_Container:{
+    marginRight:'1%',
+    height:'100%',
+    justifyContent:'center',
+    alignItems:'center'
   }
 });

@@ -53,7 +53,7 @@ const addtocart=(id:string)=>{
                         <Text style={{ textDecorationLine: 'line-through' }}>₹ 250</Text>
                     </View>
                 </View>
-                <View style={type === 'cart' ? styles.add_cart : styles.add_fav}>
+                <View style={[type === 'cart' ? styles.add_cart : styles.add_fav,{width:'25%',paddingRight:'1%'}]}>
                     {type === 'product' && <View >
                         <FavouriteIcon color={`${THEME_COLORS.secondary}`}
                             height={25}
@@ -66,10 +66,9 @@ const addtocart=(id:string)=>{
                         <Text style={styles.quantity}>{item.quantity}</Text>
                         <Text style={styles.quantityButton} onPress={() => handleCartQuantity('add', item, dispatch)}>+</Text>
                     </View>}
-                    {!item.showQuantity && type === 'product' && item.globalItemStatus &&<TouchableOpacity
-                        onPress={() => { 
-                            addtocart(item.id)}}>
-                        <Text style={styles.addBtn}>Add</Text>
+                    {!item.showQuantity && type === 'product' && item.globalItemStatus && <TouchableOpacity
+                        onPress={() => addtocart(item.id)}>
+                        <Text style={[styles.addBtn,{padding:5}]}>Add</Text>
                     </TouchableOpacity>}
                     {!item.showQuantity && type === 'product' && !item.globalItemStatus && <View
                     >
@@ -152,7 +151,6 @@ const styles = StyleSheet.create({
         backgroundColor: THEME_COLORS.secondary,
         color: TEXT_COLORS.whiteColor,
         borderRadius: 10,
-        padding: 5,
     }, add_cart: {
         justifyContent: 'center',
         alignItems: 'center',
