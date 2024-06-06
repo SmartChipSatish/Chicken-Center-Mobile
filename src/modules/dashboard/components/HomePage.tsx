@@ -6,7 +6,7 @@ import ProductsList from '../../home/components/productsList/ProductsList';
 import HeaderLocation from '../../home/components/location/HeaderLocation'
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 import { useLazyGetAllProductsQuery } from '../../home/store/services/getAllProductsService';
-import { setAddProducts } from '../../home/store/slices/ProductsListSlice';
+import { setAddProducts, setFavourite } from '../../home/store/slices/ProductsListSlice';
 import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUpdateUserMutation } from '../../auth/store/services/getUserDetailsService';
@@ -51,6 +51,10 @@ const HomePage = () => {
           deviceToken: token
         }).unwrap();
         dispatch(setUser(response.data));
+        const favList = response.data.favouriteItems
+        favList.map((item: any) => {
+          return dispatch(setFavourite(item))
+        })
 
 
       }
@@ -93,7 +97,7 @@ const HomePage = () => {
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     handleGetItemData();
     handleEnabledPressed();
     sendFcmToken()
