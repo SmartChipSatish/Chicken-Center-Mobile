@@ -14,32 +14,29 @@ const Addresses = () => {
   const [displayAddress, setDisplayAddress] = useState<any>([]);
   const dispatch = useDispatch()
 
-  const createAllAddresses = async () => {
+  const getuserAddress = async () => {
     const value = await AsyncStorage.getItem('userId');
     const userId = value ? JSON.parse(value) : null;
     try {
       const getdata = await getAddressByUser(userId).unwrap();
       setDisplayAddress(getdata.secondaryAddress);
+      // setDisplayAddress(prevAddresses => [getdata, ...prevAddresses]);
     } catch (error) {
       console.log(error);
     }
   };
 
   const formatAddress = (address: any) => {
-    return `${address.houseNo}, ${address.landmark}, ${address.city}, ${address.state} ${address.pincode || ""}`;
+    return `${address?.houseNo}, ${address?.landmark}, ${address?.city}, ${address?.state} ${address?.pincode || ""}`;
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      createAllAddresses();
-      dispatch(setDisplayAddressAll(displayAddress))
-    }, [])
-  );
+  useFocusEffect(useCallback(()=>{{
+    getuserAddress();
+  }},[]))
 
   const navigate = useNavigation<any>();
 
   const handleSubmitAddress = (e: any) => {
-    console.log(e, "heysyam")
   }
 
   return (
@@ -51,8 +48,8 @@ const Addresses = () => {
               <TouchableOpacity key={index} onPress={() => { handleSubmitAddress(address) }}>
                 <View style={styles.card}>
                   <View style={styles.iconText}>
-                    <LocationIcon style={styles.locationIcon} />
-                    <Text style={styles.cityText}>{address.city}</Text>
+                  <LocationIcon height={20} width={20} />
+                      <Text style={styles.cityText}>{address?.city}</Text>
                   </View>
                   <View>
                     <Text style={styles.addressText}>{formatAddress(address)}</Text>
@@ -81,12 +78,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   iconText: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8, // Space between city and address
-  },
-  locationIcon: {
-    marginRight: 8, // Space between icon and text
+   display:"flex",
+   flexDirection:"row"
   },
   cityText: {
     fontSize: 16,
@@ -106,9 +99,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     shadowColor: TEXT_COLORS.primary,
     shadowOffset: { width: 0, height: 1 },
-    // shadowOpacity: 0.1,
-    // shadowRadius: 6,
-    // elevation: 3,
     padding: 10,
     marginBottom: 10,
     width: '100%',

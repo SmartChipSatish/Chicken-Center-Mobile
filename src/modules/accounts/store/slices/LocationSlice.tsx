@@ -3,14 +3,14 @@ import {createSlice} from '@reduxjs/toolkit';
 
 interface ProductList {
     locations:any[],
-    latitudes:{},
-    longitudes:{},
+    latitudes:"",
+    longitudes:"",
     displayAddressesall:any[]
 }
 const initialState:ProductList ={
     locations:[],
-    latitudes:{},
-    longitudes:{},
+    latitudes:"",
+    longitudes:"",
     displayAddressesall:[]
 }
 const locationsSlice = createSlice({

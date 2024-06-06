@@ -1,11 +1,15 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { TEXT_COLORS, THEME_COLORS } from '../../../../globalStyle/GlobalStyles';
 import { FavouriteIcon } from '../../../../assets/svgimages/HomeSvgs/svgsIcons';
 import { itemData } from '../../utils/constents';
 import { handelAddToCart, handleCartQuantity } from '../../utils/AddTocartAndQuantity';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../store/store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+
 
 interface productsinfo {
     type: string
@@ -21,10 +25,16 @@ const ProductsCard: React.FC<productsinfo> = ({ item,
     const dispatch = useDispatch();
     const products = useSelector((store: RootState) => store.products.addProducts);
 
-    const addtocart = (id: string) => {
-        const cartItem = products.filter((e) => (e.id === id))[0];
-        handelAddToCart(id, dispatch, cartItem);
-    }
+
+
+
+const addtocart=(id:string)=>{
+    const cartItem= products.filter((e)=>(e.id===id))[0];
+    handelAddToCart(id,dispatch,cartItem);
+}
+
+
+
 
     return (
         <>
@@ -56,8 +66,9 @@ const ProductsCard: React.FC<productsinfo> = ({ item,
                         <Text style={styles.quantity}>{item.quantity}</Text>
                         <Text style={styles.quantityButton} onPress={() => handleCartQuantity('add', item, dispatch)}>+</Text>
                     </View>}
-                    {!item.showQuantity && type === 'product' && item.globalItemStatus && <TouchableOpacity
-                        onPress={() => addtocart(item.id)}>
+                    {!item.showQuantity && type === 'product' && item.globalItemStatus &&<TouchableOpacity
+                        onPress={() => { 
+                            addtocart(item.id)}}>
                         <Text style={styles.addBtn}>Add</Text>
                     </TouchableOpacity>}
                     {!item.showQuantity && type === 'product' && !item.globalItemStatus && <View

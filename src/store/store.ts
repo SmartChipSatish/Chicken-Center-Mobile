@@ -23,11 +23,15 @@ const store = configureStore({
         [addressApi.reducerPath]: addressApi.reducer
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(productsApi.middleware, userApi.middleware,
-            ordersApi.middleware,
-            paymentApi.middleware,
-            addressApi.middleware)
-
+        getDefaultMiddleware({
+            serializableCheck: false, // Disable the middleware in development
+            immutableCheck: false // Disable the immutable state invariant check in development
+        }).concat(productsApi.middleware, userApi.middleware,
+                                      ordersApi.middleware,
+                                      paymentApi.middleware,
+                                    addressApi.middleware) ,
+                                        
+    
 
 })
 

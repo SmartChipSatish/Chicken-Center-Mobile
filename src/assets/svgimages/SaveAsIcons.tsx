@@ -17,8 +17,8 @@ export const HomeIcon = (props: SvgProps) => (
 
 export const LocationIcon = (props: SvgProps) => (
   <Svg
-    width='25px'
-    height='25px'
+    width={props.width}
+    height={props.height}
     viewBox='0 0 24 24'
     fill='none'
     {...props}
@@ -39,6 +39,7 @@ export const WorkingIcon = (props: SvgProps) => (
     height='20px'
     viewBox='0 0 24 24'
     {...props}
+    
   >
     <Path d='M5,21H19a2.006,2.006,0,0,0,2-2V9a2.006,2.006,0,0,0-2-2H17V5a2,2,0,0,0-2-2H9A2,2,0,0,0,7,5V7H5A2.006,2.006,0,0,0,3,9V19A2.006,2.006,0,0,0,5,21ZM9,5.5A.5.5,0,0,1,9.5,5h5a.5.5,0,0,1,.5.5V7H9Z' />
   </Svg>
