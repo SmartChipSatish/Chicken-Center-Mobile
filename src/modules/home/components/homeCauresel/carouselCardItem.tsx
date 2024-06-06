@@ -31,9 +31,9 @@ const CarouselCardItem = ({ item, index }: any) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
-    // width:'100%',
+    borderWidth:1,
     borderRadius: 10,
-    marginVertical: 10,
+    borderColor:'#757676',
     ...Platform.select({
       ios: {
         shadowColor: TEXT_COLORS.primary,
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
-    borderRadius: 5,
+    borderRadius: 10,
   },
   header: {
     position: 'absolute',
