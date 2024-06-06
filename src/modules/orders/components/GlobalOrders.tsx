@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, Modal, TouchableOpacity, Alert, Button } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, Modal, TouchableOpacity, Alert, Button, Pressable } from 'react-native';
 import Rating from './Rating';
 import OrderSummary from './OrderSummary';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,6 +11,9 @@ import Loding from '../../dashboard/components/Loding';
 import { Order } from '../utils/constants';
 import StatusButton from './StatusButton';
 import TabButton from './TabButton';
+import { RightArrowIcon } from '../../../assets/svgimages/OrdersSvgs/OrderSvgs';
+import RatingDisplay from '../../../sharedFolders/components/RatingDisplay';
+import RateOrder from './RateOrder';
 
 
 export default function GlobalOrders() {
@@ -18,12 +21,13 @@ export default function GlobalOrders() {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentRatedItem, setCurrentRatedItem] = useState<any>(null);
   const [ratings, setRatings] = useState<any>({});
-  const [modalVisible1, setModalVisible1] = useState(false)
+  const [modalVisible1, setModalVisible1] = useState(false);
   const appLogo = require('../../../assets/Images/app-logo.png');
-  const [ordersData, setOrdersData] = useState<Order[]>([])
-  const [myOrderId, setMyOrderId] = useState<string>('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [orderStatus, setOrderStatus] = useState('')
+  const [ordersData, setOrdersData] = useState<Order[]>([]);
+  const [myOrderId, setMyOrderId] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [orderStatus, setOrderStatus] = useState('');
+  const [show, setShow] = useState(false);
   const TABS = {
     PLACED: 'Received',
     CANCELLED: 'CANCELLED',
@@ -50,35 +54,20 @@ export default function GlobalOrders() {
     }
     setIsLoading(false)
   }
-
-
-  const handleRateOrder = (item: any) => {
-    setCurrentRatedItem(item);
-    setModalVisible(true);
-  };
-
-  const handleRatingChange = (rating: any) => {
-    setRatings((prevRatings: any) => ({ ...prevRatings, [currentRatedItem.id]: rating }));
-  };
-
-  const handleSubmitRating = () => {
-    Alert.alert("Submitted successfully");
-    setTimeout(() => {
-      setModalVisible(false);
-    }, 2000);
-  };
-
    
   const filterOrders = () => {
-    return ordersData.filter((item) => item.orderStatus == selectedTab)
+    return ordersData?.filter((item) => item?.orderStatus == selectedTab)
   }
-
+  const handleClose = () => {
+    setShow(false)
+  }
   useFocusEffect(
     useCallback(() => {
       getOrderData()
     }, [])
   )
-  
+ 
+
   return (
     <>
     <View style={{marginTop:-10,flex:1}}>
@@ -90,56 +79,64 @@ export default function GlobalOrders() {
       {!isLoading &&
       <ScrollView >
         {filterOrders() && filterOrders().length > 0 ? filterOrders().map((item: Order) => (
-          <TouchableOpacity key={item._id}
+          <Pressable key={item._id}
             onPress={() => { setMyOrderId(item._id); setOrderStatus(item?.orderStatus); setModalVisible1(true); }}
-            style={styles.main_card}>
+            style={({ pressed }) => [
+              {
+                backgroundColor: pressed ? '#ddd' : '#f0f0f0',
+                transform: [{ scale: pressed ? 0.98 : 1 }],
+              },
+              styles.main_card,
+            ]}
+            >
             <View style={styles.card}>
-              <View style={{flex:1,flexDirection:'row',justifyContent:'space-around'}}>
-                <Text style={styles.orderIdHeader}>ORDER ID: {item?.id}</Text>
-                <StatusButton status='PLACED'/>
-                {/* <StatusButton status={orderStatus}/> */}
+              <View style={styles.orderIdCardHeader}>
+                <View style={styles.orderIdContainer}>
+                 <Text style={styles.orderIdText}>ORDER ID: </Text>
+                <Text style={styles.orderIdHeader}>{item?.id}</Text>  
+                </View>
+               
+                {/* <StatusButton status='PLACED'/> */}
+                {item?.orderStatus !== 'DELIVERED' && <RatingDisplay rating={4.3} votes={2925} />}
+                
               </View>
 
               <View style={styles.item_details}>
                 <Image style={styles.tinyLogo} source={{ uri: item?.items[0]?.imageUrl }} />
                 <View>
-                  <Text style={styles.price1}> {item?.items[0]?.itemName}</Text>
+                  <Text style={styles.itemName}> {item?.items[0]?.itemName}</Text>
                   <View style={styles.ordersPlace}>
-                    <Text style={styles.price1}> ₹{item?.totals?.amount}</Text>
+                    <Text style={styles.amount}> ₹{item?.totals?.amount}</Text>
                     <Text> |</Text>
-                    <Text style={styles.price1}> Qty.{item?.totals?.quantity}</Text>
+                    <Text style={styles.price1}> Qty: {item?.totals?.quantity}</Text>
 
                   </View>
+                  
+                  
                 </View>
-
+                <View style={{margin:5,left:30}}>
+                    <StatusButton status={item?.orderStatus}/>
+                  </View>
+                <View style={{left:80}}>
+                   <RightArrowIcon/>
+                </View>
+                
               </View>
 
-              <View style={styles.twoButtons}>
-                <View>
+              <View style={item?.orderStatus !== 'DELIVERED' ? styles.twoButtons : null}>
+                {item?.orderStatus !== 'DELIVERED' && <View>
                   <Text style={styles.RepeatColor}>Repeat</Text>
-                </View>
-                {ratings[item.id] ? (
-                  <View style={styles.ratingContainer}>
-                    {[...Array(ratings[item.id])].map((_, index) => (
-                      <Image
-                        key={index}
-                        style={styles.tinyLogo2}
-                        source={{
-                          uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRyYPvs1xPs_hTJQp1pKDhBqoP9NPso4AOTOMYqTAKVrA&s",
-                        }}
-                      />
-                    ))}
-                    <Text style={styles.Ratings}>Rating submitted</Text>
-                  </View>
-                ) : (
-                  <TouchableOpacity onPress={() => handleRateOrder(item)}>
-                    <Text style={styles.RepeatColor1}>Rate order</Text>
-                  </TouchableOpacity>
+                </View>}
 
-                )}
+                 
+                  {item?.orderStatus !== 'DELIVERED' && <TouchableOpacity onPress={() =>  setShow(true)}>
+                    <Text style={styles.RepeatColor1}>Rate order</Text>
+                  </TouchableOpacity>}
+
+               
               </View>
             </View>
-          </TouchableOpacity>
+          </Pressable>
         )): 
         <View  style={styles.orderContainer}>
            <Image source={NoOrders} style={styles.orderImg}/>
@@ -157,73 +154,9 @@ export default function GlobalOrders() {
       </ScrollView>
       }
       
-      
+      {show && <RateOrder show={show} handleClose={handleClose} />}  
 
 
-      {/* Rate order modal */}
-
-      <View style={styles.centeredView}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
-          }}>
-          <View>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setModalVisible(false);
-                  }}>
-                  <View style={styles.crossMark}>
-                    <CrossMark color={'black'} width={25} height={25}></CrossMark>
-                  </View>
-                </TouchableOpacity>
-
-                <View style={styles.textColorsone}>
-                  <Image source={appLogo}
-                    style={styles.chickenImage} />
-                  <Text style={styles.orderText}>How would you rate the products you ordered?</Text>
-                </View>
-                <ScrollView style={{ width: "95%" }}>
-                  {currentRatedItem && (
-                    <View style={styles.card1}>
-                      <View style={{ display: "flex", flexDirection: "row" }}>
-                        <Image
-                          style={styles.tinyLogos}
-                          source={{
-                            uri: currentRatedItem.image,
-                          }}
-                        />
-                        <View style={styles.ordersPlace1}>
-                          <View>
-                            <Text style={styles.textAll} >{currentRatedItem.name}</Text>
-                          </View>
-                          <View >
-                            <Rating
-
-                              rating={ratings[currentRatedItem.id] || 0}
-                              onRatingChange={handleRatingChange}
-                            />
-                          </View>
-
-                        </View>
-                      </View>
-                    </View>
-                  )}
-                </ScrollView>
-                <TouchableOpacity onPress={handleSubmitRating}>
-                  <View style={{ margin: 20 }}>
-                    <Text style={styles.buttonSubmit}>Submit</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      </View>
       {/* Order summary modal */}
 
       <View style={styles.centeredView}>
@@ -436,17 +369,45 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 20
   },
+  itemName:{
+    fontSize: 14,
+    color: TEXT_COLORS.primary,
+    fontWeight: "500",
+  },
+  amount:{
+    fontSize: 13,
+    color: THEME_COLORS.secondary,
+    fontWeight: "bold",
+  },
   price1: {
     fontSize: 13,
     color: TEXT_COLORS.primary,
-    fontWeight: "bold",
+    fontWeight: "400",
   },
   orderIdHeader:{
     fontSize: 13,
     color: THEME_COLORS.secondary,
     fontWeight: "bold",
-    paddingTop:5,
-    left:-7
+  },
+  orderIdText:{
+    fontSize: 13,
+    color: TEXT_COLORS.primary,
+    fontWeight: "500",
+  },
+  orderIdContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    paddingVertical: 2,
+    paddingHorizontal: 6,
+    borderRadius: 4,
+  },
+  orderIdCardHeader:{
+    flex:1,
+    flexDirection:'row',
+    justifyContent:'space-between',
+    alignItems:'center',
+    margin:2
   },
   quantity: {
     fontSize: 16,
@@ -455,7 +416,8 @@ const styles = StyleSheet.create({
   },
   item_details: {
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
+  
   }, 
   main_card: {
     width: '100%',

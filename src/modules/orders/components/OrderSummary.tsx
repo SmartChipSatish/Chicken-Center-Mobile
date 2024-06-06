@@ -12,6 +12,8 @@ export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {
 
     const [ordersData, setOrdersData] = useState<OrderItem[]>()
     const [totalOrder, setTotalOrder] = useState<Order>();
+    const [addressId,setAddressId] = useState('');
+    const [address,setAddress] = useState<any>([]);
     const [isLoading, setIsLoading] = useState(false)
     const [getOrders] = useGetOrderByIdMutation();
 
@@ -22,7 +24,11 @@ export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {
             const response = await getOrders(orderId);
             setOrdersData(response?.data?.items)
             setTotalOrder(response?.data)
-            console.log(response?.data, 'ordersSummary')
+            setAddress(response?.data?.userId?.secondaryAddress)
+            setAddressId(response?.data?.addressId)
+            // console.log(response?.data, 'ordersSummary')
+            
+            // console.log(response?.data.userId.secondaryAddress, 'secondaryAddress')
             setIsLoading(false)
         } catch (error) {
             console.log(error)
@@ -51,7 +57,11 @@ export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {
     const discount = totalOrder?.discountPercentage || 0;
     const coupon = totalOrder?.coupon || 0;
     const total = itemsPrice + deliveryFee + addons - (coupon + discount);
-
+// const findAddressById = (address: any[],addressId: string) => {
+//     return address.find((res: { _id: string; })=> res._id === addressId )
+// }
+// const myAddress = findAddressById(address,addressId)
+// console.log(address,'address')
     return (
     
         <View>
@@ -111,8 +121,8 @@ export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {
                         <View style={styles.cards}>
                             <View style={{flex:1,flexDirection:'row',justifyContent: 'space-between',}}>
                              <Text style={styles.Billdetails}>Order details</Text>
-                            {/* <StatusButton status={orderStatus}/>   */}
-                            <StatusButton status='DELIVERED'/>  
+                            <StatusButton status={orderStatus}/>  
+                            {/* <StatusButton status='DELIVERED'/>   */}
                             </View>
                             
                             <Text style={styles.AlltextColors}>Order id</Text>
