@@ -22,7 +22,9 @@ const CarouselCardItem = ({ item, index }: any) => {
         <Text style={[styles.headerText,{fontSize:18}]}>Chicken</Text>
         <Text style={[styles.headerText,{color:`${THEME_COLORS.secondary}`}]}>UPTO ₹ 100</Text>
         </View>
+        <View>
         <Text style={styles.headerText}>50% OFF</Text>
+        </View>
       </LinearGradient>
     </View>
   );
@@ -62,6 +64,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 5,
     flexDirection:'row',
     justifyContent: 'space-between',
+    alignItems:'flex-end'
   },
   headerText: {
     color: 'white',
