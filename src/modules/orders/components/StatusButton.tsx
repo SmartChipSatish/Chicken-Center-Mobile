@@ -4,14 +4,14 @@ import React from 'react';
 const StatusButton = ({ status }:{status: string}) => {
     const getStatus = (status: string) => {
         switch (status) {
-            case 'PLACED':
-                return { label: 'PLACED', backgroundColor: '#FEEBC8', textColor: '#DD6B20' }; // Light orange background, dark orange text
+            case 'Received':
+                return { label: 'PLACED', backgroundColor: '#FEEBC8', textColor: '#DD6B20' }; 
             case 'CANCELED':
-                return { label: 'CANCELLED', backgroundColor: '#FED7D7', textColor: '#E53E3E' }; // Light red background, dark red text
+                return { label: 'CANCELLED', backgroundColor: '#FED7D7', textColor: '#E53E3E' }; 
             case 'DELIVERED':
-                return { label: 'DELIVERED', backgroundColor: '#C6F6D5', textColor: '#38A169' }; // Light green background, dark green text
+                return { label: 'DELIVERED', backgroundColor: '#C6F6D5', textColor: '#38A169' }; 
             default:
-                return { label: 'Unknown', backgroundColor: '#E2E8F0', textColor: '#2D3748' }; // Light gray background, dark gray text
+                return { label: 'Unknown', backgroundColor: '#E2E8F0', textColor: '#2D3748' }; 
         }
     };
 
