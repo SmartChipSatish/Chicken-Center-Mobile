@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Button } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Modal, Button, Alert } from 'react-native'
 import React, { useEffect, useState, useCallback } from 'react'
 import { TextInput } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
@@ -16,9 +16,6 @@ import { setShowQuantityReset } from '../../store/slices/ProductsListSlice'
 import { ActivityIndicator } from 'react-native-paper'
 import { useGetAddressByuserMutation, useUpdateAddressMutation } from '../../../accounts/components/afterLogin/Addresses/store/AddressEndpoints'
 import { useFocusEffect } from '@react-navigation/native';
-
-
-
 
 export default function Checkout({ route }: any) {
     const [modalVisible, setModalVisible] = useState<any>(false);
@@ -56,35 +53,41 @@ export default function Checkout({ route }: any) {
     });
 
     const totalQuantity = cartItems.reduce((accumulator, item) => accumulator + item?.quantity, 0);
-    const createOrder = async () => {
-        setIsLoading(true)
-        try {
-            const storedUid = await AsyncStorage.getItem('userId');
-            const uid = storedUid?.replace(/['"]/g, '').trim();
-            const response = await createData({
-                userId: uid,
-                createdBy: uid,
-                updatedBy: uid,
-                addressId: '6655d6dff9c814266aef1d6e',
-                paymentType: paymentType,
-                items: items,
-                totals: {
-                    quantity: totalQuantity,
-                    amount: totalAmount
-                }
-            }).unwrap();
 
-            setOrderId(response?._id)
-            if (response && response?._id) {
-                dispatch(setClearCart())
-                dispatch(setShowQuantityReset(''))
-                setShow(true)
+    const createOrder = async () => {
+        if (addressId._id && paymentType !== '') {
+            setIsLoading(true)
+            try {
+                const storedUid = await AsyncStorage.getItem('userId');
+                const uid = storedUid?.replace(/['"]/g, '').trim();
+                const response = await createData({
+                    userId: uid,
+                    createdBy: uid,
+                    updatedBy: uid,
+                    addressId: addressId._id,
+                    paymentType: paymentType,
+                    items: items,
+                    totals: {
+                        quantity: totalQuantity,
+                        amount: totalAmount
+                    }
+                }).unwrap();
+
+                setOrderId(response?._id)
+                if (response && response?._id) {
+                    dispatch(setClearCart())
+                    dispatch(setShowQuantityReset(''))
+                    setShow(true)
+                }
+                setTimeout(() => { setIsLoading(false); }, 1000);
+            } catch (error) {
+                console.error('Error:', error);
             }
-            setTimeout(() => { setIsLoading(false); }, 1000);
-        } catch (error) {
-            console.error('Error:', error);
+        } else {
+            Alert.alert('Select Address and Payment type');
         }
     };
+
     const handleClose = () => {
         setShow(false)
     }
@@ -127,7 +130,6 @@ export default function Checkout({ route }: any) {
             const deleteAddress = everyoneAddress.filter((item: any) => {
                 return item?._id !== addressId?._id
             })
-           
             setSome(deleteAddress)
         } catch (error) {
             console.log(error);
@@ -135,7 +137,7 @@ export default function Checkout({ route }: any) {
     };
 
     const userone = (e: any) => {
-        console.log(e,"userid")
+        console.log(e, "userid")
         setAddressId(e)
 
     }
@@ -175,7 +177,8 @@ export default function Checkout({ route }: any) {
                 <View style={style.payment}>
                     <Text style={style.payment_text}>Payment Method</Text>
                 </View>
-                <ScrollView horizontal={true}>
+                <ScrollView horizontal={true}
+                    showsHorizontalScrollIndicator={false}>
                     <View style={style.payment_types}>
                         <View style={[style.payment_mode,
                         { backgroundColor: paymentType === 'cash' ? `${THEME_COLORS.light_color}` : 'white' }]}>
@@ -216,15 +219,18 @@ export default function Checkout({ route }: any) {
                         style={style.note} />
                 </View>
             </ScrollView>
+            <View style={{justifyContent:'center',alignItems:'center'}}>
             {paymentType === 'cash' ?
-                <TouchableOpacity style={isLoading ? style.disableContainer : style.confirm_order}>
-                    <Text style={style.cashBtn} onPress={isLoading ? () => { } : createOrder} disabled={isLoading}>
+                <TouchableOpacity style={[style.confirm_order,{backgroundColor:(addressId._id && paymentType) ?THEME_COLORS.secondary: THEME_COLORS.light_color}] }
+                                  onPress={createOrder}>
+                    {isLoading && <ActivityIndicator size="small" color={THEME_COLORS.primary} />}
+                    <Text style={style.cashBtn}  disabled={isLoading}>
                         Confirm Order
                     </Text>
-                    {isLoading && <ActivityIndicator size="small" color={THEME_COLORS.primary} />}
                 </TouchableOpacity> :
-                <Payment totalAmount={totalAmount} type={paymentType} />}
+                <Payment totalAmount={totalAmount} type={paymentType} addressId={addressId._id}/>}
             {show && <OrderConfirmationScreen show={show} handleClose={handleClose} totalAmount={totalAmount} orderId={orderId} />}
+            </View>
             <View>
                 <Modal
                     visible={modalVisible}
@@ -243,7 +249,7 @@ export default function Checkout({ route }: any) {
                                             key={indexex}
                                             style={style.card}
                                             // toggleModal();
-                                            onPress={() => { setSelectedAddress(e);  userone(e); toggleModal() }}
+                                            onPress={() => { setSelectedAddress(e); userone(e); toggleModal() }}
 
                                         >
                                             <View style={style.textIcons} >
@@ -253,7 +259,7 @@ export default function Checkout({ route }: any) {
                                             <Text style={style.text}>
                                                 {` ${e?.name || ''}  ${e?.pincode || ''}`}
                                             </Text>
-                                            <TouchableOpacity onPress={(event) => { event.stopPropagation();  setModalVisibles(true) }}>
+                                            <TouchableOpacity onPress={(event) => { event.stopPropagation(); setModalVisibles(true) }}>
                                                 <Text style={style.icons} >sssss</Text>
                                             </TouchableOpacity>
 
@@ -276,11 +282,11 @@ export default function Checkout({ route }: any) {
                     visible={modalVisibles}
                     onRequestClose={() => setModalVisibles(false)}
                 >
-                    
+
                     <View style={style.modalBackground}>
                         <View style={style.modalContents}>
-                        <TouchableOpacity onPress={() => { setModalVisibles(false); handleDeleteAddress(); }}>
-                            <Text  style={{ color: "red", fontWeight: "bold" }}>Delete</Text>
+                            <TouchableOpacity onPress={() => { setModalVisibles(false); handleDeleteAddress(); }}>
+                                <Text style={{ color: "red", fontWeight: "bold" }}>Delete</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -330,8 +336,9 @@ const style = StyleSheet.create({
         alignItems: 'center',
         marginTop: 10
     }, add_btn: {
-        color: '#4E3AFF',
+        color: THEME_COLORS.secondary,
         fontSize: 16,
+        fontWeight:'bold'
     },
 
     colorsText: {
@@ -403,13 +410,13 @@ const style = StyleSheet.create({
     },
     confirm_order: {
         marginBottom: 20,
-        backgroundColor: THEME_COLORS.secondary,
+        // backgroundColor: THEME_COLORS.secondary,
         height: 45,
         borderRadius: 10,
+        flexDirection:'row',
         justifyContent: 'center',
         alignItems: 'center',
-        width: '50%',
-        left: '25%',
+        width: '60%',
     },
     disableContainer: {
         marginBottom: 20,
@@ -444,7 +451,11 @@ const style = StyleSheet.create({
     cashBtn: {
         color: THEME_COLORS.primary,
         fontSize: TEXT_FONT_SIZE.medium,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft:'2%'
     },
     container1: {
         padding: 16,
@@ -541,7 +552,7 @@ const style = StyleSheet.create({
         borderTopRightRadius: 5,
         borderBottomLeftRadius: 5,
         borderBottomRightRadius: 5,
-        marginBottom:200
+        marginBottom: 200
     },
     modalBackground: {
         flex: 1,
