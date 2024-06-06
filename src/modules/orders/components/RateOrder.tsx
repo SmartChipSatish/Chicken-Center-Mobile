@@ -36,13 +36,10 @@ const RateOrder = ({ show, handleClose }: any) => {
             <View style={styles.container}>
                 <View style={styles.header}>
                     <Text style={styles.headerText}>Rate Order</Text>
-                    <TouchableOpacity onPress={() => { handleClose()}}>
-                    <View style={{}}>
+                    <TouchableOpacity onPress={() => { handleClose()}}  style={styles.crossMarkContainer}>
                         <CrossMark color={'white'} width={18} height={18}></CrossMark>
-                    </View>
                     </TouchableOpacity>
                 </View>
-              
                 <View style={styles.content}>
                     <View style={styles.stars}>
                         {starRatingOptions.map((option, index) => (
@@ -84,12 +81,12 @@ const styles = StyleSheet.create({
     header: {
         width: '80%',
         backgroundColor: THEME_COLORS.secondary,
-        padding: 10,
-        justifyContent: 'center',
+        justifyContent:'center',
         alignItems: 'center',
         borderTopEndRadius: 10,
         borderTopStartRadius: 10,
-        flexDirection:'row'
+        position:'relative',
+        height:50
     },
     headerText: {
         color: '#fff',
@@ -162,6 +159,10 @@ const styles = StyleSheet.create({
         width: '100%',
         textAlignVertical: 'top',
     },
+    crossMarkContainer:{
+        position:'absolute',
+        right:8
+    }
 });
 
 export default RateOrder;
