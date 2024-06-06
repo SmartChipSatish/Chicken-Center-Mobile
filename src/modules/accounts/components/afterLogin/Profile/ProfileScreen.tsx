@@ -148,6 +148,7 @@ const ProfileScreen: React.FC = () => {
             .then(data => {
                 setAvatarUri(data.secure_url);
                 setAvatarError(null);
+                AsyncStorage.setItem('login', 'true');
             }).catch(err => {
                 Alert.alert("An Error Occured While Uploading");
                 setAvatarError("Failed to upload image");

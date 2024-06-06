@@ -1,6 +1,6 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, TextInput, Text, Alert, BackHandler, ScrollView, TouchableOpacity, Keyboard, Platform, PermissionsAndroid } from 'react-native';
+import { View, TextInput, Text, Alert, BackHandler, ScrollView, TouchableOpacity, Keyboard, Platform, PermissionsAndroid, ImageBackground } from 'react-native';
 import { StyleSheet } from "react-native";
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 import auth from '@react-native-firebase/auth';
@@ -9,6 +9,7 @@ import { GoogleSignin } from 'react-native-google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loding from '../../dashboard/components/Loding';
 import { useGetUserDetailsMutation } from '../store/services/getUserDetailsService';
+const backgroundImg = require('../../../assets/Images/login_bg.png');
 
 export default function LoginPage() {
 
@@ -109,11 +110,11 @@ export default function LoginPage() {
             setLoding(true);
             try {
                 const data = await getUser(`${user?.uid}`);
-                const userId =data?.data?._id
+                const userId = data?.data?._id
                 if (userId) {
                     setLoding(false);
-                    AsyncStorage.setItem('idToken', JSON.stringify(idTokens+userId));
-                    AsyncStorage.setItem('userId',JSON.stringify(userId));
+                    AsyncStorage.setItem('idToken', JSON.stringify(idTokens + userId));
+                    AsyncStorage.setItem('userId', JSON.stringify(userId));
                     AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
                     AsyncStorage.setItem('login', 'true');
                     navigation.navigate('main');
@@ -138,52 +139,55 @@ export default function LoginPage() {
 
     return (
         <View style={style.container}>
-            <ScrollView showsVerticalScrollIndicator={false}
-                        contentContainerStyle={style.scrollViewContent}
-                        keyboardShouldPersistTaps='always'>
-                <View style={style.innerContainer}>
-                    <View style={{width:'100%'}}>
-                    <Text style={style.header}>Login / Sign up with your Phone Number</Text>
-                    </View>
-                    <View style={style.inputContainer}>
-                        <View style={{ marginLeft: 5, justifyContent: 'center' }}>
-                            <Text style={[style.input_text, { fontSize: 20, }]}>+91</Text>
+            <ImageBackground source={backgroundImg}
+                style={{ height: '100%' }}>
+                <ScrollView showsVerticalScrollIndicator={false}
+                    contentContainerStyle={style.scrollViewContent}
+                    keyboardShouldPersistTaps='always'>
+                    <View style={style.innerContainer}>
+                        <View style={{ width: '100%' }}>
+                            <Text style={style.header}>Login / Sign up with your Phone Number</Text>
                         </View>
-                        <View style={{ width: '70%', marginBottom: 20 }}
-                        >
+                        <View style={style.inputContainer}>
+                            <View style={{ marginLeft: 5, justifyContent: 'center' }}>
+                                <Text style={[style.input_text, { fontSize: 20, }]}>+91</Text>
+                            </View>
+                            <View style={{ width: '60%', marginBottom: 20 }}
+                            >
 
-                            <TextInput style={style.mobileNo_textInput}
-                                placeholder='Enter Number'
-                                onChangeText={(e) => NumberValidation(e)}
-                                keyboardType="phone-pad"
-                                maxLength={10}
-                                autoFocus={true}
-                                value={number}
-                                placeholderTextColor={TEXT_COLORS.secondary}
-                            />
+                                <TextInput style={style.mobileNo_textInput}
+                                    placeholder='Enter Number'
+                                    onChangeText={(e) => NumberValidation(e)}
+                                    keyboardType="phone-pad"
+                                    maxLength={10}
+                                    autoFocus={true}
+                                    value={number}
+                                    placeholderTextColor={TEXT_COLORS.secondary}
+                                />
 
+                            </View>
+                        </View>
+                        <View style={style.butns_container}>
+                            <TouchableOpacity
+                                onPress={SendOtp}
+                                activeOpacity={numberCheck ? 0 : 1}
+                                style={[style.numberVerificationBtn,
+                                { backgroundColor: numberCheck ? `${THEME_COLORS.secondary}` : `${THEME_COLORS.light_color}` }
+                                ]}
+                            >
+                                <Text style={{ color: 'white', fontSize: 16 }}>Proceed with OTP</Text>
+                            </TouchableOpacity>
+                            <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '6%', marginBottom: '6%' }}>
+                                <Text style={{ fontSize: 18, color: TEXT_COLORS.secondary }}>--------- or ---------</Text>
+                            </View>
+                            <TouchableOpacity style={style.numberVerificationBtn} onPress={() => handleGoogleLogin()} >
+                                <Text style={{ color: 'white', fontSize: 16 }}>Google</Text>
+                            </TouchableOpacity>
                         </View>
                     </View>
-                    <View style={{width:'100%'}}>
-                    <TouchableOpacity
-                        onPress={SendOtp}
-                        activeOpacity={numberCheck ? 0 : 1}
-                        style={[style.numberVerificationBtn,
-                        { backgroundColor: numberCheck ? `${THEME_COLORS.secondary}` : `${THEME_COLORS.light_color}` }
-                        ]}
-                    >
-                        <Text style={{ color: 'white' }}>Proceed with OTP</Text>
-                    </TouchableOpacity>
-                    <View style={{justifyContent:'center',alignItems:'center',marginTop:'15%'}}>
-                    <Text style={{fontSize:20,color:TEXT_COLORS.primary,fontWeight:'bold'}}>------ or ------</Text>
-                    </View>
-                    <TouchableOpacity style={style.numberVerificationBtn} onPress={() => handleGoogleLogin()} >
-                        <Text style={{ color: 'white' }}>Google</Text>
-                    </TouchableOpacity>
-                    </View>
-                </View>
-                {loding && <Loding/>}
-            </ScrollView>
+                    {loding && <Loding type='login' />}
+                </ScrollView>
+            </ImageBackground>
         </View>
     );
 }
@@ -197,6 +201,7 @@ const style = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 20,
+        marginTop: '3%'
     },
     innerContainer: {
         width: '100%',
@@ -205,8 +210,8 @@ const style = StyleSheet.create({
     header: {
         color: TEXT_COLORS.primary,
         fontSize: 18,
-        fontWeight: 'bold',
-      
+        // fontWeight: 'bold',
+
     }, input_text: {
         color: TEXT_COLORS.primary,
     },
@@ -216,8 +221,8 @@ const style = StyleSheet.create({
         height: 40,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 5,
-        
+        borderRadius: 15,
+        width: '60%'
     },
     mobileNo_textInput: {
         height: 58,
@@ -232,8 +237,12 @@ const style = StyleSheet.create({
         flexDirection: 'row',
         borderBottomWidth: 1,
         height: 58,
-        width: '100%',
+        width: '80%',
         alignItems: 'center',
-        marginVertical: 32
+        marginVertical: 20
+    }, butns_container: {
+        width: '100%',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
