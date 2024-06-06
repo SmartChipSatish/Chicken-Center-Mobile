@@ -1,28 +1,24 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView, Alert, BackHandler, Platform, TextInput } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, ScrollView, Alert, BackHandler, TextInput, Platform } from 'react-native';
 import CarouselCards from '../../home/components/homeCauresel/CarouselCard';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { Searchbar } from 'react-native-paper';
 import ProductsList from '../../home/components/productsList/ProductsList';
 import HeaderLocation from '../../home/components/location/HeaderLocation'
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 import { useLazyGetAllProductsQuery } from '../../home/store/services/getAllProductsService';
 import { setAddProducts } from '../../home/store/slices/ProductsListSlice';
-import { useDispatch, useSelector } from 'react-redux';
 import { openDatabase } from 'react-native-sqlite-storage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useUpdateUserMutation } from '../../auth/store/services/getUserDetailsService';
 import { CartItems, RealmContext } from '../../../database/schemas/cartItemsShema';
 import { setCartItems } from '../../home/store/slices/CartProductsSlice';
-import { RootState } from '../../../store/store';
 const { useRealm } = RealmContext
+import { useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUpdateUserMutation } from '../../auth/store/services/getUserDetailsService';
 import Icon from 'react-native-vector-icons/AntDesign';
+import { setUser } from '../../accounts/store/slices/UserSlice';
+import { promptForEnableLocationIfNeeded } from 'react-native-android-location-enabler';
 
 const { height, width } = Dimensions.get('window')
-let db = openDatabase({ name: 'itemslist.db' });
-
-
-
 const HomePage = () => {
   const navigate = useNavigation<any>();
   const [updateUser] = useUpdateUserMutation();
@@ -57,6 +53,8 @@ const HomePage = () => {
           userId: userId,
           deviceToken: token
         }).unwrap();
+        dispatch(setUser(response.data));
+
 
       }
     } catch (error) {
@@ -82,7 +80,7 @@ const HomePage = () => {
       if (cartItemData.length > 0 && response) {
 
         const updatedList = response.map(product => {
-          const cartItem = cartItemData.find(item => item.id === product.id);
+          const cartItem = cartItemData.find((item:any) => item.id === product.id);
           if (cartItem) {
             return {
               ...product,
@@ -92,6 +90,7 @@ const HomePage = () => {
           }
           return { ...product, quantity: 1, showQuantity: false };
         });
+        console.log(updatedList,'listttt');
         dispatch(setAddProducts({ data: updatedList, type: 'cart' }));
         dispatch(setCartItems(cartItemData));
       } else {
@@ -110,11 +109,32 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
-    realm.subscriptions.update(mutableSubs => {
+    realm.subscriptions.update((mutableSubs:any) => {
       mutableSubs.add(realm.objects(CartItems))
     })
   }, [realm]);
 
+  const handleEnabledPressed = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const enableResult = await promptForEnableLocationIfNeeded();
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message);
+          Alert.alert('Error Enabling Location Services', error.message);
+
+        }
+      }
+    } else {
+      Alert.alert('This functionality is only available on Android.');
+    }
+  };
+
+    useEffect(() => {
+    handleGetItemData();
+    handleEnabledPressed();
+    sendFcmToken()
+  }, [])
 
   return (
 
@@ -123,16 +143,18 @@ const HomePage = () => {
         <HeaderLocation></HeaderLocation>
       </View>
       <View style={styles.search_MainContainer}>
-      <TouchableOpacity onPress={() => navigate.navigate('searchPage')}
-        style={styles.searchBarContainer}>
-        <Icon name="search1" size={20} color={TEXT_COLORS.secondary}  style={styles.searchIcon}/>
-        <TextInput style={styles.searchBar}
-                   placeholder='Search'
-                   editable={false}
-                   placeholderTextColor={TEXT_COLORS.secondary}
-                   ></TextInput>
-      </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigate.navigate('searchPage')}
+          style={styles.searchBarContainer}>
+          <Icon name="search1" size={20} color={TEXT_COLORS.secondary} style={styles.searchIcon} />
+          <TextInput style={styles.searchBar}
+            placeholder='Search'
+            editable={false}
+            placeholderTextColor={TEXT_COLORS.secondary}
+          ></TextInput>
+        </TouchableOpacity>
       </View>
+      {/* <Text>Enable Location Services</Text> */}
+      {/* <Button title="Enable Location" onPress={handleEnabledPressed} /> */}
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.carouselContainer}>
           <CarouselCards />
@@ -152,11 +174,12 @@ const HomePage = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: `${THEME_COLORS.primary}`
-  }, search_MainContainer:{
-    justifyContent:'center',
-    alignItems:'center'
+  },
+  search_MainContainer: {
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   searchBarContainer: {
     flexDirection: 'row',
@@ -164,7 +187,7 @@ const styles = StyleSheet.create({
     marginTop: '2%',
     borderWidth: 1,
     borderColor: '#ddd',
-    width: '93%',
+    width: '97%',
     backgroundColor: '#fff',
     borderRadius: 10,
     shadowColor: `${TEXT_COLORS.primary}`,
@@ -173,8 +196,8 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
     marginBottom: '2%',
-    height:60,
-    paddingLeft:'5%'
+    height: 60,
+    paddingLeft: '5%'
   },
   banner: {
     backgroundColor: '#007bff',
@@ -191,9 +214,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   searchBar: {
-    marginRight:'2%'
-  },searchIcon:{
-    marginRight:10,
+    marginRight: '2%'
+  }, searchIcon: {
+    marginRight: 10,
   },
   searchBarText: {
     fontSize: 16,
@@ -207,6 +230,7 @@ const styles = StyleSheet.create({
   },
   carouselContainer: {
     paddingHorizontal: 20,
+    marginTop: '2%',
     height: 200,
     justifyContent: 'center',
     alignItems: 'center',
@@ -215,6 +239,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 6,
     elevation: 5,
+    width: '100%'
   },
   carouselItem: {
     backgroundColor: '#eee',
@@ -246,14 +271,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   header: {
-    fontSize: 17,
-    color: `${TEXT_COLORS.primary}`,
+    fontSize: 18,
+    color: THEME_COLORS.secondary,
     marginBottom: 10,
-    marginLeft: '2%'
+    marginLeft: '2%',
+    fontWeight: 'bold'
   },
   HomePageBackground: {
     backgroundColor: "white",
-    height: "7%"
+    // height: "12%",
+    shadowColor: TEXT_COLORS.primary,
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.8,
+    shadowRadius: 6,
+    elevation: 5,
   }
 });
 

@@ -1,5 +1,5 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { TEXT_COLORS, THEME_COLORS } from '../../../../globalStyle/GlobalStyles';
 import { FavouriteIcon } from '../../../../assets/svgimages/HomeSvgs/svgsIcons';
 import { itemData } from '../../utils/constents';
@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../store/store';
 import { RealmContext } from '../../../../database/schemas/cartItemsShema';
 const { useRealm } = RealmContext
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 interface productsinfo {
     type: string
     item: itemData
@@ -28,7 +30,7 @@ const addtocart=(id:string)=>{
     handelAddToCart(id,dispatch,cartItem,realm);
 }
 
-    return (
+return (
         <>
             <View key={item.id} style={styles.card_items} >
                 <View style={styles.items_subCard} >
@@ -38,14 +40,14 @@ const addtocart=(id:string)=>{
                         }}
                         style={styles.image}
                     />}
-                    <View >
+                    <View style={{width:'50%'}}>
                         <Text style={styles.item_text}>{item.itemName + ' ' + item.itemQty}</Text>
                         {/* <Text style={styles.item_price}>₹ {type === 'cart' ? item.total : item.itemPrice}</Text> */}
-                        <Text style={styles.item_price}>₹ { item.itemPrice}</Text>
+                        <Text style={styles.item_price}>₹ {item.itemPrice}</Text>
                         <Text style={{ textDecorationLine: 'line-through' }}>₹ 250</Text>
                     </View>
                 </View>
-                <View style={type === 'cart'? styles.add_cart:styles.add_fav}>
+                <View style={[type === 'cart' ? styles.add_cart : styles.add_fav,{width:'25%',paddingRight:'1%'}]}>
                     {type === 'product' && <View >
                         <FavouriteIcon color={`${THEME_COLORS.secondary}`}
                             height={25}
@@ -58,13 +60,13 @@ const addtocart=(id:string)=>{
                         <Text style={styles.quantity}>{item.quantity}</Text>
                         <Text style={styles.quantityButton} onPress={() => handleCartQuantity('add', item, dispatch,realm)}>+</Text>
                     </View>}
-                    {!item.showQuantity && type === 'product' && item.globalItemStatus &&<TouchableOpacity
+                    {!item.showQuantity && type === 'product' && item.globalItemStatus && <TouchableOpacity
                         onPress={() => addtocart(item.id)}>
-                        <Text style={styles.addBtn}>Add</Text>
+                        <Text style={[styles.addBtn,{padding:5}]}>Add</Text>
                     </TouchableOpacity>}
-                    {!item.showQuantity && type === 'product' && !item.globalItemStatus &&<View
-                        >
-                        <Text style={[styles.addBtn,{color:THEME_COLORS.secondary,backgroundColor:TEXT_COLORS.whiteColor}]}>Not Available</Text>
+                    {!item.showQuantity && type === 'product' && !item.globalItemStatus && <View
+                    >
+                        <Text style={[styles.addBtn, { color: THEME_COLORS.secondary, backgroundColor: TEXT_COLORS.whiteColor }]}>Not Available</Text>
                     </View>}
                 </View>
             </View>
@@ -96,7 +98,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         height: 100,
-        marginBottom:'0%'
+        marginBottom: '0%'
     },
     image: {
         width: 85,
@@ -106,17 +108,17 @@ const styles = StyleSheet.create({
         marginRight: 10
     },
     item_text: {
-        color: `${TEXT_COLORS.primary}`,
-        fontSize: 14,
+        color: '#626364',
+        fontSize: 15,
         marginBottom: 3,
-        fontWeight: 'bold',
+        fontWeight: '700',
     }, item_price: {
         color: `${THEME_COLORS.secondary}`,
         fontSize: 15,
         fontWeight: 'bold',
     }, items_subCard: {
         flexDirection: 'row',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     quantityContainer: {
         flexDirection: 'row',
@@ -126,8 +128,8 @@ const styles = StyleSheet.create({
         padding: 5,
     },
     quantityButton: {
-        fontSize: 16,
-        color: 'maroon',
+        fontSize: 20,
+        color: `${THEME_COLORS.secondary}`,
         paddingHorizontal: 10,
     },
     quantity: {
@@ -143,9 +145,8 @@ const styles = StyleSheet.create({
         backgroundColor: THEME_COLORS.secondary,
         color: TEXT_COLORS.whiteColor,
         borderRadius: 10,
-        padding: 5,
-    },add_cart: {
+    }, add_cart: {
         justifyContent: 'center',
-        alignItems:'center',
+        alignItems: 'center',
     }
 })

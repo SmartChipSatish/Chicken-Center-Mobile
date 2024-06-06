@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, ToastAndroid, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ToastAndroid, ActivityIndicator, Alert } from 'react-native';
 import { CFErrorResponse, CFPaymentGatewayService } from 'react-native-cashfree-pg-sdk';
 import {
   CFDropCheckoutPayment,
@@ -21,7 +21,7 @@ import { RootState } from '../../../store/store';
 import OrderConfirmationScreen from '../../orders/components/OrderConfirmationScreen';
 import { setShowQuantityReset } from '../../home/store/slices/ProductsListSlice';
 
-const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) => {
+const Payment = ({ totalAmount, type, addressId }: { totalAmount: number, type: string, addressId: string }) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
   const totalQuantity = cartItems.reduce((accumulator, item) => accumulator + item.quantity, 0);
@@ -33,7 +33,7 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
   const [createData] = useCreateOrderMutation();
   const [initiateOrder] = useInitiateOrderMutation();
   const [paymentVerify] = useVerifyOrderMutation();
- 
+
   const items = cartItems.map(item => {
     return ({
       itemId: item.id,
@@ -45,55 +45,64 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
     })
   });
   const createOrder = async () => {
-    setIsLoading(true)
+    if (addressId !== '') {
+      setIsLoading(true)
+      try {
+        // setIsLoading(true)
+        const storedUid = await AsyncStorage.getItem('userId');
+        console.log(storedUid)
+        const uid = storedUid?.replace(/['"]/g, '').trim();
+        console.log(uid, 'uid')
+        const response = await createData({
+          userId: uid,
+          createdBy: uid,
+          updatedBy: uid,
+          addressId: addressId,
+          paymentType: type,
+          items: items,
+          totals: {
+            quantity: totalQuantity,
+            amount: totalAmount
+          }
+        }).unwrap();
+        console.log(response, 'response')
+        setSummaryOrderId(response._id)
+        const orderId = response._id;
+        if (response && orderId) {
+          if (type === 'online') {
+            startCheckout(orderId)
+          } else if (type === 'upi') {
+            startUPICheckout(orderId)
+          }
+          setTimeout(() => { setIsLoading(false); }, 2000);
+        } else {
+          updateStatus('OrderId Not Found')
+          setTimeout(() => { setIsLoading(false); }, 1000);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        setIsLoading(false);
+      }
+    } else {
+      Alert.alert('Select Address and Payment type');
+    }
+  };
+
+  const initOrder = async (orderId: string) => {
     try {
-      // setIsLoading(true)
       const storedUid = await AsyncStorage.getItem('userId');
       console.log(storedUid)
       const uid = storedUid?.replace(/['"]/g, '').trim();
       console.log(uid, 'uid')
-      const response = await createData({
-        userId: uid,
-        createdBy: uid,
-        updatedBy: uid,
-        addressId: '6655d6dff9c814266aef1d6e',
-        paymentType: type,
-        items: items,
-        totals: {
-          quantity: totalQuantity,
-          amount: totalAmount
-        }
-      }).unwrap();
-      console.log(response, 'response')
-      setSummaryOrderId(response._id)
-      const orderId = response._id;
-      if (response && orderId) {
-        if (type === 'online') {
-          startCheckout(orderId)
-        } else if (type === 'upi') {
-          startUPICheckout(orderId)
-        }
-        setTimeout(() => { setIsLoading(false); }, 2000);
-      } else {
-        updateStatus('OrderId Not Found')
-        setTimeout(() => { setIsLoading(false); }, 1000);
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      setIsLoading(false);
-    }
-  };
-  
-  const initOrder = async (orderId: string) => {
-    try {
       const response = await initiateOrder({
         customerName: 'Nasa2',
         customerEmail: 'Nasa2@gmail.com',
         customerPhone: '+919876243167',
         orderId: orderId,
+        userId: uid,
         totalAmount: totalAmount
       });
-      console.log(response.data, 'createOrders');
+      console.log(response, 'createOrders');
       return response.data;
     } catch (err) {
       console.log(err, 'createOrderError');
@@ -101,7 +110,7 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
       return null;
     }
   };
- 
+
 
   const handleClose = () => {
     setShow(false)
@@ -212,13 +221,13 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
   }, []);
 
   return (
-    <>
-      <View style={isLoading ? styles.disableContainer : styles.container}>
+    <View style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+      <View style={addressId === '' ? styles.disableContainer : styles.container}>
 
-        <View>
-          <TouchableOpacity style={styles.confirm_order} onPress={isLoading ? () => {} : createOrder} disabled={isLoading}>
+        <View >
+          <TouchableOpacity style={styles.confirm_order} onPress={isLoading ? () => { } : createOrder} disabled={isLoading}>
+          {isLoading && <ActivityIndicator size="small" color={THEME_COLORS.primary} />}
             <Text style={styles.text}>Confirm Order</Text>
-            {isLoading && <ActivityIndicator size="small" color={THEME_COLORS.primary} />}
           </TouchableOpacity>
           <AlertNotificationRoot>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -228,7 +237,7 @@ const Payment = ({ totalAmount, type }: { totalAmount: number, type: string }) =
         {show && <OrderConfirmationScreen show={show} handleClose={handleClose} totalAmount={totalAmount} orderId={summaryOrderId} />}
       </View>
 
-    </>
+    </View>
   );
 };
 
@@ -240,8 +249,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '50%',
-    left: '25%',
+    width: '60%',
   },
   disableContainer: {
     marginBottom: 20,
@@ -250,8 +258,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '50%',
-    left: '25%',
+    width: '60%',
   },
   image: {
     width: 200,
@@ -269,13 +276,15 @@ const styles = StyleSheet.create({
   text: {
     color: 'white',
     fontSize: 18,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    marginLeft:'2%'
   },
   confirm_order: {
     height: 45,
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection:'row'
   },
 });
 

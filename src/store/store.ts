@@ -7,6 +7,7 @@ import { userApi } from "../modules/auth/store/services/userApi";
 import { ordersApi } from "../modules/orders/store/services/OrdersApi";
 import { addressApi } from "../modules/accounts/components/afterLogin/Addresses/store/AddressApi";
 import { paymentApi } from "../modules/payment/store/services/PaymentApi";
+import userSlice from "../modules/accounts/store/slices/UserSlice";
 
 
 const store = configureStore({
@@ -14,17 +15,22 @@ const store = configureStore({
         products: ProductsListSlice.reducer,
         cartProducts: cartProductsSlice.reducer,
         locations: locationsSlice.reducer,
+        user: userSlice.reducer,
         [productsApi.reducerPath]: productsApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
-        [ordersApi.reducerPath] : ordersApi.reducer,
-        [paymentApi.reducerPath] : paymentApi.reducer,
-        [addressApi.reducerPath]:addressApi.reducer
+        [ordersApi.reducerPath]: ordersApi.reducer,
+        [paymentApi.reducerPath]: paymentApi.reducer,
+        [addressApi.reducerPath]: addressApi.reducer
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(productsApi.middleware, userApi.middleware,
+        getDefaultMiddleware({
+            serializableCheck: false, // Disable the middleware in development
+            immutableCheck: false // Disable the immutable state invariant check in development
+        }).concat(productsApi.middleware, userApi.middleware,
                                       ordersApi.middleware,
                                       paymentApi.middleware,
-                                    addressApi.middleware)     
+                                    addressApi.middleware) ,
+                                        
     
 
 })

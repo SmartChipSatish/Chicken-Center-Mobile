@@ -12,6 +12,9 @@ import { TabNav } from "./TabNavigation";
 import SearchPage from "../modules/home/components/productsList/SearchPage";
 import ProfileScreen from "../modules/accounts/components/afterLogin/Profile/ProfileScreen";
 import Checkout from "../modules/home/components/cart/Checkout";
+import { BeforeLoginScreens } from "./BeforeNavigation";
+import LoginPage from "../modules/auth/components/Login";
+import PaymentAddress from "../modules/accounts/components/afterLogin/Addresses/PaymentAddress";
 
 export const StackNavgation = () => {
   const Stack = createNativeStackNavigator();
@@ -26,6 +29,9 @@ export const StackNavgation = () => {
       }} />
       <Stack.Screen name="addaddress" component={AddAddress} options={{
         title: 'Add new address'
+      }} />
+       <Stack.Screen name="payment" component={PaymentAddress} options={{
+        title: 'Payment'
       }} />
       <Stack.Screen name="notifications" component={Notifications} options={{
         title: 'Notifications',

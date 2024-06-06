@@ -11,7 +11,7 @@ import { Keyboard } from 'react-native'
 import { useGetUserDetailsMutation } from '../../../auth/store/services/getUserDetailsService'
 import { useAuth } from '../../../auth/components/AuthProvider'
 
-export default function OTPVerfication({ navigation, route }:any) {
+export default function OTPVerfication({ navigation, route }: any) {
   const [otp, setOTP] = useState(['', '', '', '', '', '']);
   const inputRefs:any[] = [];
   const [timer,setTimer]=useState(60);
@@ -37,24 +37,24 @@ export default function OTPVerfication({ navigation, route }:any) {
 
   const handleResendOTP = async () => {
     if (route.params.number !== '') {
-        Keyboard.dismiss();
-        setLoding(true);
-        try {
-            const res = await auth().signInWithPhoneNumber('+91' + route.params.number);
-            setLoding(false);
-            if(res){
-              setTimer(60);
-            }
-        } catch (error) {
-            setLoding(false);
-            Alert.alert("Something went wrong");
+      Keyboard.dismiss();
+      setLoding(true);
+      try {
+        const res = await auth().signInWithPhoneNumber('+91' + route.params.number);
+        setLoding(false);
+        if (res) {
+          setTimer(60);
         }
+      } catch (error) {
+        setLoding(false);
+        Alert.alert("Something went wrong");
+      }
     } else {
-        Alert.alert("Please enter a valid mobile number");
+      Alert.alert("Please enter a valid mobile number");
     }
 
-}
- 
+  }
+
   const handleSubmit = async () => {
     const OTP = otp.join('');
     if (OTP.length >= 6) {
@@ -67,20 +67,30 @@ export default function OTPVerfication({ navigation, route }:any) {
         const idToken = await user?.getIdToken();
         if (idToken) {
           AsyncStorage.setItem('idToken', JSON.stringify(idToken))
-          const data= await getUser(`${user?.uid}`);
-          const userId =data?.data?._id
-          if (userId) {
-              setLoding(false);
-              AsyncStorage.setItem('idToken', JSON.stringify(idToken+userId));
-              AsyncStorage.setItem('userId',JSON.stringify(userId));
-              AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
-              AsyncStorage.setItem('login', 'true');
-              // navigation.navigate('main');
-              login(JSON.stringify(idToken));
-              navigation.reset({
-                index: 0,
-                routes: [{ name: 'main' }],
-              });
+          const data = await getUser(`${user?.uid}`);
+          const userId = data?.data?._id
+          const name = data?.data?.name
+          if (userId && name !== '') {
+            setLoding(false);
+            AsyncStorage.setItem('idToken', JSON.stringify(idToken + userId));
+            AsyncStorage.setItem('userId', JSON.stringify(userId));
+            AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
+            AsyncStorage.setItem('login', 'true');
+            // navigation.navigate('main');
+            login(JSON.stringify(idToken));
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'main' }],
+            });
+          } else if (userId) {
+            AsyncStorage.setItem('idToken', JSON.stringify(idToken + userId));
+            AsyncStorage.setItem('userId', JSON.stringify(userId));
+            AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
+            // navigation.navigate('profile');
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'profile' }],
+            });
           }
           setLoding(false);
         } else {
@@ -97,27 +107,27 @@ export default function OTPVerfication({ navigation, route }:any) {
 
   }
 
-  useEffect(()=>{
-   setTimeout(()=>{
-    if(timer === 0){
-      return
-    }else{
-      setTimer(timer-1);
-    }
-   },1000)
-  },[timer])
+  useEffect(() => {
+    setTimeout(() => {
+      if (timer === 0) {
+        return
+      } else {
+        setTimer(timer - 1);
+      }
+    }, 1000)
+  }, [timer])
 
   return (
     <View style={OTPVericationCSS.container}>
 
-      <TouchableOpacity style={{marginTop:20,marginBottom:10}} onPress={()=>navigation.goBack()}>
-      <Ionicons name='chevron-back' size={30} color={`${TEXT_COLORS.primary}`}/>
+      <TouchableOpacity style={{ marginTop: 20, marginBottom: 10 }} onPress={() => navigation.goBack()}>
+        <Ionicons name='chevron-back' size={30} color={`${TEXT_COLORS.primary}`} />
       </TouchableOpacity>
 
-        <Text style={OTPVericationCSS.mainText}>Verify via OTP</Text>
-        <Text style={{fontSize:14}}>Enter the OTP sent to You on {route.params.number}</Text>
+      <Text style={OTPVericationCSS.mainText}>Verify via OTP</Text>
+      <Text style={{ fontSize: 14 }}>Enter the OTP sent to You on {route.params.number}</Text>
 
-        <View style={OTPVericationCSS.OTP_inputes}>
+      <View style={OTPVericationCSS.OTP_inputes}>
         {otp.map((value, index) => (
           <TextInput
             key={index}
@@ -131,58 +141,58 @@ export default function OTPVerfication({ navigation, route }:any) {
             }}
           />
         ))}
-        </View>
-          <View style={OTPVericationCSS.timer_container}>
-          <Text>Didn't receive the OTP?</Text>
-          {timer !==0 &&<Text>Resend: { timer }</Text>}
-          {timer ===0 && <TouchableOpacity onPress={handleResendOTP}>
-                          <Text>Resend : Send</Text>
-                         </TouchableOpacity>}
-          </View>
-        
+      </View>
+      <View style={OTPVericationCSS.timer_container}>
+        <Text>Didn't receive the OTP?</Text>
+        {timer !== 0 && <Text>Resend: {timer}</Text>}
+        {timer === 0 && <TouchableOpacity onPress={handleResendOTP}>
+          <Text>Resend : Send</Text>
+        </TouchableOpacity>}
+      </View>
 
-   <View style={OTPVericationCSS.footer_container}>
-          <Text >By continuing you agree to our Terms & Conditions</Text>
-          <TouchableOpacity style={OTPVericationCSS.continue_btn} onPress={handleSubmit}>
-            <Text style={{color:'white',fontSize:18}}>Continue</Text>
-          </TouchableOpacity>
-        </View>
-        {loding && <Loding/>}
+
+      <View style={OTPVericationCSS.footer_container}>
+        <Text >By continuing you agree to our Terms & Conditions</Text>
+        <TouchableOpacity style={OTPVericationCSS.continue_btn} onPress={handleSubmit}>
+          <Text style={{ color: 'white', fontSize: 18 }}>Continue</Text>
+        </TouchableOpacity>
+      </View>
+      {loding && <Loding type='login' />}
     </View>
   )
 }
 
-const OTPVericationCSS=StyleSheet.create({
-  container:{
-    flex: 1, 
+const OTPVericationCSS = StyleSheet.create({
+  container: {
+    flex: 1,
     paddingBottom: 20,
-    marginLeft:5,
-    marginRight:5
+    marginLeft: 5,
+    marginRight: 5
   },
-  mainText:{
-    fontSize:25,
-    marginBottom:5
+  mainText: {
+    fontSize: 25,
+    marginBottom: 5
   },
-  timer_container:{
-    flexDirection:'row',
-    justifyContent:'space-between',
-    margin:5
+  timer_container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    margin: 5
   },
-  footer_container:{ 
+  footer_container: {
     position: 'absolute',
-    bottom: 0, 
+    bottom: 0,
     width: '100%',
     alignItems: 'center',
     paddingVertical: 20,
   },
-  continue_btn:{
-    backgroundColor:`${THEME_COLORS.secondary}`,
-    borderRadius:8,
-    height:40,
-    width:'90%',
-    justifyContent:"center",
-    alignItems:"center",
-    marginTop:10
+  continue_btn: {
+    backgroundColor: `${THEME_COLORS.secondary}`,
+    borderRadius: 8,
+    height: 40,
+    width: '90%',
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10
   },
   input: {
     borderColor: `${TEXT_COLORS.primary}`,
@@ -191,13 +201,13 @@ const OTPVericationCSS=StyleSheet.create({
     margin: 5,
     textAlign: 'center',
     fontSize: 20,
-    borderBottomWidth:1,
-    color:TEXT_COLORS.primary
+    borderBottomWidth: 1,
+    color: TEXT_COLORS.primary
   },
-  OTP_inputes:{
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'space-around'
+  OTP_inputes: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around'
   }
-  
+
 })

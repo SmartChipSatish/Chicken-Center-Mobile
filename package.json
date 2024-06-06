@@ -33,6 +33,7 @@
     "react-hook-form": "^7.51.3",
     "react-native": "0.73.6",
     "react-native-alert-notification": "^0.4.0",
+    "react-native-android-location-enabler": "^2.0.1",
     "react-native-cashfree-pg-sdk": "^2.1.11",
     "react-native-contacts": "^7.0.8",
     "react-native-elements": "^3.4.3",
