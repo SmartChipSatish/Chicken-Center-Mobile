@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { RootState } from '../../../../store/store'
 import { useCreateOrderMutation } from '../../../orders/store/services/OrdersEndpoint'
-import { LocationIcon } from '../../../../assets/svgimages/SaveAsIcons'
+import { Cross, DownArrow, LocationIcon, Menuicon } from '../../../../assets/svgimages/SaveAsIcons'
 import { CashonDeliveryIcon, OnelineIcon, UpiIcon } from '../../../../assets/svgimages/HomeSvgs/svgsIcons'
 import { THEME_COLORS, TEXT_COLORS, TEXT_FONT_SIZE } from '../../../../globalStyle/GlobalStyles'
 import Payment from '../../../payment/components/Payment'
@@ -14,17 +14,17 @@ import OrderConfirmationScreen from '../../../orders/components/OrderConfirmatio
 import { setClearCart } from '../../store/slices/CartProductsSlice'
 import { setShowQuantityReset } from '../../store/slices/ProductsListSlice'
 import { ActivityIndicator } from 'react-native-paper'
-import { useGetAddressByuserMutation, useUpdateAddressMutation } from '../../../accounts/components/afterLogin/Addresses/store/AddressEndpoints'
+import { useDeleteAddressMutation, useGetAddressByuserMutation, } from '../../../accounts/components/afterLogin/Addresses/store/AddressEndpoints'
 import { useFocusEffect } from '@react-navigation/native';
+import { setItemid } from '../../../accounts/store/slices/LocationSlice'
+import CrossMark from '../../../../assets/svgimages/util'
 
 export default function Checkout({ route }: any) {
     const [modalVisible, setModalVisible] = useState<any>(false);
     const [modalVisibles, setModalVisibles] = useState(false);
-    const [addressId, setAddressId] = useState<any>({})
     const [getAddressByUser] = useGetAddressByuserMutation()
-    const [deleteUserAddress] = useUpdateAddressMutation()
+    const [deleteUserAddress] = useDeleteAddressMutation()
     const [everyoneAddress, setSome] = useState<any>([])
-    // console.log(everyoneAddress,"everyoneAddress")
     const { totalAmount } = route.params;
     const dispatch = useDispatch();
     const navigation = useNavigation<any>();
@@ -38,9 +38,9 @@ export default function Checkout({ route }: any) {
     const [isLoading, setIsLoading] = useState(false);
     const getLocations = useSelector((store: RootState) => store.locations.displayAddressesall);
     const [selectedAddress, setSelectedAddress] = useState<any>();
-
-
-
+    const itemsids = useSelector((store: RootState) => store.locations.itemId);
+    const [addressId, setAddressId] = useState<any>({})
+    console.log(addressId?._id, "syamid--------------")
     const items = cartItems.map(item => {
         return ({
             itemId: item?.id,
@@ -55,7 +55,7 @@ export default function Checkout({ route }: any) {
     const totalQuantity = cartItems.reduce((accumulator, item) => accumulator + item?.quantity, 0);
 
     const createOrder = async () => {
-        if (addressId._id && paymentType !== '') {
+        if (addressId?._id && paymentType !== '') {
             setIsLoading(true)
             try {
                 const storedUid = await AsyncStorage.getItem('userId');
@@ -64,7 +64,7 @@ export default function Checkout({ route }: any) {
                     userId: uid,
                     createdBy: uid,
                     updatedBy: uid,
-                    addressId: addressId._id,
+                    addressId: addressId?._id,
                     paymentType: paymentType,
                     items: items,
                     totals: {
@@ -126,18 +126,25 @@ export default function Checkout({ route }: any) {
 
     const handleDeleteAddress = async () => {
         try {
-            await deleteUserAddress({ id: addressId?._id, status: false }).unwrap();
-            const deleteAddress = everyoneAddress.filter((item: any) => {
-                return item?._id !== addressId?._id
-            })
-            setSome(deleteAddress)
+       await deleteUserAddress({ id: addressId?._id, status: false }).unwrap();
+            const deleteAddress = everyoneAddress.filter((item: any) => item?._id !== addressId?._id);
+            setSome(deleteAddress);
         } catch (error) {
             console.log(error);
         }
     };
 
+
+    useFocusEffect(useCallback(() => {
+        {
+            setAddressId(selectedAddress)
+        }
+    }, [selectedAddress]))
+
+
+
     const userone = (e: any) => {
-        console.log(e, "userid")
+        // console.log(e,"syamid")
         setAddressId(e)
 
     }
@@ -152,18 +159,24 @@ export default function Checkout({ route }: any) {
                         <Text style={style.add_text}>Delivery Address</Text>
                         <Text style={style.add_btn} onPress={() => navigation.navigate('addaddress')}>+ Add New Address</Text>
                     </View>
+
                     <View style={style.separator}></View>
                     <View>
                         {everyoneAddress?.length > 0 ?
-                            <TouchableOpacity style={style.card1} onPress={toggleModal}>
+                            <TouchableOpacity style={style.card1} onPress={() => { toggleModal() }}>
                                 <View style={style.one}>
-                                    <Text style={style.textLoc}
+                                    <LocationIcon color={"orange"} height={20} width={20} />
+                                    <Text
+                                        style={style.textLoc}
                                         numberOfLines={1}
                                         ellipsizeMode="tail"
                                     >
-                                        <View  ><LocationIcon height={20} width={20}></LocationIcon></View><Text style={style.text1}> {selectedAddress?.city || ''} </Text> {`${selectedAddress?.name || ''} ${selectedAddress?.landmark || ''} ${selectedAddress?.city || ''} ${selectedAddress?.state || ''} ${selectedAddress?.pincode || ''}`}
+                                        <Text style={style.text1}>
+                                            {selectedAddress?.city || ''}
+                                        </Text>
+                                        {`${selectedAddress?.name || ''} ${selectedAddress?.landmark || ''} ${selectedAddress?.city || ''} ${selectedAddress?.state || ''} ${selectedAddress?.pincode || ''}`}
                                     </Text>
-
+                                    <DownArrow height={30} width={30} />
                                 </View>
                             </TouchableOpacity> :
                             <TouchableOpacity onPress={() => navigation.navigate('addaddress')} >
@@ -171,8 +184,6 @@ export default function Checkout({ route }: any) {
                             </TouchableOpacity>
                         }
                     </View>
-
-
                 </View>
                 <View style={style.payment}>
                     <Text style={style.payment_text}>Payment Method</Text>
@@ -221,14 +232,14 @@ export default function Checkout({ route }: any) {
             </ScrollView>
             <View style={{justifyContent:'center',alignItems:'center'}}>
             {paymentType === 'cash' ?
-                <TouchableOpacity style={[style.confirm_order,{backgroundColor:(addressId._id && paymentType) ?THEME_COLORS.secondary: THEME_COLORS.light_color}] }
+                <TouchableOpacity style={[style.confirm_order,{backgroundColor:(addressId?._id && paymentType) ?THEME_COLORS.secondary: THEME_COLORS.light_color}] }
                                   onPress={createOrder}>
                     {isLoading && <ActivityIndicator size="small" color={THEME_COLORS.primary} />}
                     <Text style={style.cashBtn}  disabled={isLoading}>
                         Confirm Order
                     </Text>
                 </TouchableOpacity> :
-                <Payment totalAmount={totalAmount} type={paymentType} addressId={addressId._id}/>}
+                <Payment totalAmount={totalAmount} type={paymentType} addressId={addressId?._id}/>}
             {show && <OrderConfirmationScreen show={show} handleClose={handleClose} totalAmount={totalAmount} orderId={orderId} />}
             </View>
             <View>
@@ -240,37 +251,45 @@ export default function Checkout({ route }: any) {
                 >
                     <View style={style.modalContainer}>
                         <View style={style.modalContent}>
+                            <TouchableOpacity onPress={() => { setModalVisible(!modalVisible) }}>
+                                <View style={style.crossIcon}>
+                                    <View >
+                                        <Cross height={17} width={17} />
+                                    </View>
+                                </View>
+                            </TouchableOpacity>
                             <Text style={style.colorsText}>Choose a Delivery Address</Text>
                             <View style={style.separator1}></View>
                             <ScrollView>
+                                <TouchableOpacity onPress={() => navigation.navigate('addaddress')} >
+                                    <Text style={style.addADDRESS} >Add Address</Text>
+                                </TouchableOpacity>
                                 {everyoneAddress.map((e: any, indexex: any) => (
                                     <View>
                                         <TouchableOpacity
                                             key={indexex}
                                             style={style.card}
-                                            // toggleModal();
-                                            onPress={() => { setSelectedAddress(e); userone(e); toggleModal() }}
-
+                                            onPress={() => { setSelectedAddress(e); userone(e); toggleModal(); dispatch(setItemid(e)) }}
                                         >
-                                            <View style={style.textIcons} >
-                                                <LocationIcon height={20} width={20}></LocationIcon>
-                                                <Text style={style.text2} numberOfLines={1} ellipsizeMode="tail">{e?.city || ''}</Text>
+                                            <View>
+                                                <View style={style.textIcons} >
+                                                    <LocationIcon height={20} width={20}></LocationIcon>
+                                                    <Text style={style.text2} numberOfLines={1} ellipsizeMode="tail">{e?.city || ''}</Text>
+                                                </View>
+                                                <Text style={style.text}>
+                                                    {` ${e?.name || ''}  ${e?.pincode || ''}`}
+                                                </Text>
+                                                <TouchableOpacity onPress={(event) => {
+                                                    event.stopPropagation(); setModalVisibles(!modalVisibles); userone(e); dispatch(setItemid(e))
+                                                }}>
+                                                    <View style={style.icons} >
+                                                        <Menuicon height={20} width={20}></Menuicon>
+                                                    </View>
+                                                </TouchableOpacity>
                                             </View>
-                                            <Text style={style.text}>
-                                                {` ${e?.name || ''}  ${e?.pincode || ''}`}
-                                            </Text>
-                                            <TouchableOpacity onPress={(event) => { event.stopPropagation(); setModalVisibles(true) }}>
-                                                <Text style={style.icons} >sssss</Text>
-                                            </TouchableOpacity>
-
                                         </TouchableOpacity>
                                     </View>
-
-
                                 ))}
-                                <TouchableOpacity onPress={() => navigation.navigate('addaddress')} >
-                                    <Text style={style.addADDRESS} >Add Address</Text>
-                                </TouchableOpacity>
                             </ScrollView>
                         </View>
                     </View>
@@ -280,13 +299,18 @@ export default function Checkout({ route }: any) {
                 <Modal
                     transparent={true}
                     visible={modalVisibles}
-                    onRequestClose={() => setModalVisibles(false)}
+                    onRequestClose={() => setModalVisibles(!modalVisibles)}
                 >
 
                     <View style={style.modalBackground}>
                         <View style={style.modalContents}>
-                            <TouchableOpacity onPress={() => { setModalVisibles(false); handleDeleteAddress(); }}>
-                                <Text style={{ color: "red", fontWeight: "bold" }}>Delete</Text>
+                            <TouchableOpacity onPress={() => { navigation.navigate('payment') }}>
+                                <Text style={{ color: "black", fontWeight: "bold" }}>Edit</Text>
+                            </TouchableOpacity>
+                            <View style={style.separator2}></View>
+
+                            <TouchableOpacity onPress={() => { setModalVisibles(!modalVisibles); handleDeleteAddress(); }}>
+                                <Text style={{ color: "black", fontWeight: "bold" }}>Delete</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -300,13 +324,38 @@ export default function Checkout({ route }: any) {
     )
 }
 const style = StyleSheet.create({
+
+    one: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    textLoc: {
+
+        fontFamily: 'Arial',
+        fontSize: 12,
+        color: 'black',
+        lineHeight: 20,
+        fontWeight: "bold",
+        flex: 1,
+    },
+    text1: {
+        fontWeight: "bold",
+    },
+    crossIcon: {
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        width: '100%',
+        marginRight: 10,
+    },
     container: {
         flex: 1,
         backgroundColor: '#fff',
     },
     textIcons: {
         display: "flex",
-        flexDirection: "row"
+        flexDirection: "row",
+        marginLeft: -20
     },
     sub_container: {
         marginLeft: 6,
@@ -319,14 +368,14 @@ const style = StyleSheet.create({
         textAlign: 'center',
         padding: 10,
         borderRadius: 5,
-        marginTop: 5
+        marginBottom: 10,
     },
     icons: {
         color: "black",
         fontWeight: "bold",
         textAlign: "right",
-        marginTop: -40,
-        marginRight: -13
+        marginTop: -33,
+        marginLeft: 300
 
     },
 
@@ -347,6 +396,7 @@ const style = StyleSheet.create({
         fontWeight: "bold",
         padding: 5,
         width: "100%",
+
     },
     add_text: {
         color: 'black',
@@ -461,12 +511,14 @@ const style = StyleSheet.create({
         padding: 16,
     },
     card: {
-        backgroundColor: '#f0f0f0',
+        backgroundColor: '#F0F0F0',
         padding: 25,
-        borderRadius: 5,
+        borderRadius: 10,
         borderWidth: 0.5,
         borderColor: '#ddd',
         marginBottom: 10,
+        width: 355,
+
     },
     card1: {
         backgroundColor: '#fff',
@@ -501,8 +553,14 @@ const style = StyleSheet.create({
         borderBottomColor: 'black',
         marginVertical: 10,
     },
+    separator2: {
+        borderBottomWidth: 1,
+        width: "100%",
+        borderBottomColor: '#D3D3D3',
+        marginVertical: 10,
+    },
     text: {
-        marginLeft: -5,
+        marginLeft: -15,
         fontFamily: 'Arial',
         fontSize: 12,
         color: 'black',
@@ -510,27 +568,6 @@ const style = StyleSheet.create({
         fontWeight: "bold",
 
 
-    },
-    textLoc: {
-        marginLeft: 10,
-        fontFamily: 'Arial',
-        fontSize: 12,
-        color: 'black',
-        lineHeight: 20,
-        fontWeight: "bold",
-
-
-    },
-    one: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        marginLeft: -10
-    },
-    text1: {
-        fontSize: 14,
-        marginBottom: 8,
-        color: "black",
-        fontWeight: "bold",
     },
     text2: {
         fontSize: 14,
@@ -543,15 +580,12 @@ const style = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContent: {
-        width: "96%",
-        padding: 20,
+        width: "95%",
+        padding: 10,
         backgroundColor: THEME_COLORS.primary,
         alignItems: 'center',
         marginTop: "70%",
-        borderTopLeftRadius: 5,
-        borderTopRightRadius: 5,
-        borderBottomLeftRadius: 5,
-        borderBottomRightRadius: 5,
+        borderRadius: 10,
         marginBottom: 200
     },
     modalBackground: {
@@ -566,6 +600,7 @@ const style = StyleSheet.create({
         backgroundColor: 'white',
         borderRadius: 5,
         alignItems: "center",
-        marginRight: 30
+        marginRight: 30,
+        marginTop:20
     },
 })

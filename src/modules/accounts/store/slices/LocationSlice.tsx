@@ -5,13 +5,42 @@ interface ProductList {
     locations:any[],
     latitudes:"",
     longitudes:"",
-    displayAddressesall:any[]
+    displayAddressesall:any[],
+    itemId: {
+        _id: string,
+        city: string,
+        houseNo: string,
+        landmark: string,
+        location: {
+          _id: string,
+          coordinates: number[],
+        },
+        name: string,
+        pincode: string,
+        state: string,
+        status: boolean,
+      },
+    
 }
 const initialState:ProductList ={
     locations:[],
     latitudes:"",
     longitudes:"",
-    displayAddressesall:[]
+    displayAddressesall:[],
+    itemId: {
+    _id: "",
+    city: "",
+    houseNo: "",
+    landmark: "",
+    location: {
+      _id: "",
+      coordinates: [],
+    },
+    name: "",
+    pincode: "",
+    state: "",
+    status: true,
+  },
 }
 const locationsSlice = createSlice({
     name: 'location',
@@ -28,9 +57,12 @@ const locationsSlice = createSlice({
         },
         setDisplayAddressAll:(state,action)=>{
             state.displayAddressesall.push(action.payload)
-        }
+        },
+        setItemid: (state, action) => {
+            state.itemId=action.payload
+        },
     }
 });
 
-export const { setAddLocation,setLatitudes,setLongitudes,setDisplayAddressAll } = locationsSlice.actions;
+export const { setAddLocation,setLatitudes,setLongitudes,setDisplayAddressAll,setItemid } = locationsSlice.actions;
 export default locationsSlice;

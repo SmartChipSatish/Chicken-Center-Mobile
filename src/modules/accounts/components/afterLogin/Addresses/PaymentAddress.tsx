@@ -1,23 +1,27 @@
 import { View, Text, ViewBase, TextInput, TouchableOpacity, Alert } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { ScrollView } from 'react-native'
 import { StyleSheet } from 'react-native'
 import { saveAs } from '../../../utlis/constents'
 import Location from './Location'
 import { useDispatch, useSelector } from 'react-redux'
-import { useCreateAddressMutation } from './store/AddressEndpoints'
+import { useCreateAddressMutation, useGetAddressByuserMutation, useUpdateAddressMutation } from './store/AddressEndpoints'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useNavigation } from '@react-navigation/native'
 import { RootState } from '../../../../../store/store'
 import { TEXT_COLORS, THEME_COLORS } from '../../../../../globalStyle/GlobalStyles'
+import { setDisplayAddressAll } from '../../../store/slices/LocationSlice'
+import { useFocusEffect } from '@react-navigation/native';
 
-export default function PaymentAddress({navigation}:any) {
-//   const navigation = useNavigation<any>();
+
+export default function PaymentAddress() {
+  const navigation = useNavigation<any>();
   const userLatitudes = useSelector((store: RootState) => store.locations.latitudes)
   const userLongitudes = useSelector((store: RootState) => store.locations.longitudes);
   const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
-  const [addAddress] = useCreateAddressMutation();
+  const [updates] = useUpdateAddressMutation();
   const [placeholderShow, setPlaceholderShow] = useState(false);
+   const itemsids = useSelector((store: RootState) => store.locations.itemId);
   const [address, setAddress] = useState({ city: '', country: '', address: '', flat: '', pincode: "", street: '', state: '' });
   const [checkData, setCheckData] = useState(false);
   const [saveType, setSaveType] = useState<string>('');
@@ -26,22 +30,47 @@ export default function PaymentAddress({navigation}:any) {
   const [mobile, setmobile] = useState("")
   const dispatch = useDispatch()
   const [notifyname, setnotifyname] = useState(false)
+  const [notifyLand, setnotifyLand] = useState(false)
   const [citynotify, setcitynotify] = useState(false)
   const [statenotify, setstatenotify] = useState(false)
   const [mobilenotify, setmobilenotify] = useState(false)
+  const [getAddressByUser] = useGetAddressByuserMutation()
+  const [alltheAddress, setAllTheAddress] = useState<any>([]);
+ 
+  console.log(itemsids.city,"itemsids")
   const handleAddress = (location: any) => {
     const flat = location?.address?.split(',')?.shift() || '';
-    setAddress({ city: location.city, country: location.country, address: location.address, flat: flat, pincode: location.pincode, street: location.street, state: location.state });
+    // setAddress({ city: location.city, country: location.country, address: location.address, flat: flat, pincode: location.pincode, street: location.street, state: location.state });
   }
-
   useEffect(() => {
     if (address.city !== '' && address.country !== '' && address.address !== '' && address.flat !== '' && address.state !== '' && address.street !== '' && address.pincode !== '' && saveType !== '') {
       setCheckData(true);
     }
   }, [address, saveType])
 
+  useFocusEffect(
+    useCallback(() => {
+      if (itemsids) {
+        setAddress({
+          city: itemsids.city || "",
+          country: itemsids.city || "",
+          address: itemsids.name || "",
+          flat: itemsids.houseNo || "",
+          pincode: itemsids.pincode || "",
+          street: itemsids.city || "",
+          state: itemsids.state || ""
+        });
+        setlandmark(itemsids.landmark || "");
+        setmobile("" || "");
+      }
+    }, [itemsids])
+  );
+  
 
-  const createAllAddresses = async (status: boolean) => {
+  
+  
+  
+  const updateAddresses = async (status: boolean) => {
     const value = await AsyncStorage.getItem('userId');
     const userId = value ? JSON.parse(value) : null;
     console.log(userId, "userId")
@@ -56,13 +85,24 @@ export default function PaymentAddress({navigation}:any) {
       mobile: Number(mobile),
       status: status,
     };
+
+
     try {
       if (address.address && address.flat && landmark && address.city && address.state && address.pincode && mobile) {
-        let savedData = await addAddress({ id: userId, user: dataTosend });
-        Alert.alert("successfully added address")
-        navigation.navigate("checkout")
-        setmobile('')
-        setlandmark('')
+
+        try {
+          const savedData = await updates({ id: itemsids._id, user: dataTosend }).unwrap();
+          console.log(savedData, 'saveddata');
+          Alert.alert("Successfully added address");
+          getAllAddresses();
+          navigation.navigate("addresses");
+          setmobile('');
+          setlandmark('');
+        } catch (apiError) {
+          console.error('API call failed:', apiError);
+
+        }
+
       }
       else {
         Alert.alert("Enter all the fields...")
@@ -75,8 +115,29 @@ export default function PaymentAddress({navigation}:any) {
 
   };
 
+
+  const getAllAddresses = async () => {
+    const value = await AsyncStorage.getItem('userId');
+    const userId = value ? JSON.parse(value) : null;
+    try {
+      const getData = await getAddressByUser(userId).unwrap();
+
+      setAllTheAddress(getData.secondaryAddress);
+
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useFocusEffect(useCallback(() => {
+    {
+      dispatch(setDisplayAddressAll(alltheAddress));
+    }
+  }, []))
+
+
+
   const pincodeValidation = (e: any) => {
-    if (e.length == 6) {
+    if (e.length >= 6 && e.length < 7) {
       setnotifyname(false)
     }
     else (
@@ -85,10 +146,10 @@ export default function PaymentAddress({navigation}:any) {
   }
   const Lankmark = (e: any) => {
     if (e.length > 10) {
-      setnotifyname(false)
+      setnotifyLand(false)
     }
     else (
-      setnotifyname(true)
+      setnotifyLand(true)
     )
   }
 
@@ -111,7 +172,7 @@ export default function PaymentAddress({navigation}:any) {
   }
 
   const mobileavalidation = (e: any) => {
-    if (e.length >= 10) {
+    if (e.length >= 10 && e.length < 11) {
       setmobilenotify(false)
     }
     else (
@@ -124,7 +185,6 @@ export default function PaymentAddress({navigation}:any) {
     <ScrollView keyboardShouldPersistTaps='handled'
       showsVerticalScrollIndicator={false}>
       <View style={{ height: 300, width: '100%' }}>
-        {/* <Text>Address</Text> */}
         <Location handleAddress={handleAddress} />
       </View>
 
@@ -159,7 +219,7 @@ export default function PaymentAddress({navigation}:any) {
             placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
-        {notifyname && <Text style={Style.textstyles}>Enter minimum 10 characters</Text>}
+        {notifyLand && <Text style={Style.textstyles}>Enter minimum 10 characters</Text>}
         <View style={{ marginBottom: 10 }}>
           <Text style={Style.side_header}>City</Text>
           <TextInput style={Style.textInput}
@@ -221,10 +281,11 @@ export default function PaymentAddress({navigation}:any) {
           </View>
         </View>
         {/* style={[Style.save_btn,{backgroundColor:checkData? `${THEME_COLORS.secondary}`: `${THEME_COLORS.light_color}`}]} */}
-        <TouchableOpacity style={Style.textsave}  >
-          <Text style={{ color: 'white', fontWeight: "bold", fontSize: 20 }} onPress={() => { createAllAddresses(true) }}>Save</Text>
+
+        <TouchableOpacity style={Style.textsave} onPress={() => updateAddresses(true)} >
+          <Text style={{ color: 'white', fontWeight: "bold", fontSize: 20 }} >Save</Text>
         </TouchableOpacity>
-       
+
       </View>
 
 

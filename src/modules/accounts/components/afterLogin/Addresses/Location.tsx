@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useCallback } from 'react';
 import { View, Text, Button, PermissionsAndroid, Platform } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import MapView, { Marker } from 'react-native-maps';
 import Geocoder from 'react-native-geocoding'; 
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 
 const Location = ({handleAddress}:{handleAddress:(data:any)=>void}) => {
   const navigation = useNavigation();
@@ -59,9 +59,14 @@ const Location = ({handleAddress}:{handleAddress:(data:any)=>void}) => {
     Geocoder.init('AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY');
   }, []);
 
-  useEffect(()=>{
-    handleAddress(location)
-  },[address,location])
+  // useEffect(()=>{
+  //   handleAddress(location)
+  // },[address,location])
+  useFocusEffect(
+    useCallback(() => {
+        handleAddress(location);
+    }, [address, location])
+);
 
   const requestLocation = async () => {
     if (Platform.OS === 'android') {
