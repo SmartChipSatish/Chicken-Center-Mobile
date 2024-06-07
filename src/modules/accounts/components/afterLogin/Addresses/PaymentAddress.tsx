@@ -26,7 +26,8 @@ export default function PaymentAddress() {
   const [checkData, setCheckData] = useState(false);
   const [saveType, setSaveType] = useState<string>('');
   const [button, setbutton] = useState<any>([])
-  const [landmark, setlandmark] = useState("")
+  // const [landmark, setlandmark] = useState("")
+  const [landmark, setlandmark] = useState(itemsids?.landmark || "");
   const [mobile, setmobile] = useState("")
   const dispatch = useDispatch()
   const [notifyname, setnotifyname] = useState(false)
@@ -52,16 +53,16 @@ export default function PaymentAddress() {
     useCallback(() => {
       if (itemsids) {
         setAddress({
-          city: itemsids.city || "",
-          country: itemsids.city || "",
-          address: itemsids.name || "",
-          flat: itemsids.houseNo || "",
-          pincode: itemsids.pincode || "",
-          street: itemsids.city || "",
-          state: itemsids.state || ""
+          city: itemsids?.city || '',
+          country: '', 
+          address: itemsids?.name || '', 
+          flat: itemsids?.houseNo || '', 
+          pincode: itemsids?.pincode?.toString() || "", 
+          street: '', 
+          state: itemsids?.state || '',
+          
         });
-        setlandmark(itemsids.landmark || "");
-        setmobile("" || "");
+      
       }
     }, [itemsids])
   );
