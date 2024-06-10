@@ -21,7 +21,7 @@ export const ordersService = addressApi.injectEndpoints({
             invalidatesTags: ['address'],
         }),
         // https://food-delivery-ekjr.onrender.com/users/getUserById?userId=6656acc3fb0769e9e7cb053f
-        updateAddress: builder.mutation({
+        deleteAddress: builder.mutation({
             query: ({ id, user }) => ({
                 url: `/updateAddress?userId=${id}`,
                 method: 'POST',
@@ -29,10 +29,14 @@ export const ordersService = addressApi.injectEndpoints({
             }),
             invalidatesTags: ['address'],
         }),
-
-
-
-
+        updateAddress: builder.mutation({
+            query: ({ id, user }) => ({
+                url: `/updateAddress?addressId=${id}`,
+                method: 'POST',
+                body: user
+            }),
+            invalidatesTags: ['address'],
+        }),
     })
 
 });
@@ -40,5 +44,6 @@ export const ordersService = addressApi.injectEndpoints({
 export const {
     useCreateAddressMutation,
     useGetAddressByuserMutation,
-    useUpdateAddressMutation
+    useDeleteAddressMutation,
+    useUpdateAddressMutation,  
 } = ordersService;
