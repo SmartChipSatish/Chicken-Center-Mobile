@@ -75,7 +75,8 @@ const HomePage = () => {
 
   const handleGetItemData = async () => {
     getItems().then((data) => {
-      dispatch(setAddProducts(data.data));
+      console.log(data?.data?.items,'allProducts')
+      dispatch(setAddProducts(data?.data?.items));
     }).catch((error) => {
       console.log(error, 'error');
     })

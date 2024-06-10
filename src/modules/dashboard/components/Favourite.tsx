@@ -48,20 +48,22 @@ const Favourite = () => {
 
 
     return (
-        <ScrollView style={{ backgroundColor: THEME_COLORS.primary }}>
-            <View style={styles.container}>
-                {favouritesList?.length > 0 ? (
-                    favouritesList?.map((item: any) => (
-                        <ProductsCard type='product' item={item} key={item.id} handleFav={handleFavourite}
-                        />
-                    ))
-                ) : (
-                    <View style={styles.noFavouritesContainer}>
-                        <Text style={styles.noFavouritesText}>No Favourites</Text>
-                    </View>
-                )}
-            </View>
-        </ScrollView>
+        <>
+            {favouritesList?.length > 0 ? (
+                favouritesList?.map((item: any) => (
+                    <ScrollView style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}>
+                        <View style={styles.container}>
+                            <ProductsCard type='product' item={item} key={item.id} handleFav={handleFavourite}
+                            />
+                        </View>
+                    </ScrollView>
+                ))
+            ) : (
+                <View style={styles.noFavouritesContainer}>
+                    <Text style={styles.noFavouritesText}>No Favourites</Text>
+                </View>
+            )}
+        </>
     );
 }
 const styles = StyleSheet.create({
@@ -73,7 +75,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        height: 500,
+        backgroundColor: 'rgba(0, 0, 0, 0.1)'
     },
     noFavouritesText: {
         color: TEXT_COLORS.primary,

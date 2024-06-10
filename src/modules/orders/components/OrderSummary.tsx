@@ -22,13 +22,13 @@ export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {
         try {
             setIsLoading(true)
             const response = await getOrders(orderId);
-            setOrdersData(response?.data?.items)
-            setTotalOrder(response?.data)
-            setAddress(response?.data?.userId?.secondaryAddress)
-            setAddressId(response?.data?.addressId)
-            // console.log(response?.data, 'ordersSummary')
-            
-            // console.log(response?.data.userId.secondaryAddress, 'secondaryAddress')
+            if (response?.data) {
+                setOrdersData(response?.data?.items)
+                setTotalOrder(response?.data)
+                setAddress(response?.data?.userId?.secondaryAddress)
+                setAddressId(response?.data?.addressId)
+            }           
+            console.log(response?.data, 'ordersSummary')
             setIsLoading(false)
         } catch (error) {
             console.log(error)
@@ -57,11 +57,12 @@ export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {
     const discount = totalOrder?.discountPercentage || 0;
     const coupon = totalOrder?.coupon || 0;
     const total = itemsPrice + deliveryFee + addons - (coupon + discount);
-// const findAddressById = (address: any[],addressId: string) => {
-//     return address.find((res: { _id: string; })=> res._id === addressId )
-// }
-// const myAddress = findAddressById(address,addressId)
-// console.log(address,'address')
+
+    const findAddressById = (address: any[], addressId: string) => {
+        return address.find((res: any) => res._id === addressId)
+    }
+    const selectedAddress = findAddressById(address, addressId)
+    console.log(selectedAddress, 'address')
     return (
     
         <View>
@@ -94,7 +95,7 @@ export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {
                         ))}
 
 
-                        <View style={[styles.containers, styles.cards]}>
+                        <View style={[styles.cards,{marginBottom:10}]}>
                             <Text style={styles.Billdetails}>Bill details</Text>
                             <View style={styles.row}>
                                 <Text style={styles.leftTexts}>MRP</Text>
@@ -128,9 +129,9 @@ export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {
                             <Text style={styles.AlltextColors}>Order id</Text>
                             <Text style={styles.AlltexFonts}>{orderId}</Text>
                             <Text style={styles.AlltextColors}>Payment</Text>
-                            <Text style={styles.AlltexFonts}>Paid Online</Text>
+                            <Text style={styles.AlltexFonts}>{orderStatus}</Text>
                             <Text style={styles.AlltextColors}>Deliver to</Text>
-                            <Text style={styles.AlltexFonts}>Ramesh Nakka coalmine nilayam 1.N.R.R PURAM,ganesh nilayam madhapur hyderabad</Text>
+                            <Text style={styles.AlltexFonts}>{`${selectedAddress?.name || ''} ${selectedAddress?.landmark || ''} ${selectedAddress?.city || ''} ${selectedAddress?.state || ''} ${selectedAddress?.pincode || ''}`}</Text>
                             <Text style={styles.AlltextColors}>Order Placed</Text>
                             <Text style={styles.AlltexFonts}>placed on {formatDate((totalOrder?.updatedAt) || '')}</Text>
                         </View>
@@ -154,7 +155,7 @@ const styles = StyleSheet.create({
     },
     AlltextColors: {
         color: "black",
-        fontWeight: "bold",
+        fontWeight: "400",
         margin: 5
     },
     orderSummarys: {
@@ -166,18 +167,24 @@ const styles = StyleSheet.create({
     },
 
     cards: {
-
         backgroundColor: '#fff',
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 2,
-        padding: 10,
+        borderRadius: 8,
+        elevation: 4,
+        padding: 16,
+        marginBottom: 16,
     },
     AlltexFonts: {
-        color: "black",
-        fontWeight: "400",
-        margin: 5
+        color: TEXT_COLORS.primary,
+        fontWeight: "600",
+        marginBottom: 15,
+        marginLeft:5
     },
-    Billdetails: { fontWeight: "bold", color: "black", fontSize: 20,marginBottom:10 },
+    Billdetails: { 
+        fontWeight: "bold", 
+        color: "black", 
+        fontSize: 20,
+        marginBottom:10 
+    },
     discounts: {
         color: "green",
         fontSize: 8,

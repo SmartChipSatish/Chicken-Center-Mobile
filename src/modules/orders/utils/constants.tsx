@@ -24,6 +24,7 @@ export interface Order {
     id: string;
     items: OrderItem[];
     orderStatus: string;
+    paymentStatus: string;
     reviews: any[];
     totals: OrderTotals;
     updatedAt: string;

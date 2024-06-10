@@ -42,6 +42,12 @@ export interface itemData{
 
 }
 
+export interface ItemsResponse {
+  items: itemData[];
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+}
 export const QUANTITY_LIMIT = 10
 export const data: itemsDetails[] = [
   {

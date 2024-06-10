@@ -1,7 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { View, Text, StyleSheet, Button, Image, Modal } from 'react-native';
-import { THEME_COLORS } from '../../../globalStyle/GlobalStyles';
+import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 const tick = require('../../../assets/Images/tick.png');
 const OrderConfirmationScreen = ({ show, handleClose,totalAmount,orderId }: any) => {
   const navigation = useNavigation<any>();
@@ -96,6 +96,7 @@ const styles = StyleSheet.create({
   orderDetailText: {
     fontSize: 16,
     marginBottom: 5,
+    color: TEXT_COLORS.secondary
   },
   emailText: {
     fontSize: 14,

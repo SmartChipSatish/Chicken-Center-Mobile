@@ -29,11 +29,11 @@ export default function GlobalOrders() {
   const [orderStatus, setOrderStatus] = useState('');
   const [show, setShow] = useState(false);
   const TABS = {
-    PLACED: 'Received',
+    PLACED: ['Received', 'PLACED'],
     CANCELLED: 'CANCELLED',
     DELIVERED: 'DELIVERED'
   };
-  const [selectedTab, setSelectedTab] = useState(TABS.PLACED);
+  const [selectedTab, setSelectedTab] = useState('Received');
   const [getOrdersByUserId] = useGetOrdersByUserIdMutation();
   const NoOrders = require('../../../assets/Images/NoOrders.png');
   const getOrderData = async () => {
@@ -56,7 +56,8 @@ export default function GlobalOrders() {
   }
    
   const filterOrders = () => {
-    return ordersData?.filter((item) => item?.orderStatus == selectedTab)
+    console.log('SSSS', selectedTab)
+    return ordersData?.filter((item) => selectedTab === TABS.PLACED[0] ? TABS.PLACED.includes(item?.orderStatus) : item?.orderStatus === selectedTab)
   }
   const handleClose = () => {
     setShow(false)
@@ -72,9 +73,9 @@ export default function GlobalOrders() {
     <>
     <View style={{marginTop:-10,flex:1}}>
     <View style={styles.tabsContainer}>
-    <TabButton label={TABS.PLACED} isSelected={selectedTab === TABS.PLACED} onPress={()=>setSelectedTab(TABS.PLACED)}/>
-    <TabButton label={TABS.DELIVERED} isSelected={selectedTab === TABS.DELIVERED} onPress={()=>setSelectedTab(TABS.DELIVERED)}/>
-    <TabButton label={TABS.CANCELLED} isSelected={selectedTab === TABS.CANCELLED} onPress={()=>setSelectedTab(TABS.CANCELLED)}/>
+    <TabButton label={'RECEIVED'} isSelected={selectedTab === TABS.PLACED[0]} onPress={()=>setSelectedTab(TABS.PLACED[0])}/>
+    <TabButton label={'DELIVERED'} isSelected={selectedTab === TABS.DELIVERED} onPress={()=>setSelectedTab(TABS.DELIVERED)}/>
+    <TabButton label={'CANCELLED'} isSelected={selectedTab === TABS.CANCELLED} onPress={()=>setSelectedTab(TABS.CANCELLED)}/>
     </View>
       {!isLoading &&
       <ScrollView >
@@ -103,8 +104,10 @@ export default function GlobalOrders() {
 
               <View style={styles.item_details}>
                 <Image style={styles.tinyLogo} source={{ uri: item?.items[0]?.imageUrl }} />
-                <View>
-                  <Text style={styles.itemName}> {item?.items[0]?.itemName}</Text>
+                <View style={styles.itemDetailsContainer}>
+                <View style={styles.nameTextContainer}>
+      <Text style={styles.itemName}>{item?.items[0]?.itemName}</Text>
+    </View>
                   <View style={styles.ordersPlace}>
                     <Text style={styles.amount}> ₹{item?.totals?.amount}</Text>
                     <Text> |</Text>
@@ -114,25 +117,30 @@ export default function GlobalOrders() {
                   
                   
                 </View>
-                <View style={{margin:5,left:30}}>
+                <View style={{marginLeft:10}}>
                     <StatusButton status={item?.orderStatus}/>
                   </View>
-                <View style={{left:80}}>
+                <View style={{marginLeft:10}}>
                    <RightArrowIcon/>
                 </View>
                 
               </View>
 
               <View style={item?.orderStatus !== 'DELIVERED' ? styles.twoButtons : null}>
-                {item?.orderStatus !== 'DELIVERED' && <View>
+                {item?.orderStatus === 'DELIVERED' && <View>
                   <Text style={styles.RepeatColor}>Repeat</Text>
                 </View>}
 
                  
-                  {item?.orderStatus !== 'DELIVERED' && <TouchableOpacity onPress={() =>  setShow(true)}>
+                  {item?.orderStatus === 'DELIVERED' && <TouchableOpacity onPress={() =>  setShow(true)}>
                     <Text style={styles.RepeatColor1}>Rate order</Text>
                   </TouchableOpacity>}
-
+                  {item?.orderStatus === 'PLACED' && item?.paymentStatus === 'PENDING' && <View>
+                  <Text style={styles.RepeatColor}>Make Payment</Text>
+                </View>}
+                  {(item?.orderStatus === 'Received' || 'PLACED') && <TouchableOpacity onPress={() =>  setShow(true)}>
+                    <Text style={styles.RepeatColor1}>Cancel Order</Text>
+                  </TouchableOpacity>}
                
               </View>
             </View>
@@ -336,7 +344,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     padding: 10,
-    width: '97%',
+    width: '98%',
     top:10
   },
   card1: {
@@ -369,10 +377,19 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 20
   },
+  itemDetailsContainer: {
+    flex: 1,
+  },
+  nameTextContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+  },
   itemName:{
     fontSize: 14,
     color: TEXT_COLORS.primary,
     fontWeight: "500",
+    marginLeft: 2, 
   },
   amount:{
     fontSize: 13,

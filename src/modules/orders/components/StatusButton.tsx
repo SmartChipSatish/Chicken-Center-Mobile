@@ -6,6 +6,8 @@ const StatusButton = ({ status }:{status: string}) => {
         switch (status) {
             case 'Received':
                 return { label: 'PLACED', backgroundColor: '#FEEBC8', textColor: '#DD6B20' }; 
+            case 'PLACED':
+                return { label: 'COD', backgroundColor: '#FEEBC8', textColor: '#DD6B20' }; 
             case 'CANCELED':
                 return { label: 'CANCELLED', backgroundColor: '#FED7D7', textColor: '#E53E3E' }; 
             case 'DELIVERED':
