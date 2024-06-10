@@ -25,9 +25,8 @@ const Favourite = () => {
 
                 let updatedFavouritesList;
                 if (isItemInFavourites) {
-                    updatedFavouritesList = favouritesList.map(favItem =>
-                        favItem.id === item.id ? item : favItem
-                    );
+                    updatedFavouritesList = favouritesList.filter(favItem => favItem.id !== item.id);
+
                 } else {
                     updatedFavouritesList = [...favouritesList, item];
                 }
