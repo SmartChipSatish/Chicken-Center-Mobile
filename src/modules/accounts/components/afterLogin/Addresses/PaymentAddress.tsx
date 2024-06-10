@@ -21,7 +21,7 @@ export default function PaymentAddress() {
   const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
   const [updates] = useUpdateAddressMutation();
   const [placeholderShow, setPlaceholderShow] = useState(false);
-   const itemsids = useSelector((store: RootState) => store.locations.itemId);
+  const itemsids = useSelector((store: RootState) => store.locations.itemId);
   const [address, setAddress] = useState({ city: '', country: '', address: '', flat: '', pincode: "", street: '', state: '' });
   const [checkData, setCheckData] = useState(false);
   const [saveType, setSaveType] = useState<string>('');
@@ -37,7 +37,7 @@ export default function PaymentAddress() {
   const [mobilenotify, setmobilenotify] = useState(false)
   const [getAddressByUser] = useGetAddressByuserMutation()
   const [alltheAddress, setAllTheAddress] = useState<any>([]);
- 
+
   console.log(itemsids.city,"itemsids")
   const handleAddress = (location: any) => {
     const flat = location?.address?.split(',')?.shift() || '';
@@ -54,23 +54,23 @@ export default function PaymentAddress() {
       if (itemsids) {
         setAddress({
           city: itemsids?.city || '',
-          country: '', 
-          address: itemsids?.name || '', 
-          flat: itemsids?.houseNo || '', 
-          pincode: itemsids?.pincode?.toString() || "", 
-          street: '', 
+          country: '',
+          address: itemsids?.name || '',
+          flat: itemsids?.houseNo || '',
+          pincode: itemsids?.pincode?.toString() || "",
+          street: '',
           state: itemsids?.state || '',
-          
+
         });
-      
+
       }
     }, [itemsids])
   );
-  
 
-  
-  
-  
+
+
+
+
   const updateAddresses = async (status: boolean) => {
     const value = await AsyncStorage.getItem('userId');
     const userId = value ? JSON.parse(value) : null;
@@ -138,13 +138,13 @@ export default function PaymentAddress() {
 
 
   const pincodeValidation = (e: any) => {
-    if (e.length >= 6 && e.length < 7) {
-      setnotifyname(false)
+    const pincodeRegex = /^[1-9][0-9]{5}$/;
+    if (pincodeRegex.test(e)) {
+      setnotifyname(false);
+    } else {
+      setnotifyname(true);
     }
-    else (
-      setnotifyname(true)
-    )
-  }
+  };
   const Lankmark = (e: any) => {
     if (e.length > 10) {
       setnotifyLand(false)
@@ -172,14 +172,14 @@ export default function PaymentAddress() {
     )
   }
 
-  const mobileavalidation = (e: any) => {
-    if (e.length >= 10 && e.length < 11) {
-      setmobilenotify(false)
+  const mobileavalidation = (e: string) => {
+    const mobileNumberRegex = /^[6-9]\d{9}$/;
+    if (e.length === 10 && mobileNumberRegex.test(e)) {
+      setmobilenotify(false);
+    } else {
+      setmobilenotify(true);
     }
-    else (
-      setmobilenotify(true)
-    )
-  }
+  };
 
 
   return (

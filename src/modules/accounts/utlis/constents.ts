@@ -59,7 +59,7 @@ export const afterLoginDetails = [
   {
     icon: AddressesIcon,
     title: "Addresses",
-    content: "No saved addresses",
+    content: "Saved addresses",
     navigation: 'addresses'
   },
   // {

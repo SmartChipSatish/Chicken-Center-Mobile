@@ -113,13 +113,13 @@ export default function AddAddress() {
 
 
   const pincodeValidation = (e: any) => {
-    if (e.length >= 6 && e.length < 7) {
-      setnotifyname(false)
+    const pincodeRegex = /^[1-9][0-9]{5}$/;
+    if (pincodeRegex.test(e)) {
+      setnotifyname(false);
+    } else {
+      setnotifyname(true);
     }
-    else (
-      setnotifyname(true)
-    )
-  }
+  };
   const Lankmark = (e: any) => {
     if (e.length > 10) {
       setnotifyLand(false)
@@ -147,14 +147,14 @@ export default function AddAddress() {
     )
   }
 
-  const mobileavalidation = (e: any) => {
-    if (e.length >= 10 && e.length < 11) {
-      setmobilenotify(false)
+  const mobileavalidation = (e: string) => {
+    const mobileNumberRegex = /^[6-9]\d{9}$/;
+    if (e.length === 10 && mobileNumberRegex.test(e)) {
+      setmobilenotify(false); 
+    } else {
+      setmobilenotify(true);
     }
-    else (
-      setmobilenotify(true)
-    )
-  }
+  };
 
 
   return (
@@ -223,7 +223,7 @@ export default function AddAddress() {
             value={address.pincode}
             onChangeText={(text) => { setAddress({ ...address, pincode: text }), pincodeValidation(text) }}
             placeholder='Pincode'
-            keyboardType="phone-pad"
+            keyboardType="numeric"
             placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
@@ -250,7 +250,7 @@ export default function AddAddress() {
               return <TouchableOpacity style={[Style.savas_btn, { backgroundColor: saveType === e.title ? `${THEME_COLORS.light_color}` : 'white' }]}
                 key={inedx}
                 onPress={() => { setSaveType(e.title); setbutton(e) }}>
-                <e.icon width={20} height={20} color={`${TEXT_COLORS.primary}`} />
+                <e.icon fill={"black"} width={20} height={20} color={`${TEXT_COLORS.primary}`} />
                 <Text style={{ marginLeft: 5, color: "black" }}>{e.title}</Text>
               </TouchableOpacity>
             })}
