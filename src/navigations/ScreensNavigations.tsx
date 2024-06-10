@@ -44,7 +44,7 @@ export const StackNavgation = () => {
         title: 'Add new address'
       }} />
        <Stack.Screen name="payment" component={PaymentAddress} options={{
-        title: 'Add new address'
+        title: 'Add  address'
       }} />
       <Stack.Screen name="notifications" component={Notifications} options={{
         title: 'Notifications',

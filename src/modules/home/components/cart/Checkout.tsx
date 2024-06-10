@@ -165,7 +165,7 @@ export default function Checkout({ route }: any) {
                         {everyoneAddress?.length > 0 ?
                             <TouchableOpacity style={style.card1} onPress={() => { toggleModal() }}>
                                 <View style={style.one}>
-                                    <LocationIcon color={"orange"} height={20} width={20} />
+                                    <LocationIcon fill={"#77022F"}  height={20} width={20} />
                                     <Text
                                         style={style.textLoc}
                                         numberOfLines={1}
@@ -273,7 +273,7 @@ export default function Checkout({ route }: any) {
                                         >
                                             <View>
                                                 <View style={style.textIcons} >
-                                                    <LocationIcon height={20} width={20}></LocationIcon>
+                                                    <LocationIcon fill={"#77022F"}  height={20} width={20}></LocationIcon>
                                                     <Text style={style.text2} numberOfLines={1} ellipsizeMode="tail">{e?.city || ''}</Text>
                                                 </View>
                                                 <Text style={style.text}>
@@ -304,6 +304,13 @@ export default function Checkout({ route }: any) {
 
                     <View style={style.modalBackground}>
                         <View style={style.modalContents}>
+                           <TouchableOpacity onPress={()=>{
+                            setModalVisibles(!modalVisibles)}}>
+                                <View style={style.crossIcon}>
+                                <Cross  height={10} width={10}></Cross>
+                                </View>
+                          
+                           </TouchableOpacity>
                             <TouchableOpacity onPress={() => { navigation.navigate('payment') }}>
                                 <Text style={{ color: "black", fontWeight: "bold" }}>Edit</Text>
                             </TouchableOpacity>
@@ -595,11 +602,11 @@ const style = StyleSheet.create({
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     modalContents: {
-        width: 100,
+        width: 150,
         padding: 10,
         backgroundColor: 'white',
         borderRadius: 5,
-        alignItems: "center",
+        alignItems:"center",
         marginRight: 30,
         marginTop:20
     },
