@@ -1,14 +1,14 @@
-import { itemData } from "../../utils/constents";
+import { ItemsResponse, itemData } from "../../utils/constents";
 import { productsApi } from "./productsApi";
 
 export const getAllPrducts = productsApi.injectEndpoints({
     endpoints: (builder) => ({
-      getAllProducts: builder.query<itemData[], void>({
+      getAllProducts: builder.query<ItemsResponse, void>({
         query: () => ({
           url: '/items/getAllItems',
           method: 'GET',
         }),
-        transformResponse: (response: itemData[] ) => {
+        transformResponse: (response: ItemsResponse ) => {
           return response;
         },
       }),

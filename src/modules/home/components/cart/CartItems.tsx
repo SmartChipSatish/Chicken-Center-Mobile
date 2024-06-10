@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, Image  } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, Image, TouchableOpacity  } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
 import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../../../../globalStyle/GlobalStyles';
 import { useDispatch, useSelector } from 'react-redux';
@@ -90,7 +90,10 @@ export default function Cartitems() {
             </ScrollView> : <View style={styles.empty_cart}>
                 <Image source={empty_cart}/>
                  <Text style={styles.emptycart_text}>Empty cart</Text>
-                 <Text>Please Add Products</Text>
+                    <TouchableOpacity style={styles.button}
+                        onPress={() => navigation.navigate('home')}>
+                        <Text style={{ color: THEME_COLORS.primary }}>Please Add Products</Text>
+                    </TouchableOpacity>
                  </View>}
         </View>
     );
@@ -193,10 +196,17 @@ const styles = StyleSheet.create({
     },empty_cart:{
         justifyContent:'center',
         alignItems:'center',
+        height:'92%'
     },emptycart_text:{
         color:'black',
         fontSize:18,
         fontWeight:'bold'
+    },
+    button:{ 
+        backgroundColor: THEME_COLORS.secondary, 
+        borderRadius: 5, 
+        padding: 10, 
+        margin: 10 
     }
 });
 

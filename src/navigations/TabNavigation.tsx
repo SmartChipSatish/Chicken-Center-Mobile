@@ -51,7 +51,14 @@ export const TabNav = () => {
                 tabBarActiveTintColor: `${THEME_COLORS.secondary}`,
                 tabBarStyle: { height: 60 },
                 tabBarInactiveTintColor: `${TEXT_COLORS.secondary}`,
-                tabBarHideOnKeyboard: true
+                tabBarHideOnKeyboard: true,
+                headerStyle: {
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    elevation: 5,
+                },
             }}
         >
             <Tab.Screen name="home"
@@ -69,7 +76,6 @@ export const TabNav = () => {
                     tabBarIcon: ({ color, size }) => (
                         <CustomTabBarLabel label={'Cart'} color={color} />
                     ),
-                    headerShown: false,
                 }} />
             <Tab.Screen name='orders'
                 component={Orders}

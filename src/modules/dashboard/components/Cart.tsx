@@ -6,9 +6,7 @@ import { TEXT_COLORS } from '../../../globalStyle/GlobalStyles'
 export default function Cart() {
   return (
     <View>
-      <View style={style.header}>
-        <Text style={style.header_title}>Cart</Text>
-      </View>
+     
       <Cartitems></Cartitems>
     </View>
   )
