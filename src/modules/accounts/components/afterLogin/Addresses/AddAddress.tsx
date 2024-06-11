@@ -63,7 +63,7 @@ export default function AddAddress() {
 
 
     try {
-      if (address.address && address.flat && landmark && address.city && address.state && address.pincode && mobile) {
+      if (address.address && address.flat && landmark && address.city && address.state && address.pincode) {
 
         try {
           const savedData = await addAddress({ id: userId, user: dataTosend }).unwrap();
@@ -229,7 +229,7 @@ export default function AddAddress() {
         </View>
         {notifyname && <Text style={Style.textstyles}>Enter correct pincode</Text>}
 
-        <View style={{ marginBottom: 10 }}>
+        {/* <View style={{ marginBottom: 10 }}>
           <Text style={Style.side_header}>Mobile</Text>
           <TextInput style={Style.textInput}
             value={mobile}
@@ -239,7 +239,7 @@ export default function AddAddress() {
             placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
-        {mobilenotify && <Text style={Style.textstyles}>Enter correct mobile number</Text>}
+        {mobilenotify && <Text style={Style.textstyles}>Enter correct mobile number</Text>} */}
 
 
 

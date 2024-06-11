@@ -74,7 +74,7 @@ const Addresses = () => {
             displayAddress.map((address: any, index: any) => (
               <View style={styles.card} key={index}>
                 <View style={styles.iconText}>
-                  <LocationIcon fill={"#77022F"} height={20} width={20} />
+                  <LocationIcon fill={"orange"} height={20} width={20} />
                   <Text style={styles.cityText}>{address?.city}</Text>
                 </View>
                 <View style={styles.crossIcondata}>

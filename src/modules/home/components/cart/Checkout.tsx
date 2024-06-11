@@ -165,7 +165,7 @@ export default function Checkout({ route }: any) {
                         {everyoneAddress?.length > 0 ?
                             <TouchableOpacity style={style.card1} onPress={() => { toggleModal() }}>
                                 <View style={style.one}>
-                                    <LocationIcon fill={"#77022F"}  height={20} width={20} />
+                                    <LocationIcon fill={"orange"}  height={20} width={20} />
                                     <Text
                                         style={style.textLoc}
                                         numberOfLines={1}
@@ -273,7 +273,7 @@ export default function Checkout({ route }: any) {
                                         >
                                             <View>
                                                 <View style={style.textIcons} >
-                                                    <LocationIcon fill={"#77022F"}  height={20} width={20}></LocationIcon>
+                                                    <LocationIcon fill={"orange"}  height={20} width={20}></LocationIcon>
                                                     <Text style={style.text2} numberOfLines={1} ellipsizeMode="tail">{e?.city || ''}</Text>
                                                 </View>
                                                 <Text style={style.text}>
