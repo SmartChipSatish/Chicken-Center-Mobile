@@ -12,13 +12,14 @@ import { Image } from 'react-native';
 import ProfileCard from '../utlis/ProfileCard';
 import { setUser } from '../store/slices/UserSlice';
 import { useDispatch } from 'react-redux';
+import { useAuth } from '../../auth/components/AuthProvider';
 const appLogo = require('../../../assets/Images/app-logo.png');
 
 export default function Account({ navigation }: any) {
 
     const [show, setShow] = useState<boolean>(false);
     const dispatch = useDispatch()
-
+    const {logout} = useAuth();
     const handleClose = () => {
         setShow(!show);
     }
@@ -27,11 +28,13 @@ export default function Account({ navigation }: any) {
         webClientId: '781535826140-6kr39lp0fm05a2fupcecf42j9ka8o5v0.apps.googleusercontent.com',
     });
 
-    const handleLogout = async () => {
-        await AsyncStorage.clear();
-        navigation.navigate('login');
+    const handleLogout = () => {
         dispatch(setUser(''));
-
+        logout();
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'login' }],
+          });
     }
 
     const handlePress = async () => {

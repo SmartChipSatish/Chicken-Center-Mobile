@@ -3,12 +3,13 @@ import { Alert, StyleSheet, TextInput, TouchableOpacity } from 'react-native'
 import { View } from 'react-native'
 import { Text } from 'react-native-paper'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { TEXT_COLORS, THEME_COLORS } from '../../../../globalStyle/GlobalStyles'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import auth from '@react-native-firebase/auth';
-import Loding from '../../../dashboard/components/Loding'
 import { Keyboard } from 'react-native'
-import { useGetUserDetailsMutation } from '../../../auth/store/services/getUserDetailsService'
+import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles'
+import Loding from '../../dashboard/components/Loding'
+import { useGetUserDetailsMutation } from '../store/services/getUserDetailsService'
+import { useAuth } from './AuthProvider'
 
 export default function OTPVerfication({ navigation, route }: any) {
   const [otp, setOTP] = useState(['', '', '', '', '', '']);
@@ -16,6 +17,8 @@ export default function OTPVerfication({ navigation, route }: any) {
   const [timer, setTimer] = useState(60);
   const [getUser] = useGetUserDetailsMutation();
   const [loding, setLoding] = useState<boolean>(false);
+  const {login} = useAuth(); 
+
   const handleInputChange = (index: number, value: any) => {
     if (isNaN(value)) {
       return;
@@ -70,16 +73,16 @@ export default function OTPVerfication({ navigation, route }: any) {
           const name = data?.data?.name
           if (userId && name !== '') {
             setLoding(false);
-            AsyncStorage.setItem('idToken', JSON.stringify(idToken + userId));
-            AsyncStorage.setItem('userId', JSON.stringify(userId));
-            AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
-            AsyncStorage.setItem('login', 'true');
-            navigation.navigate('main');
+            login(JSON.stringify(idToken),userId);
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'main' }],
+            });
           } else if (userId) {
-            AsyncStorage.setItem('idToken', JSON.stringify(idToken + userId));
-            AsyncStorage.setItem('userId', JSON.stringify(userId));
-            AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
-            navigation.navigate('profile');
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'profile' }],
+            });
           }
           setLoding(false);
         } else {

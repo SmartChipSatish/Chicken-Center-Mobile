@@ -1,7 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import OTPVerfication from '../modules/accounts/components/otpLogin/OTPVerfication';
 import React from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons'
 import Addresses from "../modules/accounts/components/afterLogin/Addresses/Addresses";
 import AddAddress from "../modules/accounts/components/afterLogin/Addresses/AddAddress";
 import { Notifications } from "../modules/accounts/components/afterLogin/Notifications/Notifications";
@@ -14,8 +12,6 @@ import { TabNav } from "./TabNavigation";
 import SearchPage from "../modules/home/components/productsList/SearchPage";
 import ProfileScreen from "../modules/accounts/components/afterLogin/Profile/ProfileScreen";
 import Checkout from "../modules/home/components/cart/Checkout";
-import { BeforeLoginScreens } from "./BeforeNavigation";
-import LoginPage from "../modules/auth/components/Login";
 import PaymentAddress from "../modules/accounts/components/afterLogin/Addresses/PaymentAddress";
 
 export const StackNavgation = () => {
@@ -26,17 +22,6 @@ export const StackNavgation = () => {
       <Stack.Screen name='main' component={TabNav} options={{
         headerShown: false
       }} />
-      <Stack.Screen name='login' component={LoginPage} options={{
-        headerShown: false,
-      }} />
-      <Stack.Screen name='otpverfication' component={OTPVerfication} options={{
-                headerShown: false,
-                headerLeft: () => {
-                    return (
-                        <Ionicons name='chevron-back' size={30} color={'black'} />
-                    )
-                }
-            }} />
       <Stack.Screen name="addresses" component={Addresses} options={{
         title: 'Saved addresses'
       }} />
