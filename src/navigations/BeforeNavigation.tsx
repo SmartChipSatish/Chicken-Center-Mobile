@@ -1,11 +1,8 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import Login from "../modules/auth/components/Login";
-import OTPVerfication from "../modules/accounts/components/otpLogin/OTPVerfication";
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { TabNav } from "./TabNavigation";
-import { StackNavgation } from "./ScreensNavigations";
-import ProfileScreen from "../modules/accounts/components/afterLogin/Profile/ProfileScreen";
+import OTPVerfication from "../modules/auth/components/OTPVerfication";
 
 export const BeforeLoginScreens = () => {
     const Stack = createNativeStackNavigator();
@@ -22,15 +19,6 @@ export const BeforeLoginScreens = () => {
                     )
                 }
             }} />
-            <Stack.Screen name='main' component={StackNavgation} options={{
-                headerShown: false
-            }} />
-            <Stack.Screen name="profile" component={ProfileScreen} options={{
-                title: 'Profile',
-                headerTitleAlign: 'center',
-
-            }}
-            />
         </Stack.Navigator>
     )
 }

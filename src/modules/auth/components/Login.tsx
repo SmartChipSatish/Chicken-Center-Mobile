@@ -9,6 +9,7 @@ import { GoogleSignin } from 'react-native-google-signin';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loding from '../../dashboard/components/Loding';
 import { useGetUserDetailsMutation } from '../store/services/getUserDetailsService';
+import { useAuth } from './AuthProvider';
 const backgroundImg = require('../../../assets/Images/login_bg.png');
 
 export default function LoginPage() {
@@ -18,6 +19,8 @@ export default function LoginPage() {
     const [loding, setLoding] = useState<boolean>(false);
     const navigation = useNavigation<any>();
     const [getUser] = useGetUserDetailsMutation();
+    const { login } = useAuth();
+
     const NumberValidation = (number: string) => {
         setNumber(number);
         const numberRegx = /^[0-9]{10}$/
@@ -113,11 +116,11 @@ export default function LoginPage() {
                 const userId = data?.data?._id
                 if (userId) {
                     setLoding(false);
-                    AsyncStorage.setItem('idToken', JSON.stringify(idTokens + userId));
-                    AsyncStorage.setItem('userId', JSON.stringify(userId));
-                    AsyncStorage.setItem('uid', JSON.stringify(user?.uid));
-                    AsyncStorage.setItem('login', 'true');
-                    navigation.navigate('main');
+                    login(JSON.stringify(idTokens),userId);
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'main' }],
+                    });
                 }
 
             } catch (error) {
@@ -138,57 +141,52 @@ export default function LoginPage() {
     );
 
     return (
-        <View style={style.container}>
-            <ImageBackground source={backgroundImg}
-                style={{ height: '100%' }}>
-                <ScrollView showsVerticalScrollIndicator={false}
-                    contentContainerStyle={style.scrollViewContent}
-                    keyboardShouldPersistTaps='always'>
-                    <View style={style.innerContainer}>
-                        <View style={{ width: '100%' }}>
-                            <Text style={style.header}>Login / Sign up with your Phone Number</Text>
-                        </View>
-                        <View style={style.inputContainer}>
-                            <View style={{ marginLeft: 5, justifyContent: 'center' }}>
-                                <Text style={[style.input_text, { fontSize: 20, }]}>+91</Text>
-                            </View>
-                            <View style={{ width: '60%', marginBottom: 20 }}
-                            >
-
-                                <TextInput style={style.mobileNo_textInput}
-                                    placeholder='Enter Number'
-                                    onChangeText={(e) => NumberValidation(e)}
-                                    keyboardType="phone-pad"
-                                    maxLength={10}
-                                    autoFocus={true}
-                                    value={number}
-                                    placeholderTextColor={TEXT_COLORS.secondary}
-                                />
-
-                            </View>
-                        </View>
-                        <View style={style.butns_container}>
-                            <TouchableOpacity
-                                onPress={SendOtp}
-                                activeOpacity={numberCheck ? 0 : 1}
-                                style={[style.numberVerificationBtn,
-                                { backgroundColor: numberCheck ? `${THEME_COLORS.secondary}` : `${THEME_COLORS.light_color}` }
-                                ]}
-                            >
-                                <Text style={{ color: 'white', fontSize: 16 }}>Proceed with OTP</Text>
-                            </TouchableOpacity>
-                            <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '6%', marginBottom: '6%' }}>
-                                <Text style={{ fontSize: 18, color: TEXT_COLORS.secondary }}>--------- or ---------</Text>
-                            </View>
-                            <TouchableOpacity style={style.numberVerificationBtn} onPress={() => handleGoogleLogin()} >
-                                <Text style={{ color: 'white', fontSize: 16 }}>Google</Text>
-                            </TouchableOpacity>
-                        </View>
+        // <View style={style.container}>
+        <ImageBackground source={backgroundImg}
+            style={{ height: '100%' }}>
+            <ScrollView showsVerticalScrollIndicator={false}
+                contentContainerStyle={style.scrollViewContent}
+                keyboardShouldPersistTaps='always'>
+                <View style={style.innerContainer}>
+                    <View style={{ width: '100%' }}>
+                        <Text style={style.header}>Login / Sign up with your Phone Number</Text>
                     </View>
-                    {loding && <Loding type='login' />}
-                </ScrollView>
-            </ImageBackground>
-        </View>
+                    <View
+                        style={style.inputContainer}
+                    >
+                        <Text style={style.county_code}>+91</Text>
+                        <TextInput style={style.num_input}
+                            placeholder='Enter Number'
+                            onChangeText={(e) => NumberValidation(e)}
+                            editable={true}
+                            keyboardType="numeric"
+                            maxLength={10}
+                            value={number}
+                            placeholderTextColor={TEXT_COLORS.primary}
+                        />
+                    </View>
+                    <View style={style.butns_container}>
+                        <TouchableOpacity
+                            onPress={SendOtp}
+                            activeOpacity={numberCheck ? 0 : 1}
+                            style={[style.numberVerificationBtn,
+                            { backgroundColor: numberCheck ? `${THEME_COLORS.secondary}` : `${THEME_COLORS.light_color}` }
+                            ]}
+                        >
+                            <Text style={{ color: 'white', fontSize: 16 }}>Proceed with OTP</Text>
+                        </TouchableOpacity>
+                        <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: '6%', marginBottom: '6%' }}>
+                            <Text style={{ fontSize: 18, color: TEXT_COLORS.secondary }}>--------- or ---------</Text>
+                        </View>
+                        <TouchableOpacity style={style.numberVerificationBtn} onPress={() => handleGoogleLogin()} >
+                            <Text style={{ color: 'white', fontSize: 16 }}>Google</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </ScrollView>
+            {loding && <Loding type='login' />}
+        </ImageBackground>
+        // </View>
     );
 }
 
@@ -235,14 +233,27 @@ const style = StyleSheet.create({
     },
     inputContainer: {
         flexDirection: 'row',
-        borderBottomWidth: 1,
-        height: 58,
-        width: '80%',
         alignItems: 'center',
-        marginVertical: 20
+        marginTop: '2%',
+        borderBottomWidth: 1,
+        width: '90%',
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        marginBottom: '2%',
+        height: 60,
+        paddingLeft: '5%',
+        marginRight: '2%'
     }, butns_container: {
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center'
+    }, county_code: {
+        marginRight: 10,
+        color: TEXT_COLORS.primary,
+        fontSize: 18
+    }, num_input: {
+        marginRight: '2%',
+        fontSize: 18,
+        color: TEXT_COLORS.primary,
     }
 });

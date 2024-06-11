@@ -14,7 +14,7 @@ class MainActivity : ReactActivity() {
    */
   override fun getMainComponentName(): String = "KMMC"
 override fun onCreate(savedInstanceState: Bundle?) {
-        SplashScreen.show(this) // Show the splash screen on startup
+         // Show the splash screen on startup
         super.onCreate(savedInstanceState)
     }
   /**

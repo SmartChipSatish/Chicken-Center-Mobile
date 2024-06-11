@@ -28,6 +28,7 @@
     "@types/react-native-typing-animation": "^0.1.5",
     "axios": "^1.7.2",
     "cashfree-pg-api-contract": "^2.0.6",
+    "lottie-react-native": "^6.7.2",
     "react": "18.2.0",
     "react-hook-form": "^7.51.3",
     "react-native": "0.73.6",
