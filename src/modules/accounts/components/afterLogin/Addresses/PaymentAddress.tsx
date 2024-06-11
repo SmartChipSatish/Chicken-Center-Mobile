@@ -89,7 +89,7 @@ export default function PaymentAddress() {
 
 
     try {
-      if (address.address && address.flat && landmark && address.city && address.state && address.pincode && mobile) {
+      if (address.address && address.flat && landmark && address.city && address.state && address.pincode ) {
 
         try {
           const savedData = await updates({ id: itemsids._id, user: dataTosend }).unwrap();
@@ -254,7 +254,7 @@ export default function PaymentAddress() {
         </View>
         {notifyname && <Text style={Style.textstyles}>Enter correct pincode</Text>}
 
-        <View style={{ marginBottom: 10 }}>
+        {/* <View style={{ marginBottom: 10 }}>
           <Text style={Style.side_header}>Mobile</Text>
           <TextInput style={Style.textInput}
             value={mobile}
@@ -264,7 +264,7 @@ export default function PaymentAddress() {
             placeholderTextColor={TEXT_COLORS.secondary}
           />
         </View>
-        {mobilenotify && <Text style={Style.textstyles}>Enter correct mobile number</Text>}
+        {mobilenotify && <Text style={Style.textstyles}>Enter correct mobile number</Text>} */}
 
 
 
@@ -275,7 +275,7 @@ export default function PaymentAddress() {
               return <TouchableOpacity style={[Style.savas_btn, { backgroundColor: saveType === e.title ? `${THEME_COLORS.light_color}` : 'white' }]}
                 key={inedx}
                 onPress={() => { setSaveType(e.title); setbutton(e) }}>
-                <e.icon width={20} height={20} color={`${TEXT_COLORS.primary}`} />
+                <e.icon fill={"black"} width={20} height={20} color={`${TEXT_COLORS.primary}`} />
                 <Text style={{ marginLeft: 5, color: "black" }}>{e.title}</Text>
               </TouchableOpacity>
             })}
