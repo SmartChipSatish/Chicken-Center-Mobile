@@ -94,7 +94,7 @@ export default function GlobalOrders() {
               <View style={styles.orderIdCardHeader}>
                 <View style={styles.orderIdContainer}>
                  <Text style={styles.orderIdText}>ORDER ID: </Text>
-                <Text style={styles.orderIdHeader}>{item?.id}</Text>  
+                <Text style={styles.orderIdHeader}>#{item?.id}</Text>  
                 </View>
                
                 {/* <StatusButton status='PLACED'/> */}
@@ -127,9 +127,9 @@ export default function GlobalOrders() {
               </View>
 
               <View style={item?.orderStatus !== 'DELIVERED' ? styles.twoButtons : null}>
-                {item?.orderStatus === 'DELIVERED' && <View>
+                {item?.orderStatus === 'DELIVERED' && <TouchableOpacity onPress={()=>navigation.navigate('checkout',{totalAmount: '', orderId:item?.id})}>
                   <Text style={styles.RepeatColor}>Repeat</Text>
-                </View>}
+                </TouchableOpacity>}
 
                  
                   {item?.orderStatus === 'DELIVERED' && <TouchableOpacity onPress={() =>  setShow(true)}>

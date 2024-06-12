@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
 
     },
     AlltextColors: {
-        color: "black",
+        color: "#626364",
         fontWeight: "400",
         margin: 5
     },
@@ -176,7 +176,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     AlltexFonts: {
-        color: TEXT_COLORS.primary,
+        color: '#626364',
         fontWeight: "600",
         marginBottom: 15,
         marginLeft: 5
