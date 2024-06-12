@@ -47,7 +47,7 @@ export default function SearchPage({ navigation }: any) {
             placeholder='Search'
             onChangeText={setSearchQuery}
             editable={true}
-            placeholderTextColor={TEXT_COLORS.secondary}
+            placeholderTextColor={TEXT_COLORS.primary}
           />
         </View>
       </View>
@@ -102,7 +102,9 @@ const styles = StyleSheet.create({
     paddingLeft: '5%',
     marginRight: '2%'
   }, searchBar: {
-    marginRight: '2%'
+    marginRight: '2%',
+    color:TEXT_COLORS.primary,
+    fontSize:16
   }, searchIcon: {
     marginRight: 10,
   }, no_searchText: {

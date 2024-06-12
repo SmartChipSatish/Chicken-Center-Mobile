@@ -12,7 +12,7 @@ import { THEME_COLORS, TEXT_COLORS, TEXT_FONT_SIZE } from '../../../../globalSty
 import Payment from '../../../payment/components/Payment'
 import OrderConfirmationScreen from '../../../orders/components/OrderConfirmationScreen'
 import { setClearCart } from '../../store/slices/CartProductsSlice'
-import { setShowQuantityReset } from '../../store/slices/ProductsListSlice'
+import { setResetQuantity, setShowQuantityReset } from '../../store/slices/ProductsListSlice'
 import { ActivityIndicator } from 'react-native-paper'
 import { useDeleteAddressMutation, useGetAddressByuserMutation, } from '../../../accounts/components/afterLogin/Addresses/store/AddressEndpoints'
 import { useFocusEffect } from '@react-navigation/native';
@@ -77,6 +77,7 @@ export default function Checkout({ route }: any) {
                 if (response && response?._id) {
                     dispatch(setClearCart())
                     dispatch(setShowQuantityReset(''))
+                    dispatch(setResetQuantity(''));
                     setShow(true)
                 }
                 setTimeout(() => { setIsLoading(false); }, 1000);

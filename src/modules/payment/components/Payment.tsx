@@ -19,7 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useCreateOrderMutation } from '../../orders/store/services/OrdersEndpoint';
 import { RootState } from '../../../store/store';
 import OrderConfirmationScreen from '../../orders/components/OrderConfirmationScreen';
-import { setShowQuantityReset } from '../../home/store/slices/ProductsListSlice';
+import { setResetQuantity, setShowQuantityReset } from '../../home/store/slices/ProductsListSlice';
 
 const Payment = ({ totalAmount, type, addressId }: { totalAmount: number, type: string, addressId: string }) => {
   const dispatch = useDispatch();
@@ -122,6 +122,7 @@ const Payment = ({ totalAmount, type, addressId }: { totalAmount: number, type: 
       if (res.data) {
         dispatch(setClearCart())
         dispatch(setShowQuantityReset(''))
+        dispatch(setResetQuantity(''));
         setShow(true)
       }
 
