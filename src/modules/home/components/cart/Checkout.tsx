@@ -173,9 +173,9 @@ export default function Checkout({ route }: any) {
                                         ellipsizeMode="tail"
                                     >
                                         <Text style={style.text1}>
-                                            {selectedAddress?.city || ''}
+                                            {selectedAddress?.city || ''} 
                                         </Text>
-                                        {`${selectedAddress?.name || ''} ${selectedAddress?.landmark || ''} ${selectedAddress?.city || ''} ${selectedAddress?.state || ''} ${selectedAddress?.pincode || ''}`}
+                                        <Text> </Text> {`${selectedAddress?.name || ''} ${selectedAddress?.landmark || ''} ${selectedAddress?.city || ''} ${selectedAddress?.state || ''} ${selectedAddress?.pincode || ''}`}
                                     </Text>
                                     <DownArrow height={30} width={30} />
                                 </View>

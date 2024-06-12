@@ -94,9 +94,10 @@ export default function PaymentAddress() {
         try {
           const savedData = await updates({ id: itemsids._id, user: dataTosend }).unwrap();
           console.log(savedData, 'saveddata');
-          Alert.alert("Successfully added address");
+          // Alert.alert("Successfully added address");
           getAllAddresses();
-          navigation.navigate("addresses");
+          // navigation.navigate("checkout",{name:"name"});
+          navigation.goBack()
           setmobile('');
           setlandmark('');
         } catch (apiError) {
@@ -271,12 +272,13 @@ export default function PaymentAddress() {
         <View>
           <Text style={Style.side_header}>Save as</Text>
           <View style={{ flexDirection: 'row', marginTop: 5 }}>
-            {saveAs.map((e, inedx) => {
-              return <TouchableOpacity style={[Style.savas_btn, { backgroundColor: saveType === e.title ? `${THEME_COLORS.light_color}` : 'white' }]}
+          {saveAs.map((e, inedx) => {
+              return <TouchableOpacity style={[Style.savas_btn, { backgroundColor: saveType === e.title  ? `${THEME_COLORS.light_color}` : 'white',
+                borderColor: saveType === e.title ? 'white' : 'black' }]}
                 key={inedx}
                 onPress={() => { setSaveType(e.title); setbutton(e) }}>
-                <e.icon fill={"black"} width={20} height={20} color={`${TEXT_COLORS.primary}`} />
-                <Text style={{ marginLeft: 5, color: "black" }}>{e.title}</Text>
+                <e.icon fill={saveType === e.title ? 'white' : 'black'} width={20} height={20} color={`${TEXT_COLORS.primary}`} />
+                <Text style={{ marginLeft: 5, color: saveType === e.title ? 'white' : 'black' }}>{e.title}</Text>
               </TouchableOpacity>
             })}
           </View>
