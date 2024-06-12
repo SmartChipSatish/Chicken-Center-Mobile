@@ -205,8 +205,11 @@ const styles = StyleSheet.create({
     button:{ 
         backgroundColor: THEME_COLORS.secondary, 
         borderRadius: 5, 
-        padding: 10, 
-        margin: 10 
+        marginTop:'3%',
+        height:40,
+        justifyContent:'center',
+        alignItems:'center',
+        width:140
     }
 });
 

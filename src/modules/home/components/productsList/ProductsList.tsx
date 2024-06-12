@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { itemData } from '../../utils/constents';
 import { RootState } from '../../../../store/store';
@@ -14,6 +14,8 @@ const ProductsList = () => {
     const products = useSelector((store: RootState) => store.products.addProducts);
     const favouritesList = products.filter(item => item.favourite === true);
     const dispatch = useDispatch();
+    const [productsList,setProductsList]=useState<itemData[]>([]);
+
     const [updateUser] = useUpdateUserMutation();
     const handleFavourite = async (item: any) => {
         try {
@@ -45,10 +47,15 @@ const ProductsList = () => {
 
     };
 
+    useEffect(()=>{
+      const avaliableList:itemData[]=products.filter((e)=>e.globalItemStatus);
+      const notAvaliableList:itemData[]=products.filter((e)=>!e.globalItemStatus);
+      setProductsList(avaliableList.concat(notAvaliableList));
+    },[products]);
 
     return (
         <>
-            {products?.length > 0 ? products.map((e: itemData) => {
+            {productsList?.length > 0 ? productsList.map((e: itemData) => {
                 return <ProductsCard item={e}
                     handleFav={handleFavourite}
                     type='product'

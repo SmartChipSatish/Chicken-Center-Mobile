@@ -60,9 +60,14 @@ const ProductsListSlice = createSlice({
                 return { ...e, showQuantity: false }
             })
             state.addProducts = newDetails
-        }
+        },setResetQuantity: (state, action) => {
+            const data = state.addProducts.map((e) => {
+                    return { ...e, quantity: 1 }
+            })
+            state.addProducts = data
+        },
     }
 });
 
-export const { setAddProducts, setQuantity, setFavourite, setShowQuantity, setShowQuantityReset } = ProductsListSlice.actions;
+export const { setAddProducts, setQuantity, setFavourite, setShowQuantity, setShowQuantityReset, setResetQuantity } = ProductsListSlice.actions;
 export default ProductsListSlice;
