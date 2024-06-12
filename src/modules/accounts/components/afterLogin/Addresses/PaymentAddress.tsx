@@ -96,7 +96,8 @@ export default function PaymentAddress() {
           console.log(savedData, 'saveddata');
           // Alert.alert("Successfully added address");
           getAllAddresses();
-          navigation.navigate("checkout",{name:"name"});
+          // navigation.navigate("checkout",{name:"name"});
+          navigation.goBack()
           setmobile('');
           setlandmark('');
         } catch (apiError) {
