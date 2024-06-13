@@ -21,11 +21,17 @@ import { RootState } from '../../../store/store';
 import OrderConfirmationScreen from '../../orders/components/OrderConfirmationScreen';
 import { setResetQuantity, setShowQuantityReset } from '../../home/store/slices/ProductsListSlice';
 
-const Payment = ({ totalAmount, type, addressId }: { totalAmount: number, type: string, addressId: string }) => {
+interface paymentDetails{ 
+  totalAmount: number, 
+  type: string, 
+  addressId: string,
+  repeatOrderData:any 
+}
+
+const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetails) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
   const totalQuantity = cartItems.reduce((accumulator, item) => accumulator + item.quantity, 0);
-
   const [summaryOrderId, setSummaryOrderId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [show, setShow] = useState(false);
@@ -59,8 +65,8 @@ const Payment = ({ totalAmount, type, addressId }: { totalAmount: number, type: 
           updatedBy: uid,
           addressId: addressId,
           paymentType: type,
-          items: items,
-          totals: {
+          items: repeatOrderData !== undefined ? repeatOrderData?.items : items,
+          totals: repeatOrderData !== undefined ? repeatOrderData?.totals : {
             quantity: totalQuantity,
             amount: totalAmount
           }
@@ -100,7 +106,7 @@ const Payment = ({ totalAmount, type, addressId }: { totalAmount: number, type: 
         customerPhone: '+919876243167',
         orderId: orderId,
         userId: uid,
-        totalAmount: totalAmount
+        totalAmount: repeatOrderData !== undefined ? repeatOrderData?.totals?.amount : totalAmount
       });
       console.log(response, 'createOrders');
       return response.data;
@@ -235,7 +241,10 @@ const Payment = ({ totalAmount, type, addressId }: { totalAmount: number, type: 
             </View>
           </AlertNotificationRoot>
         </View>
-        {show && <OrderConfirmationScreen show={show} handleClose={handleClose} totalAmount={totalAmount} orderId={summaryOrderId} />}
+        {show && <OrderConfirmationScreen show={show} 
+                                          handleClose={handleClose} 
+                                          totalAmount={repeatOrderData !== undefined ? repeatOrderData?.totals?.amount : totalAmount} 
+                                          orderId={summaryOrderId} />}
       </View>
 
     </View>

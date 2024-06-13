@@ -127,7 +127,7 @@ export default function GlobalOrders() {
               </View>
 
               <View style={item?.orderStatus !== 'DELIVERED' ? styles.twoButtons : null}>
-                {item?.orderStatus === 'DELIVERED' && <TouchableOpacity onPress={()=>navigation.navigate('checkout',{totalAmount: '', orderId:item?.id})}>
+                {item?.orderStatus === 'DELIVERED' && <TouchableOpacity onPress={()=>navigation.navigate('checkout',{totalAmount: '', re_orderId:item?.id})}>
                   <Text style={styles.RepeatColor}>Repeat</Text>
                 </TouchableOpacity>}
 

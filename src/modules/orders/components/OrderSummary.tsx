@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     },
     Billdetails: {
         fontWeight: "bold",
-        color: "black",
+        color: "#626364",
         fontSize: 20,
         marginBottom: 10
     },
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems:'center',
-        height:60,
+        height:55,
         width: '100%',
         shadowColor: '#000',
         shadowOffset: { width: 100, height: 10 },
