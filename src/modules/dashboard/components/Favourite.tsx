@@ -16,14 +16,16 @@ const Favourite = () => {
     const favouritesList = products.filter(item => item.favourite === true);
 
     const handleFavourite = async (item: any) => {
+        dispatch(setFavourite(item));
+
         try {
             const storeduserId = await AsyncStorage.getItem('userId');
             if (storeduserId) {
                 const userId = storeduserId.replace(/['"]/g, '').trim();
-                const isItemInFavourites = favouritesList.some(favItem => favItem.id === item.id);
+                const isItemInFavourites = favouritesList.some(favItem => favItem?.id === item?.id);
                 let updatedFavouritesList;
                 if (isItemInFavourites) {
-                    updatedFavouritesList = favouritesList.filter(favItem => favItem.id !== item.id);
+                    updatedFavouritesList = favouritesList.filter(favItem => favItem?.id !== item?.id);
                 } else {
                     updatedFavouritesList = [...favouritesList, item];
                 }
@@ -32,7 +34,7 @@ const Favourite = () => {
                     favouriteItems: updatedFavouritesList
                 }).unwrap();
                 dispatch(setUser(response.data));
-                dispatch(setFavourite(item));
+
             }
         } catch (error) {
             console.log(error);
@@ -43,18 +45,18 @@ const Favourite = () => {
         <>
             {favouritesList?.length > 0 ? (
                 <ScrollView style={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}>
-                {favouritesList?.map((item: any) => (
-                    <View style={styles.container} key={item.id}>
-                        <ProductsCard type='product' item={item} handleFav={handleFavourite} />
-                    </View>
-                ))}
+                    {favouritesList?.map((item: any) => (
+                        <View style={styles.container} key={item.id}>
+                            <ProductsCard type='product' item={item} handleFav={handleFavourite} />
+                        </View>
+                    ))}
                 </ScrollView>
             ) : (
                 <View style={styles.noFavouritesContainer}>
                     <Text style={styles.noFavouritesText}>No Favourites</Text>
                 </View>
             )}
-       </>
+        </>
     );
 }
 

@@ -7,9 +7,13 @@ import Loding from '../../dashboard/components/Loding';
 import { Order, OrderItem } from '../utils/constants';
 import CrossMark from '../../../assets/svgimages/util';
 import StatusButton from './StatusButton';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
 import RatingDisplay from '../../../sharedFolders/components/RatingDisplay';
+import RateOrder from './RateOrder';
 
 export default function OrderSummary({ orderId, setModalVisible1, orderStatus }: { orderId: string, setModalVisible1: () => void, orderStatus: string }) {
+    const user = useSelector((store: RootState) => store.user.user);
 
     const [ordersData, setOrdersData] = useState<OrderItem[]>()
     const [totalOrder, setTotalOrder] = useState<Order>();
@@ -17,6 +21,7 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
     const [address, setAddress] = useState<any>([]);
     const [isLoading, setIsLoading] = useState(false)
     const [getOrders] = useGetOrderByIdMutation();
+    const [paymentStatus, setPaymentStatus] = useState<string>('')
 
     const getOrderData = async () => {
         setIsLoading(true)
@@ -28,6 +33,7 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
                 setTotalOrder(response?.data)
                 setAddress(response?.data?.userId?.secondaryAddress)
                 setAddressId(response?.data?.addressId)
+                setPaymentStatus(response?.data?.paymentStatus.toString())
             }
             console.log(response?.data, 'ordersSummary')
             setIsLoading(false)
@@ -58,12 +64,27 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
     const discount = totalOrder?.discountPercentage || 0;
     const coupon = totalOrder?.coupon || 0;
     const total = itemsPrice + deliveryFee + addons - (coupon + discount);
+    const [show, setShow] = useState(false);
 
     const findAddressById = (address: any[], addressId: string) => {
         return address.find((res: any) => res._id === addressId)
     }
     const selectedAddress = findAddressById(address, addressId)
     console.log(selectedAddress, 'address')
+    const formatMobileNumber = (mobileNumber: string) => {
+        if (mobileNumber.startsWith('+91')) {
+            return mobileNumber.slice(3);
+        } else if (mobileNumber.startsWith('91') && mobileNumber.length === 12) {
+            return mobileNumber.slice(2);
+        } else {
+            return mobileNumber;
+        }
+    };
+    const formattedNumber = user ? formatMobileNumber(user.primaryNumber.toString()) : '';
+    const handleClose = () => {
+        setShow(false)
+    }
+    console.log(orderStatus, 'orderStatus')
     return (
 
         <View>
@@ -73,7 +94,7 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
                     onPress={() => {
                         setModalVisible1()
                     }}>
-                <CrossMark color={'black'} width={20} height={20} style={{marginRight:'2%'}}></CrossMark>
+                    <CrossMark color={'black'} width={20} height={20} style={{ marginRight: '2%' }}></CrossMark>
                 </TouchableOpacity>
             </View>
 
@@ -87,18 +108,19 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
                                 <Text style={styles.price1}>Qty:{item?.itemQty}</Text>
                                 <Text style={styles.price}>₹{item?.itemPrice}</Text>
                                 <View style={styles.rightAlign}>
-
                                 </View>
-                            </View>
-                            <View>
-                            <RatingDisplay rating={4.3} votes={2925} />
                             </View>
                         </View>
                     ))}
 
 
-                    <View style={[styles.cards, { marginBottom: 10 }]}>
-                        <Text style={styles.Billdetails}>Bill details</Text>
+                    <View style={styles.cards}>
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', }}>
+
+                            <Text style={styles.Billdetails}>Bill details</Text>
+                            <StatusButton status={orderStatus} />
+
+                        </View>
                         <View style={styles.row}>
                             <Text style={styles.leftTexts}>MRP</Text>
                             <Text style={styles.rightAmount}>₹{itemsPrice}</Text>
@@ -124,24 +146,33 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
                     <View style={styles.cards}>
                         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', }}>
                             <Text style={styles.Billdetails}>Order details</Text>
-                            <StatusButton status={orderStatus} />
+                            <TouchableOpacity onPress={() => setShow(true)}>
+                                <RatingDisplay rating={4.3} votes={2925} />
+                            </TouchableOpacity>
+
                             {/* <StatusButton status='DELIVERED'/>   */}
                         </View>
 
                         <Text style={styles.AlltextColors}>Order id</Text>
-                        <Text style={styles.AlltexFonts}>#{orderId}</Text>
+                        <Text style={[styles.AlltexFonts, styles.textColor]}>#{orderId}</Text>
+                        <Text style={styles.AlltextColors}>UserName</Text>
+                        <Text style={styles.AlltexFonts}>{user?.name}</Text>
+                        <Text style={styles.AlltextColors}>Mobile</Text>
+                        <Text style={styles.AlltexFonts}>{formattedNumber}</Text>
                         <Text style={styles.AlltextColors}>Payment</Text>
-                        <Text style={styles.AlltexFonts}>{orderStatus}</Text>
+                        <Text style={styles.AlltexFonts}>{paymentStatus === 'PENDING' ? 'Cash On Delivery' : 'Online'}</Text>
                         <Text style={styles.AlltextColors}>Deliver to</Text>
                         <Text style={styles.AlltexFonts}>{`${selectedAddress?.name || ''} ${selectedAddress?.landmark || ''} ${selectedAddress?.city || ''} ${selectedAddress?.state || ''} ${selectedAddress?.pincode || ''}`}</Text>
                         <Text style={styles.AlltextColors}>Order Placed</Text>
-                        <Text style={styles.AlltexFonts}>placed on {formatDate((totalOrder?.updatedAt) || '')}</Text>
+                        <Text style={styles.AlltexFonts}>{formatDate((totalOrder?.updatedAt) || '')}</Text>
                     </View>
                 </ScrollView> :
                 <View style={styles.loading}>
                     <Loding />
                 </View>
             }
+            {show && <RateOrder show={show} handleClose={handleClose} />}
+
 
         </View>
 
@@ -196,8 +227,8 @@ const styles = StyleSheet.create({
         flex: 0,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems:'center',
-        height:55,
+        alignItems: 'center',
+        height: 55,
         width: '100%',
         shadowColor: '#000',
         shadowOffset: { width: 100, height: 10 },
