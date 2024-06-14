@@ -18,6 +18,8 @@ import { useDeleteAddressMutation, useGetAddressByuserMutation, } from '../../..
 import { useFocusEffect } from '@react-navigation/native';
 import { setItemid } from '../../../accounts/store/slices/LocationSlice'
 import CrossMark from '../../../../assets/svgimages/util'
+import { useToast } from 'react-native-toast-notifications'
+import { ShowToster } from '../../../../sharedFolders/components/ShowToster'
 
 export default function Checkout({ route }: any) {
     const [modalVisible, setModalVisible] = useState<any>(false);
@@ -42,7 +44,7 @@ export default function Checkout({ route }: any) {
     const [addressId, setAddressId] = useState<any>({});
     const [repeatOrderData,setRepeatOrderData]= useState<any>();
     const [getOrders] = useGetOrderByIdMutation();
-
+    const toast =useToast();
     const items = cartItems.map(item => {
         return ({
             itemId: item?.id,
@@ -89,7 +91,8 @@ export default function Checkout({ route }: any) {
                 console.error('Error:', error);
             }
         } else {
-            Alert.alert('Select Address and Payment type');
+            // Alert.alert('Select Address and Payment type');
+            ShowToster(toast, 'Select Address and Payment type', '', 'error');
         }
     };
 

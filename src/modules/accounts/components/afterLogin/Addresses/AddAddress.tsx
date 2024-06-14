@@ -12,6 +12,8 @@ import { RootState } from '../../../../../store/store'
 import { TEXT_COLORS, THEME_COLORS } from '../../../../../globalStyle/GlobalStyles'
 import { setDisplayAddressAll } from '../../../store/slices/LocationSlice'
 import { useFocusEffect } from '@react-navigation/native';
+import { useToast } from 'react-native-toast-notifications'
+import { ShowToster } from '../../../../../sharedFolders/components/ShowToster'
 
 export default function AddAddress() {
   console.log(saveAs,"saveAs-----")
@@ -35,6 +37,8 @@ export default function AddAddress() {
   const [mobilenotify, setmobilenotify] = useState(false)
   const [getAddressByUser] = useGetAddressByuserMutation()
   const [alltheAddress, setAllTheAddress] = useState<any>([]);
+  const toast = useToast();
+
   const handleAddress = (location: any) => {
     const flat = location?.address?.split(',')?.shift() || '';
     setAddress({ city: location.city, country: location.country, address: location.address, flat: flat, pincode: location.pincode, street: location.street, state: location.state });
@@ -82,8 +86,8 @@ export default function AddAddress() {
 
       }
       else {
-        Alert.alert("Enter all the fields...")
-        
+        // Alert.alert("Enter all the fields...")
+        ShowToster(toast, 'Enter all the fields...', '', 'error'); 
       }
 
 

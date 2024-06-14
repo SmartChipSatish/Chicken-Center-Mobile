@@ -4,9 +4,13 @@ import { ForwardArrowIcon } from '../../../../assets/svgimages/AccountsSvgs/acco
 import { afterLoginDetails } from '../../utlis/constents'
 import { style } from '../../utlis/Styles';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../store/store';
 
 export default function AfterLogin() {
-  const navigate = useNavigation<any>()
+  const navigate = useNavigation<any>();
+  const orderCount = useSelector((store: RootState) => store.orders.ordersCount);
+  
   return (
     <View style={style.container}>
 
@@ -19,7 +23,7 @@ export default function AfterLogin() {
           </View>
           <View style={{ width: '80%', marginLeft: 5, marginBottom: 15 }}>
             <Text style={style.title}>{e.title}</Text>
-            <Text style={style.discription}>{e.content}</Text>
+            <Text style={style.discription}>{e.title === 'Orders'? 'Orders placed: ' + orderCount:e.content}</Text>
           </View>
           <View style={{ marginBottom: 15 }}>
             <ForwardArrowIcon />

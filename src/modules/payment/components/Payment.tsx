@@ -20,6 +20,8 @@ import { useCreateOrderMutation } from '../../orders/store/services/OrdersEndpoi
 import { RootState } from '../../../store/store';
 import OrderConfirmationScreen from '../../orders/components/OrderConfirmationScreen';
 import { setResetQuantity, setShowQuantityReset } from '../../home/store/slices/ProductsListSlice';
+import { ShowToster } from '../../../sharedFolders/components/ShowToster';
+import { useToast } from 'react-native-toast-notifications';
 
 interface paymentDetails{ 
   totalAmount: number, 
@@ -35,7 +37,7 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
   const [summaryOrderId, setSummaryOrderId] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [show, setShow] = useState(false);
-
+  const toast = useToast();
   const [createData] = useCreateOrderMutation();
   const [initiateOrder] = useInitiateOrderMutation();
   const [paymentVerify] = useVerifyOrderMutation();
@@ -92,7 +94,8 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
         setIsLoading(false);
       }
     } else {
-      Alert.alert('Select Address and Payment type');
+      // Alert.alert('Select Address and Payment type');
+      ShowToster(toast, 'Select Address and Payment type', '', 'error');
     }
   };
 

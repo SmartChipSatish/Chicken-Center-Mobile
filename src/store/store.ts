@@ -8,6 +8,7 @@ import { ordersApi } from "../modules/orders/store/services/OrdersApi";
 import { addressApi } from "../modules/accounts/components/afterLogin/Addresses/store/AddressApi";
 import { paymentApi } from "../modules/payment/store/services/PaymentApi";
 import userSlice from "../modules/accounts/store/slices/UserSlice";
+import OrderItemsSlice from "../modules/orders/store/slices/OrdersSlices";
 
 
 const store = configureStore({
@@ -16,6 +17,7 @@ const store = configureStore({
         cartProducts: cartProductsSlice.reducer,
         locations: locationsSlice.reducer,
         user: userSlice.reducer,
+        orders:OrderItemsSlice.reducer,
         [productsApi.reducerPath]: productsApi.reducer,
         [userApi.reducerPath]: userApi.reducer,
         [ordersApi.reducerPath]: ordersApi.reducer,

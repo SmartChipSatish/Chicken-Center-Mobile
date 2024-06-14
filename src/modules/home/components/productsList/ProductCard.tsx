@@ -7,7 +7,8 @@ import { handelAddToCart, handleCartQuantity } from '../../utils/AddTocartAndQua
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../store/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { useToast } from 'react-native-toast-notifications';
+import { ShowToster } from '../../../../sharedFolders/components/ShowToster';
 
 
 
@@ -24,16 +25,21 @@ const ProductsCard: React.FC<productsinfo> = ({ item,
 }) => {
     const dispatch = useDispatch();
     const products = useSelector((store: RootState) => store.products.addProducts);
+    const toast = useToast();
 
 
+    const addtocart = (id: string) => {
+        const cartItem = products.filter((e) => (e.id === id))[0];
+        handelAddToCart(id, dispatch, cartItem);
+        ShowToster(toast, 'Product is added to cart', '', 'success');
+    }
 
-
-const addtocart=(id:string)=>{
-    const cartItem= products.filter((e)=>(e.id===id))[0];
-    handelAddToCart(id,dispatch,cartItem);
-}
-
-
+   const handleRemoveItem=()=>{
+    handleCartQuantity('remove', item, dispatch)
+    if(item.quantity ===1){
+        ShowToster(toast, 'Product is removed from cart', '', 'error'); 
+    }
+   }
 
 
     return (
@@ -53,7 +59,7 @@ const addtocart=(id:string)=>{
                         <Text style={{ textDecorationLine: 'line-through' }}>₹ 250</Text>
                     </View>
                 </View>
-                <View style={[type === 'cart' ? styles.add_cart : styles.add_fav,{width:'30%',paddingRight:'1%'}]}>
+                <View style={[type === 'cart' ? styles.add_cart : styles.add_fav, { width: '30%', paddingRight: '1%' }]}>
                     {type === 'product' && <View >
                         <FavouriteIcon color={`${THEME_COLORS.secondary}`}
                             height={25}
@@ -62,13 +68,13 @@ const addtocart=(id:string)=>{
                             onPress={() => handleFav?.(item)} />
                     </View>}
                     {(item.showQuantity || type === 'cart') && <View style={styles.quantityContainer}>
-                        <Text style={styles.quantityButton} onPress={() => handleCartQuantity('remove', item, dispatch)}>-</Text>
+                        <Text style={styles.quantityButton} onPress={() => handleRemoveItem()}>-</Text>
                         <Text style={styles.quantity}>{item.quantity}</Text>
                         <Text style={styles.quantityButton} onPress={() => handleCartQuantity('add', item, dispatch)}>+</Text>
                     </View>}
                     {!item.showQuantity && type === 'product' && item.globalItemStatus && <TouchableOpacity
                         onPress={() => addtocart(item.id)}>
-                        <Text style={[styles.addBtn,{padding:5}]}>Add</Text>
+                        <Text style={[styles.addBtn, { padding: 5 }]}>Add</Text>
                     </TouchableOpacity>}
                     {!item.showQuantity && type === 'product' && !item.globalItemStatus && <View
                     >
@@ -125,7 +131,7 @@ const styles = StyleSheet.create({
     }, items_subCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        width:'50%',
+        width: '50%',
     },
     quantityContainer: {
         flexDirection: 'row',

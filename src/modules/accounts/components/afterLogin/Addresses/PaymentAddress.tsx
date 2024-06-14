@@ -12,6 +12,8 @@ import { RootState } from '../../../../../store/store'
 import { TEXT_COLORS, THEME_COLORS } from '../../../../../globalStyle/GlobalStyles'
 import { setDisplayAddressAll } from '../../../store/slices/LocationSlice'
 import { useFocusEffect } from '@react-navigation/native';
+import { ShowToster } from '../../../../../sharedFolders/components/ShowToster'
+import { useToast } from 'react-native-toast-notifications'
 
 
 export default function PaymentAddress() {
@@ -37,7 +39,7 @@ export default function PaymentAddress() {
   const [mobilenotify, setmobilenotify] = useState(false)
   const [getAddressByUser] = useGetAddressByuserMutation()
   const [alltheAddress, setAllTheAddress] = useState<any>([]);
-
+  const toast = useToast();
   console.log(itemsids.city,"itemsids")
   const handleAddress = (location: any) => {
     const flat = location?.address?.split(',')?.shift() || '';
@@ -107,7 +109,8 @@ export default function PaymentAddress() {
 
       }
       else {
-        Alert.alert("Enter all the fields...")
+        // Alert.alert("Enter all the fields...")
+        ShowToster(toast, 'Enter all the fields...', '', 'error');
       }
 
 

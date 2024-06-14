@@ -14,6 +14,8 @@ import TabButton from './TabButton';
 import { RightArrowIcon } from '../../../assets/svgimages/OrdersSvgs/OrderSvgs';
 import RatingDisplay from '../../../sharedFolders/components/RatingDisplay';
 import RateOrder from './RateOrder';
+import { useDispatch } from 'react-redux';
+import { setOrderCount } from '../store/slices/OrdersSlices';
 
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
@@ -32,6 +34,7 @@ export default function GlobalOrders() {
   const [isLoading, setIsLoading] = useState(false);
   const [orderStatus, setOrderStatus] = useState('');
   const [show, setShow] = useState(false);
+  const dispatch=useDispatch();
   const [makepaydata, setMakepaydata] = useState({ orderId: '', addressId: '', totalAmount: 0 });
   const TABS = {
     PLACED: ['Received', 'PLACED'],
@@ -51,7 +54,7 @@ export default function GlobalOrders() {
       console.log(uid, 'uid')
       const response = await getOrdersByUserId(uid);
       setOrdersData(response.data)
-      console.log(response.data, 'orderbyuserid')
+      dispatch(setOrderCount(response.data.length));
       setIsLoading(false)
     } catch (error) {
       console.log(error)

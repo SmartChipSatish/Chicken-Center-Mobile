@@ -11,6 +11,8 @@ import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../../../../store/store';
 import { setUser } from '../../../store/slices/UserSlice';
+import { ShowToster } from '../../../../../sharedFolders/components/ShowToster';
+import { useToast } from 'react-native-toast-notifications';
 
 const ProfileScreen: React.FC = () => {
     const user = useSelector((store: RootState) => store.user.user);
@@ -32,7 +34,7 @@ const ProfileScreen: React.FC = () => {
     const [isEdited, setIsEdited] = useState<boolean>(false);
     const [loding, setLoding] = useState<boolean>(false);
     const [avatarError, setAvatarError] = useState<string | null>(null);
-
+    const toast = useToast();
     const validateName = (name: string) => {
         return name.length >= 3;
     };
@@ -158,7 +160,8 @@ const ProfileScreen: React.FC = () => {
                 setAvatarError(null);
                 AsyncStorage.setItem('login', 'true');
             }).catch(err => {
-                Alert.alert("An Error Occured While Uploading");
+                // Alert.alert("An Error Occured While Uploading");
+                ShowToster(toast, 'An Error Occured While Uploading', '', 'error');
                 setAvatarError("Failed to upload image");
             });
     };
