@@ -48,14 +48,16 @@ export default function Checkout({ route }: any) {
     const items = cartItems.map(item => {
         return ({
             itemId: item?.id,
-            itemQty: item?.quantity,
+            itemQty: item?.itemQty,
             itemPrice: item?.itemPrice,
             amount: item?.total,
             imageUrl: item?.imageUrl,
-            itemName: item?.itemName
+            itemName: item?.itemName,
+            itemUnit:item?.quantity,
+            contactNumber:'9948917262'
         })
     });
-
+    
     const totalQuantity = cartItems.reduce((accumulator, item) => accumulator + item?.quantity, 0);
 
     const createOrder = async () => {
@@ -76,7 +78,7 @@ export default function Checkout({ route }: any) {
                         amount: totalAmount
                     }
                 }).unwrap();
-
+                console.log(response,'itemresponse')
                 setOrderId(response?._id)
                 if (response && response?._id) {
                     dispatch(setClearCart())

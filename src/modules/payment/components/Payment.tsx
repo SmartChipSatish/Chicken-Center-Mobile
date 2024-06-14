@@ -45,11 +45,13 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
   const items = cartItems.map(item => {
     return ({
       itemId: item.id,
-      itemQty: item.quantity,
+      itemQty: item.itemQty,
       itemPrice: item.itemPrice,
       amount: item.total,
       imageUrl: item.imageUrl,
-      itemName: item.itemName
+      itemName: item.itemName,
+      itemUnit:item?.quantity,
+      contactNumber:'9948917262'
     })
   });
   const createOrder = async () => {
@@ -235,9 +237,9 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
       <View style={addressId === '' ? styles.disableContainer : styles.container}>
 
         <View >
-          <TouchableOpacity style={styles.confirm_order} onPress={isLoading ? () => { } : createOrder} disabled={isLoading}>
+          <TouchableOpacity style={[styles.confirm_order,{backgroundColor:(addressId && type) ? THEME_COLORS.secondary: THEME_COLORS.light_color}]} onPress={isLoading ? () => { } : createOrder} disabled={isLoading}>
           {isLoading && <ActivityIndicator size="small" color={THEME_COLORS.primary} />}
-            <Text style={styles.text}>Confirm Order</Text>
+            <Text style={styles.text} disabled={isLoading}>Confirm Order</Text>
           </TouchableOpacity>
           <AlertNotificationRoot>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
