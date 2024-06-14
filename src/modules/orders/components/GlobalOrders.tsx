@@ -15,6 +15,10 @@ import { RightArrowIcon } from '../../../assets/svgimages/OrdersSvgs/OrderSvgs';
 import RatingDisplay from '../../../sharedFolders/components/RatingDisplay';
 import RateOrder from './RateOrder';
 
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../store/store';
+import MakePayment from '../../payment/components/MakePayment';
+
 
 export default function GlobalOrders() {
   const navigation = useNavigation<any>()
@@ -28,6 +32,7 @@ export default function GlobalOrders() {
   const [isLoading, setIsLoading] = useState(false);
   const [orderStatus, setOrderStatus] = useState('');
   const [show, setShow] = useState(false);
+  const [makepaydata, setMakepaydata] = useState({ orderId: '', addressId: '', totalAmount: 0 });
   const TABS = {
     PLACED: ['Received', 'PLACED'],
     CANCELLED: 'CANCELLED',
@@ -46,7 +51,7 @@ export default function GlobalOrders() {
       console.log(uid, 'uid')
       const response = await getOrdersByUserId(uid);
       setOrdersData(response.data)
-      console.log(response, 'orderbyuserid')
+      console.log(response.data, 'orderbyuserid')
       setIsLoading(false)
     } catch (error) {
       console.log(error)
@@ -54,141 +59,155 @@ export default function GlobalOrders() {
     }
     setIsLoading(false)
   }
-   
+
   const filterOrders = () => {
-    console.log('SSSS', selectedTab)
     return ordersData?.filter((item) => selectedTab === TABS.PLACED[0] ? TABS.PLACED.includes(item?.orderStatus) : item?.orderStatus === selectedTab)
   }
   const handleClose = () => {
     setShow(false)
   }
+  const handlePaymentSuccess = () => {
+    setMakepaydata({ orderId: '', addressId: '', totalAmount: 0 });
+    getOrderData(); 
+  };
+
   useFocusEffect(
     useCallback(() => {
       getOrderData()
     }, [])
   )
- 
+
 
   return (
     <>
-    <View style={{marginTop:-10,flex:1}}>
-    <View style={styles.tabsContainer}>
-    <TabButton label={'RECEIVED'} isSelected={selectedTab === TABS.PLACED[0]} onPress={()=>setSelectedTab(TABS.PLACED[0])}/>
-    <TabButton label={'DELIVERED'} isSelected={selectedTab === TABS.DELIVERED} onPress={()=>setSelectedTab(TABS.DELIVERED)}/>
-    <TabButton label={'CANCELLED'} isSelected={selectedTab === TABS.CANCELLED} onPress={()=>setSelectedTab(TABS.CANCELLED)}/>
-    </View>
-      {!isLoading &&
-      <ScrollView >
-        {filterOrders() && filterOrders().length > 0 ? filterOrders().map((item: Order) => (
-          <Pressable key={item._id}
-            onPress={() => { setMyOrderId(item._id); setOrderStatus(item?.orderStatus); setModalVisible1(true); }}
-            style={({ pressed }) => [
-              {
-                backgroundColor: pressed ? '#ddd' : '#f0f0f0',
-                transform: [{ scale: pressed ? 0.98 : 1 }],
-              },
-              styles.main_card,
-            ]}
-            >
-            <View style={styles.card}>
-              <View style={styles.orderIdCardHeader}>
-                <View style={styles.orderIdContainer}>
-                 <Text style={styles.orderIdText}>ORDER ID: </Text>
-                <Text style={styles.orderIdHeader}>#{item?.id}</Text>  
-                </View>
-               
-                {/* <StatusButton status='PLACED'/> */}
-                {item?.orderStatus !== 'DELIVERED' && <RatingDisplay rating={4.3} votes={2925} />}
-                
-              </View>
+      <View style={{ marginTop: -10, flex: 1 }}>
+        <View style={styles.tabsContainer}>
+          <TabButton label={'RECEIVED'} isSelected={selectedTab === TABS.PLACED[0]} onPress={() => setSelectedTab(TABS.PLACED[0])} />
+          <TabButton label={'DELIVERED'} isSelected={selectedTab === TABS.DELIVERED} onPress={() => setSelectedTab(TABS.DELIVERED)} />
+          <TabButton label={'CANCELLED'} isSelected={selectedTab === TABS.CANCELLED} onPress={() => setSelectedTab(TABS.CANCELLED)} />
+        </View>
+        {!isLoading &&
+          <ScrollView >
+            {filterOrders() && filterOrders().length > 0 ? filterOrders().map((item: Order) => (
+              <Pressable key={item._id}
+                onPress={() => { setMyOrderId(item._id); setOrderStatus(item?.orderStatus); setModalVisible1(true); }}
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: pressed ? '#ddd' : '#f0f0f0',
+                    transform: [{ scale: pressed ? 0.98 : 1 }],
+                  },
+                  styles.main_card,
+                ]}
+              >
+                <View key={item._id} style={styles.card}>
+                  <View style={styles.orderIdCardHeader}>
+                    <View style={styles.orderIdContainer}>
+                      <Text style={styles.orderIdText}>ORDER ID: </Text>
+                      <Text style={styles.orderIdHeader}>#{item?.id.slice(-4)}</Text>
+                    </View>
 
-              <View style={styles.item_details}>
-                <Image style={styles.tinyLogo} source={{ uri: item?.items[0]?.imageUrl }} />
-                <View style={styles.itemDetailsContainer}>
-                <View style={styles.nameTextContainer}>
-      <Text style={styles.itemName}>{item?.items[0]?.itemName}</Text>
-    </View>
-                  <View style={styles.ordersPlace}>
-                    <Text style={styles.amount}> ₹{item?.totals?.amount}</Text>
-                    <Text> |</Text>
-                    <Text style={styles.price1}> Qty: {item?.totals?.quantity}</Text>
+                    {/* <StatusButton status='PLACED'/> */}
+                    {item?.orderStatus !== 'DELIVERED' && <RatingDisplay rating={4.3} votes={2925} />}
 
                   </View>
-                  
-                  
-                </View>
-                <View style={{marginLeft:10}}>
-                    <StatusButton status={item?.orderStatus}/>
+
+                  <View style={styles.item_details}>
+                    <Image style={styles.tinyLogo} source={{ uri: item?.items[0]?.imageUrl }} />
+                    <View style={styles.itemDetailsContainer}>
+                      <View style={styles.nameTextContainer}>
+                        <Text style={styles.itemName}>{item?.items[0]?.itemName}</Text>
+                      </View>
+                      <View style={styles.ordersPlace}>
+                        <Text style={styles.amount}> ₹{item?.totals?.amount}</Text>
+                        <Text> |</Text>
+                        <Text style={styles.price1}> Qty: {item?.totals?.quantity}</Text>
+
+                      </View>
+
+
+                    </View>
+                    <View style={{ marginLeft: 10 }}>
+                      <StatusButton status={item?.orderStatus} />
+                    </View>
+                    <View style={{ marginLeft: 10 }}>
+                      <RightArrowIcon />
+                    </View>
+
                   </View>
-                <View style={{marginLeft:10}}>
-                   <RightArrowIcon/>
-                </View>
-                
-              </View>
 
               <View style={item?.orderStatus !== 'DELIVERED' ? styles.twoButtons : null}>
                 {item?.orderStatus === 'DELIVERED' && <TouchableOpacity onPress={()=>navigation.navigate('checkout',{totalAmount: '', re_orderId:item?.id})}>
-                  <Text style={styles.RepeatColor}>Repeat</Text>
+                  <Text style={styles.RepeatColor}>Repeat Order</Text>
                 </TouchableOpacity>}
 
-                 
-                  {item?.orderStatus === 'DELIVERED' && <TouchableOpacity onPress={() =>  setShow(true)}>
-                    <Text style={styles.RepeatColor1}>Rate order</Text>
-                  </TouchableOpacity>}
-                  {item?.orderStatus === 'PLACED' && item?.paymentStatus === 'PENDING' && <View>
-                  <Text style={styles.RepeatColor}>Make Payment</Text>
-                </View>}
-                  {(item?.orderStatus === 'Received' || 'PLACED') && <TouchableOpacity onPress={() =>  setShow(true)}>
-                    <Text style={styles.RepeatColor1}>Cancel Order</Text>
-                  </TouchableOpacity>}
-               
-              </View>
-            </View>
-          </Pressable>
-        )): 
-        <View  style={styles.orderContainer}>
-           <Image source={NoOrders} style={styles.orderImg}/>
-           <Text style={styles.orderHeader}>No Orders Found</Text>
-                 <Text style={styles.orderBody}>
-                  Looks like you haven't made {"\n"} 
+
+                    {item?.orderStatus === 'DELIVERED' && <TouchableOpacity onPress={() => setShow(true)}>
+                      <Text style={styles.RepeatColor1}>Rate order</Text>
+                    </TouchableOpacity>}
+                    {item?.orderStatus === 'PLACED' && item?.paymentStatus === 'PENDING' && <View>
+                      <TouchableOpacity onPress={() => setMakepaydata({ orderId: item?.id, addressId: item?.addressId, totalAmount: item?.totals?.amount })} disabled={isLoading}>
+                        <Text style={styles.RepeatColor} disabled={isLoading}>Make Payment</Text>
+                      </TouchableOpacity>
+
+                    </View>}
+                    {(item?.orderStatus === 'Received' || 'PLACED') && <TouchableOpacity onPress={() => setShow(true)}>
+                      <Text style={styles.RepeatColor1}>Cancel Order</Text>
+                    </TouchableOpacity>}
+
+                  </View>
+                </View>
+              </Pressable>
+            )) :
+              <View style={styles.orderContainer}>
+                <Image source={NoOrders} style={styles.orderImg} />
+                <Text style={styles.orderHeader}>No Orders Found</Text>
+                <Text style={styles.orderBody}>
+                  Looks like you haven't made {"\n"}
                   {'            '}your order yet...
-                 </Text>
-           <TouchableOpacity style={styles.orderButton} onPress={()=>navigation.navigate('home')}>
-            <Text style={styles.noOrderText}>Back To Home</Text>
-           </TouchableOpacity>
+                </Text>
+                <TouchableOpacity style={styles.orderButton} onPress={() => navigation.navigate('home')}>
+                  <Text style={styles.noOrderText}>Back To Home</Text>
+                </TouchableOpacity>
 
-        </View>
+              </View>
+            }
+          </ScrollView>
         }
-      </ScrollView>
-      }
-      
-      {show && <RateOrder show={show} handleClose={handleClose} />}  
 
+        {show && <RateOrder show={show} handleClose={handleClose} />}
+        {
+          makepaydata.orderId != '' && makepaydata?.addressId !== '' && 
+          <MakePayment orderId={makepaydata.orderId}
+                       type={'online'}
+                       addressId={makepaydata?.addressId}
+                       totalAmount={makepaydata.totalAmount} 
+                       onSuccess={handlePaymentSuccess}/>
+        }
 
-      {/* Order summary modal */}
+        {/* Order summary modal */}
 
-      <View style={styles.centeredView}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible1}
-          onRequestClose={() => {
-            setModalVisible1(!modalVisible1);
-          }}
+        <View style={styles.centeredView}>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={modalVisible1}
+            onRequestClose={() => {
+              setModalVisible1(!modalVisible1);
+            }}
           >
-          <View>
-            <View style={styles.centeredView}>
-              <View style={styles.modalView}>
-                <OrderSummary orderId={myOrderId} setModalVisible1={ ()=>setModalVisible1(false)} orderStatus={orderStatus}></OrderSummary>
+            <View>
+              <View style={styles.centeredView}>
+                <View style={styles.modalView}>
+                  <OrderSummary orderId={myOrderId} setModalVisible1={() => setModalVisible1(false)} orderStatus={orderStatus}></OrderSummary>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
+        </View>
       </View>
-    </View>
-    {isLoading && <Loding /> }
+      {isLoading && <Loding />}
     </>
-    
+
   );
 }
 
@@ -345,7 +364,7 @@ const styles = StyleSheet.create({
     elevation: 5,
     padding: 10,
     width: '98%',
-    top:10
+    top: 10
   },
   card1: {
     flexDirection: 'row',
@@ -385,13 +404,13 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     alignItems: 'flex-start',
   },
-  itemName:{
+  itemName: {
     fontSize: 14,
     color: TEXT_COLORS.primary,
     fontWeight: "500",
-    marginLeft: 2, 
+    marginLeft: 2,
   },
-  amount:{
+  amount: {
     fontSize: 13,
     color: THEME_COLORS.secondary,
     fontWeight: "bold",
@@ -401,12 +420,12 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.primary,
     fontWeight: "400",
   },
-  orderIdHeader:{
+  orderIdHeader: {
     fontSize: 13,
     color: THEME_COLORS.secondary,
     fontWeight: "bold",
   },
-  orderIdText:{
+  orderIdText: {
     fontSize: 13,
     color: TEXT_COLORS.primary,
     fontWeight: "500",
@@ -419,12 +438,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     borderRadius: 4,
   },
-  orderIdCardHeader:{
-    flex:1,
-    flexDirection:'row',
-    justifyContent:'space-between',
-    alignItems:'center',
-    margin:2
+  orderIdCardHeader: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    margin: 2
   },
   quantity: {
     fontSize: 16,
@@ -434,51 +453,51 @@ const styles = StyleSheet.create({
   item_details: {
     flexDirection: 'row',
     alignItems: 'center',
-  
-  }, 
+
+  },
   main_card: {
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor:'rgba(0, 0, 0, 0.1)',
-    paddingVertical:2,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    paddingVertical: 2,
 
   },
-  orderContainer:{
-    justifyContent:'center',
-    alignItems:'center',
-   flex:1
-},
-orderImg:{
-  height:300,
-  width:300,
-  objectFit:'contain',
-  top:50
-},
-orderHeader:{
-  fontSize:18,
-  fontWeight:'bold',
-  color:TEXT_COLORS.primary,
-  margin:10
-},
-orderBody:{
-  fontSize:14,
-  fontWeight:'600',
-  marginBottom:20
-},
-orderButton:{
-  backgroundColor:THEME_COLORS.secondary,
-  borderRadius:5,
-  padding:10
-},
-noOrderText:{
-  color:TEXT_COLORS.whiteColor
-},
-tabsContainer: {
-  flexDirection: 'row',
-  justifyContent: 'space-around',
-  backgroundColor: '#f2f2f2',
-  paddingVertical: 10,
-},
+  orderContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1
+  },
+  orderImg: {
+    height: 300,
+    width: 300,
+    objectFit: 'contain',
+    top: 50
+  },
+  orderHeader: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: TEXT_COLORS.primary,
+    margin: 10
+  },
+  orderBody: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 20
+  },
+  orderButton: {
+    backgroundColor: THEME_COLORS.secondary,
+    borderRadius: 5,
+    padding: 10
+  },
+  noOrderText: {
+    color: TEXT_COLORS.whiteColor
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#f2f2f2',
+    paddingVertical: 10,
+  },
 
 });

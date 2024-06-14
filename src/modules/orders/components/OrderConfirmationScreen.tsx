@@ -3,7 +3,7 @@ import React from 'react';
 import { View, Text, StyleSheet, Button, Image, Modal } from 'react-native';
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 const tick = require('../../../assets/Images/tick.png');
-const OrderConfirmationScreen = ({ show, handleClose,totalAmount,orderId }: any) => {
+const OrderConfirmationScreen = ({ show, handleClose,totalAmount,orderId,type }: any) => {
   const navigation = useNavigation<any>();
   return (
     <Modal
@@ -31,13 +31,9 @@ const OrderConfirmationScreen = ({ show, handleClose,totalAmount,orderId }: any)
             <Text style={styles.orderDetailText}>₹ {totalAmount}</Text>
           </View>
 
-          {/* <Text style={styles.emailText}>
-          A Confirmation email has been sent to
-        </Text>
-        <Text style={styles.emailText}>subumani@gmail.com</Text> */}
           <Button
-            title="Go To Orders"
-            onPress={() => navigation.navigate('orders')}
+            title={type ==='makePayment'? "Close" :"Go To Orders"}
+            onPress={() => type ==='makePayment'? handleClose(): navigation.navigate('orders')}
             color={THEME_COLORS.secondary}
 
           />
