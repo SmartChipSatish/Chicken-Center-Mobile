@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 import { useDispatch, useSelector } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { RootState } from '../../../../store/store'
-import { useCreateOrderMutation } from '../../../orders/store/services/OrdersEndpoint'
+import { useCreateOrderMutation, useGetOrderByIdMutation } from '../../../orders/store/services/OrdersEndpoint'
 import { Cross, DownArrow, LocationIcon, Menuicon } from '../../../../assets/svgimages/SaveAsIcons'
 import { CashonDeliveryIcon, OnelineIcon, UpiIcon } from '../../../../assets/svgimages/HomeSvgs/svgsIcons'
 import { THEME_COLORS, TEXT_COLORS, TEXT_FONT_SIZE } from '../../../../globalStyle/GlobalStyles'
@@ -25,7 +25,7 @@ export default function Checkout({ route }: any) {
     const [getAddressByUser] = useGetAddressByuserMutation()
     const [deleteUserAddress] = useDeleteAddressMutation()
     const [everyoneAddress, setSome] = useState<any>([])
-    const { totalAmount } = route.params;
+    const { totalAmount, re_orderId } = route.params;
     const dispatch = useDispatch();
     const navigation = useNavigation<any>();
     const [paymentType, setpaymentType] = useState('cash');
@@ -39,8 +39,10 @@ export default function Checkout({ route }: any) {
     const getLocations = useSelector((store: RootState) => store.locations.displayAddressesall);
     const [selectedAddress, setSelectedAddress] = useState<any>();
     const itemsids = useSelector((store: RootState) => store.locations.itemId);
-    const [addressId, setAddressId] = useState<any>({})
-    console.log(addressId?._id, "syamid--------------")
+    const [addressId, setAddressId] = useState<any>({});
+    const [repeatOrderData,setRepeatOrderData]= useState<any>();
+    const [getOrders] = useGetOrderByIdMutation();
+
     const items = cartItems.map(item => {
         return ({
             itemId: item?.id,
@@ -66,9 +68,9 @@ export default function Checkout({ route }: any) {
                     updatedBy: uid,
                     addressId: addressId?._id,
                     paymentType: paymentType,
-                    items: items,
-                    totals: {
-                        quantity: totalQuantity,
+                    items: totalAmount ==='' ? repeatOrderData.items :items,
+                    totals: totalAmount ===''? repeatOrderData.totals:{
+                        quantity:  totalQuantity,
                         amount: totalAmount
                     }
                 }).unwrap();
@@ -149,6 +151,17 @@ export default function Checkout({ route }: any) {
         setAddressId(e)
 
     }
+
+    const handleRepOrderData=async()=>{
+      const response = await getOrders(re_orderId);
+      setRepeatOrderData(response.data)
+    }
+
+    useEffect(()=>{
+     if(re_orderId !== ''){
+        handleRepOrderData();
+     }
+    },[re_orderId])
 
     return (
         <View style={style.container}>
@@ -240,8 +253,14 @@ export default function Checkout({ route }: any) {
                         Confirm Order
                     </Text>
                 </TouchableOpacity> :
-                <Payment totalAmount={totalAmount} type={paymentType} addressId={addressId?._id}/>}
-            {show && <OrderConfirmationScreen show={show} handleClose={handleClose} totalAmount={totalAmount} orderId={orderId} />}
+                <Payment totalAmount={totalAmount} 
+                         type={paymentType} 
+                         addressId={addressId?._id} 
+                         repeatOrderData={repeatOrderData}/>}
+            {show && <OrderConfirmationScreen show={show} 
+                                              handleClose={handleClose} 
+                                              totalAmount={totalAmount ===''? repeatOrderData?.totals?.amount : totalAmount} 
+                                              orderId={orderId} />}
             </View>
             <View>
                 <Modal

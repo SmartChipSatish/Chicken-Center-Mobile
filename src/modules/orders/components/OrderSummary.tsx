@@ -7,13 +7,14 @@ import Loding from '../../dashboard/components/Loding';
 import { Order, OrderItem } from '../utils/constants';
 import CrossMark from '../../../assets/svgimages/util';
 import StatusButton from './StatusButton';
+import RatingDisplay from '../../../sharedFolders/components/RatingDisplay';
 
-export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {orderId:string,setModalVisible1:()=>void,orderStatus:string}) {
+export default function OrderSummary({ orderId, setModalVisible1, orderStatus }: { orderId: string, setModalVisible1: () => void, orderStatus: string }) {
 
     const [ordersData, setOrdersData] = useState<OrderItem[]>()
     const [totalOrder, setTotalOrder] = useState<Order>();
-    const [addressId,setAddressId] = useState('');
-    const [address,setAddress] = useState<any>([]);
+    const [addressId, setAddressId] = useState('');
+    const [address, setAddress] = useState<any>([]);
     const [isLoading, setIsLoading] = useState(false)
     const [getOrders] = useGetOrderByIdMutation();
 
@@ -27,7 +28,7 @@ export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {
                 setTotalOrder(response?.data)
                 setAddress(response?.data?.userId?.secondaryAddress)
                 setAddressId(response?.data?.addressId)
-            }           
+            }
             console.log(response?.data, 'ordersSummary')
             setIsLoading(false)
         } catch (error) {
@@ -42,16 +43,16 @@ export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {
     }, [orderId])
 
 
-    const calculateTotalPrice = (items: OrderItem[] | undefined)  => {
-        return items?.reduce((acc: number, item: OrderItem) => acc + item?.itemPrice *  Number(item.itemQty), 0);
+    const calculateTotalPrice = (items: OrderItem[] | undefined) => {
+        return items?.reduce((acc: number, item: OrderItem) => acc + item?.itemPrice * Number(item.itemQty), 0);
     };
-    const formatDate = (dateString: string | number | Date ) => {
+    const formatDate = (dateString: string | number | Date) => {
         const options: any = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', options);
     };
 
-    const itemsPrice =( totalOrder?.totals ? totalOrder?.totals?.amount : calculateTotalPrice(ordersData)) || 0;
+    const itemsPrice = (totalOrder?.totals ? totalOrder?.totals?.amount : calculateTotalPrice(ordersData)) || 0;
     const deliveryFee = totalOrder?.deliveryFee || 0;
     const addons = totalOrder?.addons || 0;
     const discount = totalOrder?.discountPercentage || 0;
@@ -64,7 +65,7 @@ export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {
     const selectedAddress = findAddressById(address, addressId)
     console.log(selectedAddress, 'address')
     return (
-    
+
         <View>
             <View style={styles.orderHeader}>
                 <Text style={styles.orderSummarys}>Order Summary</Text>
@@ -72,77 +73,78 @@ export default function OrderSummary({ orderId,setModalVisible1,orderStatus }: {
                     onPress={() => {
                         setModalVisible1()
                     }}>
-                    <View style={styles.crossMark}>
-                        <CrossMark color={'black'} width={18} height={18}></CrossMark>
-                    </View>
+                <CrossMark color={'black'} width={20} height={20} style={{marginRight:'2%'}}></CrossMark>
                 </TouchableOpacity>
             </View>
-           
-            {!isLoading ?       
-                    <ScrollView style={styles.container}>
-                        {ordersData && ordersData?.length > 0 && ordersData.map((item: OrderItem) => (
-                            <View key={item?._id} style={styles.card}>
-                                <Image style={styles.tinyLogo} source={{ uri: item?.imageUrl }} />
-                                <View style={styles.cardContent}>
-                                    <Text style={styles.title}>{item?.itemName}</Text>
-                                    <Text style={styles.price1}>Qty:{item?.itemQty}</Text>
-                                    <Text style={styles.price}>₹{item?.itemPrice}</Text>
-                                    <View style={styles.rightAlign}>
 
-                                    </View>
+            {!isLoading ?
+                <ScrollView style={styles.container}>
+                    {ordersData && ordersData?.length > 0 && ordersData.map((item: OrderItem) => (
+                        <View key={item?._id} style={styles.card}>
+                            <Image style={styles.tinyLogo} source={{ uri: item?.imageUrl }} />
+                            <View style={styles.cardContent}>
+                                <Text style={styles.title}>{item?.itemName}</Text>
+                                <Text style={styles.price1}>Qty:{item?.itemQty}</Text>
+                                <Text style={styles.price}>₹{item?.itemPrice}</Text>
+                                <View style={styles.rightAlign}>
+
                                 </View>
                             </View>
-                        ))}
-
-
-                        <View style={[styles.cards,{marginBottom:10}]}>
-                            <Text style={styles.Billdetails}>Bill details</Text>
-                            <View style={styles.row}>
-                                <Text style={styles.leftTexts}>MRP</Text>
-                                <Text style={styles.rightAmount}>₹{itemsPrice}</Text>
-                            </View>
-
-                            <View style={styles.row}>
-                                <Text style={styles.leftTexts}>Product discount</Text>
-                                <Text style={styles.rightAmount}>₹{discount}</Text>
-                            </View>
-                            <View style={styles.row}>
-                                <Text style={styles.leftTexts}>Item total</Text>
-                                <Text style={styles.rightAmount}>₹{coupon}</Text>
-                            </View>
-                            <View style={styles.row}>
-                                <Text style={styles.leftTexts}>Handling charges</Text>
-                                <Text style={styles.rightAmount}>₹{deliveryFee}</Text>
-                            </View>
-                            <View style={styles.row}>
-                                <Text style={[styles.leftTexts, styles.textColor]}>Bill total</Text>
-                                <Text style={[styles.rightAmount, styles.textColor]}>₹{total}</Text>
+                            <View>
+                            <RatingDisplay rating={4.3} votes={2925} />
                             </View>
                         </View>
-                        <View style={styles.cards}>
-                            <View style={{flex:1,flexDirection:'row',justifyContent: 'space-between',}}>
-                             <Text style={styles.Billdetails}>Order details</Text>
-                            <StatusButton status={orderStatus}/>  
+                    ))}
+
+
+                    <View style={[styles.cards, { marginBottom: 10 }]}>
+                        <Text style={styles.Billdetails}>Bill details</Text>
+                        <View style={styles.row}>
+                            <Text style={styles.leftTexts}>MRP</Text>
+                            <Text style={styles.rightAmount}>₹{itemsPrice}</Text>
+                        </View>
+
+                        <View style={styles.row}>
+                            <Text style={styles.leftTexts}>Product discount</Text>
+                            <Text style={styles.rightAmount}>₹{discount}</Text>
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={styles.leftTexts}>Item total</Text>
+                            <Text style={styles.rightAmount}>₹{coupon}</Text>
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={styles.leftTexts}>Handling charges</Text>
+                            <Text style={styles.rightAmount}>₹{deliveryFee}</Text>
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={[styles.leftTexts, styles.textColor]}>Bill total</Text>
+                            <Text style={[styles.rightAmount, styles.textColor]}>₹{total}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.cards}>
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', }}>
+                            <Text style={styles.Billdetails}>Order details</Text>
+                            <StatusButton status={orderStatus} />
                             {/* <StatusButton status='DELIVERED'/>   */}
-                            </View>
-                            
-                            <Text style={styles.AlltextColors}>Order id</Text>
-                            <Text style={styles.AlltexFonts}>{orderId}</Text>
-                            <Text style={styles.AlltextColors}>Payment</Text>
-                            <Text style={styles.AlltexFonts}>{orderStatus}</Text>
-                            <Text style={styles.AlltextColors}>Deliver to</Text>
-                            <Text style={styles.AlltexFonts}>{`${selectedAddress?.name || ''} ${selectedAddress?.landmark || ''} ${selectedAddress?.city || ''} ${selectedAddress?.state || ''} ${selectedAddress?.pincode || ''}`}</Text>
-                            <Text style={styles.AlltextColors}>Order Placed</Text>
-                            <Text style={styles.AlltexFonts}>placed on {formatDate((totalOrder?.updatedAt) || '')}</Text>
                         </View>
-                    </ScrollView>:  
-                    <View style={styles.loading}>
-                         <Loding />
-                    </View>                 
-   }
-                       
+
+                        <Text style={styles.AlltextColors}>Order id</Text>
+                        <Text style={styles.AlltexFonts}>#{orderId}</Text>
+                        <Text style={styles.AlltextColors}>Payment</Text>
+                        <Text style={styles.AlltexFonts}>{orderStatus}</Text>
+                        <Text style={styles.AlltextColors}>Deliver to</Text>
+                        <Text style={styles.AlltexFonts}>{`${selectedAddress?.name || ''} ${selectedAddress?.landmark || ''} ${selectedAddress?.city || ''} ${selectedAddress?.state || ''} ${selectedAddress?.pincode || ''}`}</Text>
+                        <Text style={styles.AlltextColors}>Order Placed</Text>
+                        <Text style={styles.AlltexFonts}>placed on {formatDate((totalOrder?.updatedAt) || '')}</Text>
+                    </View>
+                </ScrollView> :
+                <View style={styles.loading}>
+                    <Loding />
+                </View>
+            }
+
         </View>
-   
+
     );
 }
 
@@ -154,7 +156,7 @@ const styles = StyleSheet.create({
 
     },
     AlltextColors: {
-        color: "black",
+        color: "#626364",
         fontWeight: "400",
         margin: 5
     },
@@ -162,8 +164,8 @@ const styles = StyleSheet.create({
         color: TEXT_COLORS.primary,
         fontSize: TEXT_FONT_SIZE.large,
         marginLeft: 5,
-        height:35,
-        fontWeight:'bold'
+        height: 35,
+        // fontWeight: 'bold'
     },
 
     cards: {
@@ -174,32 +176,37 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     AlltexFonts: {
-        color: TEXT_COLORS.primary,
+        color: '#626364',
         fontWeight: "600",
         marginBottom: 15,
-        marginLeft:5
+        marginLeft: 5
     },
-    Billdetails: { 
-        fontWeight: "bold", 
-        color: "black", 
+    Billdetails: {
+        fontWeight: "bold",
+        color: "#626364",
         fontSize: 20,
-        marginBottom:10 
+        marginBottom: 10
     },
     discounts: {
         color: "green",
         fontSize: 8,
         fontWeight: "bold"
     },
-    orderHeader:{ 
-        flex: 0, 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
-        padding: 8,
-        width:'100%',
-        marginTop:5,      
+    orderHeader: {
+        flex: 0,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems:'center',
+        height:55,
+        width: '100%',
+        shadowColor: '#000',
+        shadowOffset: { width: 100, height: 10 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
-    crossMark:{
-        top:5
+    crossMark: {
+        top: 5
     },
     OrderDetails: {
         display: 'flex',
@@ -293,7 +300,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color: TEXT_COLORS.secondary,
         marginVertical: 5,
-        fontWeight:'800'
+        fontWeight: '800'
     },
     rightAlign: {
         flexDirection: 'row',
@@ -343,12 +350,12 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: TEXT_FONT_SIZE.small,
         textAlign: 'left',
-        color: TEXT_COLORS.primary,
+        color: '#626364',
     },
     rightAmount: {
         fontSize: TEXT_FONT_SIZE.small,
         textAlign: 'right',
-        color: TEXT_COLORS.primary,
+        color: '#626364',
 
     },
     separator: {
@@ -361,10 +368,10 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginTop: 10,
     },
-  loading:{
-    flex:1,
-    justifyContent:'center',
-    alignItems:'center'
-}
+    loading: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
+    }
 
 });

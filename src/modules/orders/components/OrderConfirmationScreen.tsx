@@ -24,7 +24,7 @@ const OrderConfirmationScreen = ({ show, handleClose,totalAmount,orderId }: any)
           <Text style={styles.orderPlacedText}>Order Placed Successfully</Text>
           <View style={styles.textRows}>
             <Text style={styles.AlltextColors}>Order ID: </Text>
-            <Text style={styles.orderDetailText}>{orderId}</Text>
+            <Text style={styles.orderDetailText}>#{orderId}</Text>
           </View>
           <View style={styles.textRows}>
             <Text style={styles.AlltextColors}>Order Amount: </Text>
