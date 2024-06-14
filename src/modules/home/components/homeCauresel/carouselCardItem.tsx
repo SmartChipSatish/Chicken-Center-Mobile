@@ -36,6 +36,7 @@ const styles = StyleSheet.create({
     borderWidth:1,
     borderRadius: 10,
     borderColor:'#757676',
+    width:'98%',
     ...Platform.select({
       ios: {
         shadowColor: TEXT_COLORS.primary,

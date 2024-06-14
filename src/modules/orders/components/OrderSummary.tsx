@@ -117,7 +117,7 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
                     <View style={styles.cards}>
                         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', }}>
 
-                            <Text style={styles.Billdetails}>Bill details</Text>
+                            <Text style={styles.Billdetails}>Bill Details</Text>
                             <StatusButton status={orderStatus} />
 
                         </View>
@@ -145,7 +145,7 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
                     </View>
                     <View style={styles.cards}>
                         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', }}>
-                            <Text style={styles.Billdetails}>Order details</Text>
+                            <Text style={styles.Billdetails}>Order Details</Text>
                             <TouchableOpacity onPress={() => setShow(true)}>
                                 <RatingDisplay rating={4.3} votes={2925} />
                             </TouchableOpacity>
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
         fontSize: TEXT_FONT_SIZE.large,
         marginLeft: 5,
         height: 35,
-        // fontWeight: 'bold'
+        fontWeight: '600'
     },
 
     cards: {
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: 55,
+        height: 57,
         width: '100%',
         shadowColor: '#000',
         shadowOffset: { width: 100, height: 10 },

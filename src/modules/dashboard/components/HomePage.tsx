@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 6,
     elevation: 5,
-    width: '100%'
+    width: '98%'
   },
   carouselItem: {
     backgroundColor: '#eee',
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     color: THEME_COLORS.secondary,
     marginBottom: 10,
     marginLeft: '2%',
-    fontWeight: 'bold'
+    fontWeight: '700'
   },
   HomePageBackground: {
     backgroundColor: "white",
