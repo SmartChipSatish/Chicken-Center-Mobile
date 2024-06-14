@@ -92,7 +92,7 @@ export default function Cartitems() {
                  <Text style={styles.emptycart_text}>Empty cart</Text>
                     <TouchableOpacity style={styles.button}
                         onPress={() => navigation.navigate('home')}>
-                        <Text style={{ color: THEME_COLORS.primary }}>Please Add Products</Text>
+                        <Text style={{ color: THEME_COLORS.primary }}> Add Products</Text>
                     </TouchableOpacity>
                  </View>}
         </View>

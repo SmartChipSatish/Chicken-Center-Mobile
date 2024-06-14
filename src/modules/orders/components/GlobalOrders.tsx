@@ -14,6 +14,8 @@ import TabButton from './TabButton';
 import { RightArrowIcon } from '../../../assets/svgimages/OrdersSvgs/OrderSvgs';
 import RatingDisplay from '../../../sharedFolders/components/RatingDisplay';
 import RateOrder from './RateOrder';
+import { useDispatch } from 'react-redux';
+import { setOrderCount } from '../store/slices/OrdersSlices';
 
 
 export default function GlobalOrders() {
@@ -28,6 +30,7 @@ export default function GlobalOrders() {
   const [isLoading, setIsLoading] = useState(false);
   const [orderStatus, setOrderStatus] = useState('');
   const [show, setShow] = useState(false);
+  const dispatch=useDispatch();
   const TABS = {
     PLACED: ['Received', 'PLACED'],
     CANCELLED: 'CANCELLED',
@@ -46,6 +49,7 @@ export default function GlobalOrders() {
       console.log(uid, 'uid')
       const response = await getOrdersByUserId(uid);
       setOrdersData(response.data)
+      dispatch(setOrderCount(response.data.length));
       console.log(response, 'orderbyuserid')
       setIsLoading(false)
     } catch (error) {

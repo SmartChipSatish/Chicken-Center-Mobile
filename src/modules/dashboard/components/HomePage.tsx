@@ -13,6 +13,7 @@ import { useUpdateUserMutation } from '../../auth/store/services/getUserDetailsS
 import Icon from 'react-native-vector-icons/AntDesign';
 import { setUser } from '../../accounts/store/slices/UserSlice';
 import { promptForEnableLocationIfNeeded } from 'react-native-android-location-enabler';
+// import ShowToster from '../../../sharedFolders/components/ShowToster';
 
 const { height, width } = Dimensions.get('window')
 const HomePage = () => {
@@ -130,7 +131,7 @@ const HomePage = () => {
         </View>
         <View style={styles.freshMeats}>
           <Text style={styles.header}>Fresh Meats</Text>
-          <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom: '10%' }}>
+          <View style={{ justifyContent: 'center', alignItems: 'center',marginBottom:'2%' }}>
             <ProductsList />
           </View>
         </View>
@@ -143,7 +144,7 @@ const HomePage = () => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
     backgroundColor: `${THEME_COLORS.primary}`
   },
   search_MainContainer: {
@@ -233,8 +234,7 @@ const styles = StyleSheet.create({
   },
   freshMeats: {
     backgroundColor: '#fff',
-    padding: 3,
-    marginTop: 10
+    marginTop: 10,
   },
   freshMeatsText: {
     fontSize: 18,
