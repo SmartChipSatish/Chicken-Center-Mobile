@@ -51,11 +51,12 @@ const HomePage = () => {
           deviceToken: token
         }).unwrap();
         dispatch(setUser(response.data));
-        const favList = response.data.favouriteItems
-        favList.map((item: any) => {
-          return dispatch(setFavourite(item))
-        })
-
+        const favList = response.data.favouriteItems;
+        if (favList?.length > 0) {
+          favList.map((item: any) => {
+            return dispatch(setFavourite(item))
+          })
+        }
 
       }
     } catch (error) {
@@ -75,7 +76,7 @@ const HomePage = () => {
 
   const handleGetItemData = async () => {
     getItems().then((data) => {
-      console.log(data?.data?.items,'allProducts')
+      console.log(data?.data?.items, 'allProducts')
       dispatch(setAddProducts(data?.data?.items));
     }).catch((error) => {
       console.log(error, 'error');
@@ -129,7 +130,7 @@ const HomePage = () => {
         </View>
         <View style={styles.freshMeats}>
           <Text style={styles.header}>Fresh Meats</Text>
-          <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom:'10%' }}>
+          <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom: '10%' }}>
             <ProductsList />
           </View>
         </View>

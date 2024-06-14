@@ -76,7 +76,15 @@ const ProfileScreen: React.FC = () => {
         setMobileNumber(number);
         setIsEdited(true);
     };
-
+    const formatMobileNumber = (mobileNumber: string) => {
+        if (mobileNumber.startsWith('+91')) {
+            return mobileNumber.slice(3);
+        } else if (mobileNumber.startsWith('91') && mobileNumber.length === 12) {
+            return mobileNumber.slice(2);
+        } else {
+            return mobileNumber;
+        }
+    };
     const handleSubmit = async () => {
         setLoding(true);
 
@@ -159,7 +167,8 @@ const ProfileScreen: React.FC = () => {
         if (user) {
             setEmail(user?.email);
             setName(user?.name);
-            setMobileNumber(user?.primaryNumber?.toString());
+            const formattedNumber = user ? formatMobileNumber(user?.primaryNumber?.toString()) : '';
+            setMobileNumber(formattedNumber);
             setCanUpdateEmail(user?.primaryNumber ? true : false);
             setCanUpdatePhone(user?.email ? true : false);
             setAvatarUri(user?.profileUrl);
@@ -212,6 +221,7 @@ const ProfileScreen: React.FC = () => {
                     placeholder="Mobile Number"
                     value={mobileNumber}
                     onChangeText={(e) => { handlePhoneChange(e) }}
+                    maxLength={10}
                     editable={canUpdatePhone}
                     keyboardType="phone-pad"
                 />

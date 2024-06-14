@@ -15,19 +15,20 @@ const ProductsList = () => {
     const products = useSelector((store: RootState) => store.products.addProducts);
     const favouritesList = products.filter(item => item.favourite === true);
     const dispatch = useDispatch();
-    const [productsList,setProductsList]=useState<itemData[]>([]);
+    const [productsList, setProductsList] = useState<itemData[]>([]);
 
     const [updateUser] = useUpdateUserMutation();
     const handleFavourite = async (item: any) => {
+        dispatch(setFavourite(item));
+
         try {
             const storeduserId = await AsyncStorage.getItem('userId');
             if (storeduserId) {
                 const userId = storeduserId.replace(/['"]/g, '').trim();
-                const isItemInFavourites = favouritesList.some(favItem => favItem.id === item.id);
-
+                const isItemInFavourites = favouritesList.some(favItem => favItem?.id === item?.id);
                 let updatedFavouritesList;
                 if (isItemInFavourites) {
-                    updatedFavouritesList = favouritesList.filter(favItem => favItem.id !== item.id);
+                    updatedFavouritesList = favouritesList.filter(favItem => favItem?.id !== item?.id);
 
                 } else {
                     updatedFavouritesList = [...favouritesList, item];
@@ -39,7 +40,6 @@ const ProductsList = () => {
                     favouriteItems: updatedFavouritesList
                 }).unwrap();
                 dispatch(setUser(response.data));
-                dispatch(setFavourite(item));
 
             }
         } catch (error) {
@@ -48,11 +48,11 @@ const ProductsList = () => {
 
     };
 
-    useEffect(()=>{
-      const avaliableList:itemData[]=products.filter((e)=>e.globalItemStatus);
-      const notAvaliableList:itemData[]=products.filter((e)=>!e.globalItemStatus);
-      setProductsList(avaliableList.concat(notAvaliableList));
-    },[products]);
+    useEffect(() => {
+        const avaliableList: itemData[] = products.filter((e) => e.globalItemStatus);
+        const notAvaliableList: itemData[] = products.filter((e) => !e.globalItemStatus);
+        setProductsList(avaliableList.concat(notAvaliableList));
+    }, [products]);
 
     return (
         <>
