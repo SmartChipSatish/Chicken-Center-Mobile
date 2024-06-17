@@ -293,10 +293,8 @@ const styles = StyleSheet.create({
     borderTopColor: TEXT_COLORS.secondary
   },
   modalView: {
-    margin: 0,
     backgroundColor: 'white',
     borderRadius: 5,
-    padding: 0,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -307,7 +305,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     width: '100%',
-    height: '100%',
   },
   RepeatColor: {
     backgroundColor: THEME_COLORS.secondary,

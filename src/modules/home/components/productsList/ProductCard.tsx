@@ -56,7 +56,7 @@ const ProductsCard: React.FC<productsinfo> = ({ item,
                         <Text style={styles.item_text}>{item.itemName + ' ' + item.itemQty}</Text>
                         {/* <Text style={styles.item_price}>₹ {type === 'cart' ? item.total : item.itemPrice}</Text> */}
                         <Text style={styles.item_price}>₹ {item.itemPrice}</Text>
-                        <Text style={{ textDecorationLine: 'line-through' }}>₹ 250</Text>
+                        {/* <Text style={{ textDecorationLine: 'line-through' }}>₹ 250</Text> */}
                     </View>
                 </View>
                 <View style={[type === 'cart' ? styles.add_cart : styles.add_fav, { width: '30%', paddingRight: '1%' }]}>
