@@ -20,6 +20,7 @@ import { setItemid } from '../../../accounts/store/slices/LocationSlice'
 import CrossMark from '../../../../assets/svgimages/util'
 import { useToast } from 'react-native-toast-notifications'
 import { ShowToster } from '../../../../sharedFolders/components/ShowToster'
+import Loding from '../../../dashboard/components/Loding'
 
 export default function Checkout({ route }: any) {
     const [modalVisible, setModalVisible] = useState<any>(false);
@@ -44,6 +45,7 @@ export default function Checkout({ route }: any) {
     const [addressId, setAddressId] = useState<any>({});
     const [repeatOrderData,setRepeatOrderData]= useState<any>();
     const [getOrders] = useGetOrderByIdMutation();
+    const [loding,setLoding]=useState<boolean>(false);
     const toast =useToast();
     const items = cartItems.map(item => {
         return ({
@@ -161,6 +163,9 @@ export default function Checkout({ route }: any) {
       const response = await getOrders(re_orderId);
       setRepeatOrderData(response.data)
     }
+    const handleSetLoding=(status:boolean)=>{
+        setLoding(status)
+    }
 
     useEffect(()=>{
      if(re_orderId !== ''){
@@ -170,7 +175,8 @@ export default function Checkout({ route }: any) {
 
     return (
         <View style={style.container}>
-            <ScrollView style={style.sub_container}
+           <View style={[loding && style.display_none,{ flex: 1}]}>
+            <ScrollView style={[style.sub_container,]}
                 keyboardShouldPersistTaps='handled'
                 showsVerticalScrollIndicator={false}>
                 <View style={style.card2}>
@@ -261,12 +267,16 @@ export default function Checkout({ route }: any) {
                 <Payment totalAmount={totalAmount} 
                          type={paymentType} 
                          addressId={addressId?._id} 
-                         repeatOrderData={repeatOrderData}/>}
+                         repeatOrderData={repeatOrderData}
+                         setLoding={handleSetLoding}/>}
             {show && <OrderConfirmationScreen show={show} 
                                               handleClose={handleClose} 
                                               totalAmount={totalAmount ===''? repeatOrderData?.totals?.amount : totalAmount} 
                                               orderId={orderId} />}
             </View>
+            </View>
+            
+            {loding && <Loding/>}
             <View>
                 <Modal
                     visible={modalVisible}
@@ -635,4 +645,7 @@ const style = StyleSheet.create({
         marginRight: 30,
         marginTop:20
     },
+    display_none:{
+        display:'none'
+    }
 })

@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 6,
     elevation: 5,
-    width: '98%'
+    width: '100%'
   },
   carouselItem: {
     backgroundColor: '#eee',
