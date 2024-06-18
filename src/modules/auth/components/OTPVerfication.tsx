@@ -17,7 +17,7 @@ export default function OTPVerfication({ navigation, route }: any) {
   const [timer, setTimer] = useState(60);
   const [getUser] = useGetUserDetailsMutation();
   const [loding, setLoding] = useState<boolean>(false);
-  const {login} = useAuth(); 
+  const { login } = useAuth();
 
   const handleInputChange = (index: number, value: any) => {
     if (isNaN(value)) {
@@ -73,7 +73,7 @@ export default function OTPVerfication({ navigation, route }: any) {
           const name = data?.data?.name
           if (userId && name !== '') {
             setLoding(false);
-            login(JSON.stringify(idToken),userId);
+            login(JSON.stringify(idToken), userId);
             navigation.reset({
               index: 0,
               routes: [{ name: 'main' }],
@@ -110,47 +110,49 @@ export default function OTPVerfication({ navigation, route }: any) {
   }, [timer])
 
   return (
-    <View style={OTPVericationCSS.container}>
+    <>
+      <View style={OTPVericationCSS.container}>
 
-      <TouchableOpacity style={{ marginTop: 20, marginBottom: 10 }} onPress={() => navigation.goBack()}>
-        <Ionicons name='chevron-back' size={30} color={`${TEXT_COLORS.primary}`} />
-      </TouchableOpacity>
-
-      <Text style={OTPVericationCSS.mainText}>Verify via OTP</Text>
-      <Text style={{ fontSize: 14 }}>Enter the OTP sent to You on {route.params.number}</Text>
-
-      <View style={OTPVericationCSS.OTP_inputes}>
-        {otp.map((value, index) => (
-          <TextInput
-            key={index}
-            style={OTPVericationCSS.input}
-            value={value}
-            keyboardType="numeric"
-            maxLength={1}
-            onChangeText={(text) => handleInputChange(index, text)}
-            ref={(ref) => {
-              inputRefs[index] = ref;
-            }}
-          />
-        ))}
-      </View>
-      <View style={OTPVericationCSS.timer_container}>
-        <Text>Didn't receive the OTP?</Text>
-        {timer !== 0 && <Text>Resend: {timer}</Text>}
-        {timer === 0 && <TouchableOpacity onPress={handleResendOTP}>
-          <Text>Resend : Send</Text>
-        </TouchableOpacity>}
-      </View>
-
-
-      <View style={OTPVericationCSS.footer_container}>
-        <Text >By continuing you agree to our Terms & Conditions</Text>
-        <TouchableOpacity style={OTPVericationCSS.continue_btn} onPress={handleSubmit}>
-          <Text style={{ color: 'white', fontSize: 18 }}>Continue</Text>
+        <TouchableOpacity style={{ marginTop: 20, marginBottom: 10 }} onPress={() => navigation.goBack()}>
+          <Ionicons name='chevron-back' size={30} color={`${TEXT_COLORS.primary}`} />
         </TouchableOpacity>
+
+        <Text style={OTPVericationCSS.mainText}>Verify via OTP</Text>
+        <Text style={{ fontSize: 14 }}>Enter the OTP sent to You on {route.params.number}</Text>
+
+        <View style={OTPVericationCSS.OTP_inputes}>
+          {otp.map((value, index) => (
+            <TextInput
+              key={index}
+              style={OTPVericationCSS.input}
+              value={value}
+              keyboardType="numeric"
+              maxLength={1}
+              onChangeText={(text) => handleInputChange(index, text)}
+              ref={(ref) => {
+                inputRefs[index] = ref;
+              }}
+            />
+          ))}
+        </View>
+        <View style={OTPVericationCSS.timer_container}>
+          <Text>Didn't receive the OTP?</Text>
+          {timer !== 0 && <Text>Resend: {timer}</Text>}
+          {timer === 0 && <TouchableOpacity onPress={handleResendOTP}>
+            <Text>Resend : Send</Text>
+          </TouchableOpacity>}
+        </View>
+
+
+        <View style={OTPVericationCSS.footer_container}>
+          <Text >By continuing you agree to our Terms & Conditions</Text>
+          <TouchableOpacity style={OTPVericationCSS.continue_btn} onPress={handleSubmit}>
+            <Text style={{ color: 'white', fontSize: 18 }}>Continue</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       {loding && <Loding type='login' />}
-    </View>
+    </>
   )
 }
 

@@ -60,7 +60,7 @@ export const Cross = (props: SvgProps) => (
 
 export const DownArrow = (props: SvgProps) => (
   <Svg
-    fill='#353839'
+    fill='#969595'
     width={props.width}
     height={props.height}
     viewBox='0 0 32 32'
