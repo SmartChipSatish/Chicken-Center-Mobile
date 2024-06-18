@@ -27,10 +27,11 @@ interface paymentDetails{
   totalAmount: number, 
   type: string, 
   addressId: string,
-  repeatOrderData:any 
+  repeatOrderData:any ,
+  setLoding:(status:boolean)=>void
 }
 
-const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetails) => {
+const Payment = ({ totalAmount, type, addressId,repeatOrderData, setLoding }: paymentDetails) => {
   const dispatch = useDispatch();
   const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
   const totalQuantity = cartItems.reduce((accumulator, item) => accumulator + item.quantity, 0);
@@ -58,11 +59,8 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
     if (addressId !== '') {
       setIsLoading(true)
       try {
-        // setIsLoading(true)
         const storedUid = await AsyncStorage.getItem('userId');
-        console.log(storedUid)
         const uid = storedUid?.replace(/['"]/g, '').trim();
-        console.log(uid, 'uid')
         const response = await createData({
           userId: uid,
           createdBy: uid,
@@ -75,7 +73,7 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
             amount: totalAmount
           }
         }).unwrap();
-        console.log(response, 'response')
+        setLoding(true);
         setSummaryOrderId(response._id)
         const orderId = response._id;
         if (response && orderId) {
@@ -102,9 +100,7 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
   const initOrder = async (orderId: string) => {
     try {
       const storedUid = await AsyncStorage.getItem('userId');
-      console.log(storedUid)
       const uid = storedUid?.replace(/['"]/g, '').trim();
-      console.log(uid, 'uid')
       const response = await initiateOrder({
         customerName: 'Nasa2',
         customerEmail: 'Nasa2@gmail.com',
@@ -113,10 +109,8 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
         userId: uid,
         totalAmount: repeatOrderData !== undefined ? repeatOrderData?.totals?.amount : totalAmount
       });
-      console.log(response, 'createOrders');
       return response.data;
     } catch (err) {
-      console.log(err, 'createOrderError');
       ToastAndroid.showWithGravity('Failed to create order. Please try again.', ToastAndroid.LONG, ToastAndroid.CENTER);
       return null;
     }
@@ -129,8 +123,8 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
   const verifyPayment = async (orderID: string) => {
     try {
       let res = await paymentVerify({ orderId: orderID })
-      console.log(res.data, 'verifypayment')
       if (res.data) {
+        setLoding(false);
         dispatch(setClearCart())
         dispatch(setShowQuantityReset(''))
         dispatch(setResetQuantity(''));
@@ -138,7 +132,6 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
       }
 
     } catch (error: any) {
-      console.log(error, 'verifyError')
       Dialog.show({
         type: ALERT_TYPE.DANGER,
         title: 'Failure',
@@ -174,7 +167,7 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
       );
       CFPaymentGatewayService.doPayment(dropPayment)
     } catch (error) {
-      console.log(error, 'checkoutError')
+    
     }
   };
 
@@ -194,7 +187,7 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
       CFPaymentGatewayService.doUPIPayment(upiPayment);
 
     } catch (e: any) {
-      console.log(e.message);
+
     }
   };
 
@@ -218,7 +211,6 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData }: paymentDetail
     });
     CFPaymentGatewayService.setCallback({
       onVerify(orderID: string): void {
-        console.log('orderId is :' + orderID);
         verifyPayment(orderID)
         updateStatus(orderID);
       },
