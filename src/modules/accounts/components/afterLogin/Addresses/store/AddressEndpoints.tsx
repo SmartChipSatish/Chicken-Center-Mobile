@@ -7,7 +7,7 @@ export const ordersService = addressApi.injectEndpoints({
 
         createAddress: builder.mutation({
             query: ({ id, user }) => ({
-                url: `/addAddress?userId=${id}`,
+                url: `/users/addAddress?userId=${id}`,
                 method: 'POST',
                 body: user
             }),
@@ -15,7 +15,7 @@ export const ordersService = addressApi.injectEndpoints({
         }),
         getAddressByuser: builder.mutation({
             query: (id) => ({
-                url: `/getUserById?userId=${id}`,
+                url: `/users/getUserById?userId=${id}`,
                 method: 'GET'
             }),
             invalidatesTags: ['address'],
@@ -23,7 +23,7 @@ export const ordersService = addressApi.injectEndpoints({
         // https://food-delivery-ekjr.onrender.com/users/getUserById?userId=6656acc3fb0769e9e7cb053f
         deleteAddress: builder.mutation({
             query: ({ id, user }) => ({
-                url: `/updateAddress?userId=${id}`,
+                url: `/users/updateAddress?userId=${id}`,
                 method: 'POST',
                 body: user
             }),
@@ -31,7 +31,7 @@ export const ordersService = addressApi.injectEndpoints({
         }),
         updateAddress: builder.mutation({
             query: ({ id, user }) => ({
-                url: `/updateAddress?addressId=${id}`,
+                url: `/users/updateAddress?addressId=${id}`,
                 method: 'POST',
                 body: user
             }),
