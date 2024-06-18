@@ -331,6 +331,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: THEME_COLORS.secondary,
     fontWeight: "bold",
+    textTransform:'uppercase'
   },
   orderIdText: {
     fontSize: 13,

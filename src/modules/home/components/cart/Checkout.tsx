@@ -201,7 +201,7 @@ export default function Checkout({ route }: any) {
                                         </Text>
                                         <Text> </Text> {`${selectedAddress?.name || ''} ${selectedAddress?.landmark || ''} ${selectedAddress?.city || ''} ${selectedAddress?.state || ''} ${selectedAddress?.pincode || ''}`}
                                     </Text>
-                                    <DownArrow height={30} width={30} />
+                                    <DownArrow height={20} width={20} />
                                 </View>
                             </TouchableOpacity> :
                             <TouchableOpacity onPress={() => navigation.navigate('addaddress')} >

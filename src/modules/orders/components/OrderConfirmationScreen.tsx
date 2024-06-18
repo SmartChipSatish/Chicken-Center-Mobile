@@ -23,11 +23,11 @@ const OrderConfirmationScreen = ({ show, handleClose,totalAmount,orderId,type }:
           />
           <Text style={styles.orderPlacedText}>Order Placed Successfully</Text>
           <View style={styles.textRows}>
-            <Text style={styles.AlltextColors}>Order ID: </Text>
-            <Text style={styles.orderDetailText}>#{orderId}</Text>
+            <Text style={styles.AlltextColors}>Order ID : </Text>
+            <Text style={styles.orderDetailText}>#{orderId.slice(-4)}</Text>
           </View>
           <View style={styles.textRows}>
-            <Text style={styles.AlltextColors}>Order Amount: </Text>
+            <Text style={styles.AlltextColors}>Order Amount : </Text>
             <Text style={styles.orderDetailText}>₹ {totalAmount}</Text>
           </View>
 
@@ -35,7 +35,7 @@ const OrderConfirmationScreen = ({ show, handleClose,totalAmount,orderId,type }:
             title={type ==='makePayment'? "Close" :"Go To Orders"}
             onPress={() => type ==='makePayment'? handleClose(): navigation.navigate('orders')}
             color={THEME_COLORS.secondary}
-
+            
           />
         </View>
       </View>
@@ -92,7 +92,9 @@ const styles = StyleSheet.create({
   orderDetailText: {
     fontSize: 16,
     marginBottom: 5,
-    color: TEXT_COLORS.secondary
+    color: TEXT_COLORS.primary,
+    textTransform:'uppercase',
+
   },
   emailText: {
     fontSize: 14,
@@ -107,8 +109,11 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   textRows: {
-    flex: 0,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    width:'60%',
+    justifyContent:'space-between',
+    alignItems:'center',
+    marginBottom:'2%'
   }
 });
 
