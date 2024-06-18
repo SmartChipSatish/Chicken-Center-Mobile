@@ -13,7 +13,7 @@ import Loding from '../../../dashboard/components/Loding';
 const ProductsList = () => {
 
     const products = useSelector((store: RootState) => store.products.addProducts);
-    const favouritesList = products.filter(item => item.favourite === true);
+    const favouritesList = products?products?.filter(item => item.favourite === true):[];
     const dispatch = useDispatch();
     const [productsList, setProductsList] = useState<itemData[]>([]);
 
@@ -49,8 +49,8 @@ const ProductsList = () => {
     };
 
     useEffect(() => {
-        const avaliableList: itemData[] = products.filter((e) => e.globalItemStatus);
-        const notAvaliableList: itemData[] = products.filter((e) => !e.globalItemStatus);
+        const avaliableList: itemData[] = products?.filter((e) => e.globalItemStatus) || [];
+        const notAvaliableList: itemData[] = products?.filter((e) => !e.globalItemStatus) || [];
         setProductsList(avaliableList.concat(notAvaliableList));
     }, [products]);
 

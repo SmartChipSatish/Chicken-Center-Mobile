@@ -13,7 +13,7 @@ const Favourite = () => {
     const dispatch = useDispatch();
     const [updateUser] = useUpdateUserMutation();
     const products = useSelector((store: RootState) => store.products.addProducts)
-    const favouritesList = products.filter(item => item.favourite === true);
+    const favouritesList = products?.filter(item => item.favourite === true) || [];
 
     const handleFavourite = async (item: any) => {
         dispatch(setFavourite(item));
