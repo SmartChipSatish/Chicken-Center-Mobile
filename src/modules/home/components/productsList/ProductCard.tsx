@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     }, items_subCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        width: '50%',
+        width: '45%',
     },
     quantityContainer: {
         flexDirection: 'row',
