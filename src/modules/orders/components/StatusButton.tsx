@@ -10,7 +10,7 @@ const StatusButton = ({ status }:{status: string}) => {
                 return { label: 'COD', backgroundColor: '#FEEBC8', textColor: '#DD6B20' }; 
             case 'CANCELED':
                 return { label: 'CANCELLED', backgroundColor: '#FED7D7', textColor: '#E53E3E' }; 
-            case 'DELIVERED':
+            case 'DELIVERD':
                 return { label: 'DELIVERED', backgroundColor: '#C6F6D5', textColor: '#38A169' }; 
             default:
                 return { label: 'Unknown', backgroundColor: '#E2E8F0', textColor: '#2D3748' }; 
@@ -34,9 +34,16 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         borderRadius: 20,
         alignItems: 'center',
-        alignSelf: 'center',
+        justifyContent: 'center',
+        marginVertical: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 3,
     },
     buttonText: {
-        fontWeight: 'bold',
+        fontWeight: '600',
+        letterSpacing: 0.5,
     },
 });

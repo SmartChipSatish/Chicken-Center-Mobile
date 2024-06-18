@@ -37,13 +37,13 @@ export default function GlobalOrders() {
   const dispatch=useDispatch();
   const [makepaydata, setMakepaydata] = useState({ orderId: '', addressId: '', totalAmount: 0 });
   const TABS = {
-    PLACED: ['Received', 'PLACED'],
+    PLACED: 'Received',
     CANCELLED: 'CANCELLED',
-    DELIVERED: 'DELIVERED'
+    DELIVERED: 'DELIVERD'
   };
   const [selectedTab, setSelectedTab] = useState('Received');
   const [getOrdersByUserId] = useGetOrdersByUserIdMutation();
-  const NoOrders = require('../../../assets/Images/NoOrders.png');
+  const NoOrders = require('../../../assets/Images/NoOrdersFound.png');
   const getOrderData = async () => {
     setIsLoading(true)
     try {
@@ -52,8 +52,13 @@ export default function GlobalOrders() {
       console.log(storedUid)
       const uid = storedUid?.replace(/['"]/g, '').trim();
       console.log(uid, 'uid')
-      const response = await getOrdersByUserId(uid);
-      setOrdersData(response.data)
+      let response;
+      if (selectedTab === 'Received') {
+        response = await getOrdersByUserId({ userId: uid, page: 1, limit: 10, orderStatus: selectedTab, orderStatusMain: 'PLACED' });
+    } else {
+        response = await getOrdersByUserId({ userId: uid, page: 1, limit: 10, orderStatus: selectedTab });
+    }
+      setOrdersData(response.data.orders)
       dispatch(setOrderCount(response.data.length));
       setIsLoading(false)
     } catch (error) {
@@ -77,21 +82,23 @@ export default function GlobalOrders() {
   useFocusEffect(
     useCallback(() => {
       getOrderData()
-    }, [])
+    }, [selectedTab])
   )
 
-
+  const handleTabPress = (tab: React.SetStateAction<string>) => {
+    setSelectedTab(tab);
+  };
   return (
     <>
       <View style={{ marginTop: -10, flex: 1 }}>
         <View style={styles.tabsContainer}>
-          <TabButton label={'RECEIVED'} isSelected={selectedTab === TABS.PLACED[0]} onPress={() => setSelectedTab(TABS.PLACED[0])} />
-          <TabButton label={'DELIVERED'} isSelected={selectedTab === TABS.DELIVERED} onPress={() => setSelectedTab(TABS.DELIVERED)} />
-          <TabButton label={'CANCELLED'} isSelected={selectedTab === TABS.CANCELLED} onPress={() => setSelectedTab(TABS.CANCELLED)} />
+          <TabButton label={'RECEIVED'} isSelected={selectedTab === TABS.PLACED} onPress={() => handleTabPress(TABS.PLACED)} />
+          <TabButton label={'DELIVERED'} isSelected={selectedTab === TABS.DELIVERED} onPress={() => handleTabPress(TABS.DELIVERED)} />
+          <TabButton label={'CANCELLED'} isSelected={selectedTab === TABS.CANCELLED} onPress={() => handleTabPress(TABS.CANCELLED)} />
         </View>
         {!isLoading &&
           <ScrollView >
-            {filterOrders() && filterOrders().length > 0 ? filterOrders().map((item: Order) => (
+            {ordersData && ordersData.length > 0 ? ordersData.map((item: Order) => (
               <Pressable key={item._id}
                 onPress={() => { setMyOrderId(item._id); setOrderStatus(item?.orderStatus); setModalVisible1(true); }}
                 style={({ pressed }) => [
@@ -121,9 +128,9 @@ export default function GlobalOrders() {
                         <Text style={styles.itemName}>{item?.items[0]?.itemName}</Text>
                       </View>
                       <View style={styles.ordersPlace}>
-                        <Text style={styles.amount}> ₹{item?.totals?.amount}</Text>
-                        <Text> |</Text>
-                        <Text style={styles.price1}> Qty: {item?.totals?.quantity}</Text>
+                        <Text style={styles.amount}>₹{item?.totals?.amount}</Text>
+                        <Text> | </Text>
+                        <Text style={styles.price1}>Qty: {item?.totals?.quantity}</Text>
 
                       </View>
 
@@ -132,19 +139,19 @@ export default function GlobalOrders() {
                     <View style={{ marginLeft: 10 }}>
                       <StatusButton status={item?.orderStatus} />
                     </View>
-                    <View style={{ marginLeft: 10 }}>
+                    <View style={styles.cardArrow}>
                       <RightArrowIcon />
                     </View>
 
                   </View>
 
-              <View style={item?.orderStatus !== 'DELIVERED' ? styles.twoButtons : null}>
-                {item?.orderStatus === 'DELIVERED' && <TouchableOpacity onPress={()=>navigation.navigate('checkout',{totalAmount: '', re_orderId:item?.id})}>
+              <View style={styles.twoButtons}>
+                {item?.orderStatus === 'DELIVERD' && <TouchableOpacity onPress={()=>navigation.navigate('checkout',{totalAmount: '', re_orderId:item?.id})}>
                   <Text style={styles.RepeatColor}>Repeat Order</Text>
                 </TouchableOpacity>}
 
 
-                    {item?.orderStatus === 'DELIVERED' && <TouchableOpacity onPress={() => setShow(true)}>
+                    {item?.orderStatus === 'DELIVERD' && <TouchableOpacity onPress={() => setShow(true)}>
                       <Text style={styles.RepeatColor1}>Rate order</Text>
                     </TouchableOpacity>}
                     {item?.orderStatus === 'PLACED' && item?.paymentStatus === 'PENDING' && <View>
@@ -153,21 +160,20 @@ export default function GlobalOrders() {
                       </TouchableOpacity>
 
                     </View>}
-                    {(item?.orderStatus === 'Received' || 'PLACED') && <TouchableOpacity onPress={() => setShow(true)}>
+                    { item?.orderStatus !== 'DELIVERD' && <TouchableOpacity onPress={() => setShow(true)}>
                       <Text style={styles.RepeatColor1}>Cancel Order</Text>
                     </TouchableOpacity>}
-
-                  </View>
+    </View>
                 </View>
               </Pressable>
             )) :
               <View style={styles.orderContainer}>
-                <Image source={NoOrders} style={styles.orderImg} />
-                <Text style={styles.orderHeader}>No Orders Found</Text>
+                 <Image source={NoOrders} style={styles.orderImg} />              
+                {/* <Text style={styles.orderHeader}>No Orders Found</Text>
                 <Text style={styles.orderBody}>
                   Looks like you haven't made {"\n"}
                   {'            '}your order yet...
-                </Text>
+                </Text> */}
                 <TouchableOpacity style={styles.orderButton} onPress={() => navigation.navigate('home')}>
                   <Text style={styles.noOrderText}>Back To Home</Text>
                 </TouchableOpacity>
@@ -215,72 +221,9 @@ export default function GlobalOrders() {
 }
 
 const styles = StyleSheet.create({
-  Ratings: {
-    color: TEXT_COLORS.secondary
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: '4%',
-    height: 30
-  },
-  tinyLogo2: {
-    height: 13,
-    width: 13
-  },
-  buttonSubmit: {
-    backgroundColor: THEME_COLORS.secondary,
-    color: THEME_COLORS.primary,
-    width: 160,
-    padding: 10,
-    textAlign: "center",
-    fontWeight: "bold",
-    borderRadius: 5
-
-  },
-  textAll: {
-    color: TEXT_COLORS.primary,
-  },
-  textColorsone: {
-
-    marginVertical: -68,
-    marginTop: 35,
-    padding: 15,
-    backgroundColor: '#fff',
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 2,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginLeft: 10,
-    marginRight: 25,
-  },
-  chickenImage: {
-    height: 80,
-    width: 80,
-    marginLeft: 30,
-    backgroundColor: THEME_COLORS.secondary,
-    borderRadius: 10,
-  },
   centeredView: {
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  orderText: {
-    color: "black",
-    fontWeight: "bold",
-    fontSize: 18,
-    width: "90%",
-    marginLeft: 10,
-    marginTop: 10
-  },
-  crossMark: {
-    marginLeft: 330,
-    marginTop: 30,
   },
   twoButtons: {
     display: "flex",
@@ -335,24 +278,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginVertical: -20
   },
-  prices: {
-    color: TEXT_COLORS.primary,
-    fontWeight: "bold",
-    fontSize: 16
-  },
   ordersPlace: {
     flexDirection: "row",
     marginLeft: '5%',
     alignItems: 'center'
   },
-  ordersPlace1: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    marginTop: -5,
-    marginLeft: 20,
-  },
-
   card: {
     backgroundColor: '#fff',
     borderRadius: 8,
@@ -363,38 +293,15 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
     padding: 10,
-    width: '98%',
+    width: '96%',
     top: 10
   },
-  card1: {
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    borderRadius: 8,
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    marginVertical: -50,
-    width: "100%",
-    marginTop: 1
-  },
-
+  
   tinyLogo: {
     height: 70,
     width: 80,
     borderRadius: 8,
     marginTop: '2%',
-  },
-  tinyLogos: {
-    height: 70,
-    width: 80,
-    borderRadius: 8,
-    marginTop: 20,
-    marginLeft: 10,
-    padding: 10,
-    marginVertical: 20
   },
   itemDetailsContainer: {
     flex: 1,
@@ -403,12 +310,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
+    marginLeft: '5%',
   },
   itemName: {
     fontSize: 14,
     color: TEXT_COLORS.primary,
     fontWeight: "500",
-    marginLeft: 2,
   },
   amount: {
     fontSize: 13,
@@ -427,13 +334,13 @@ const styles = StyleSheet.create({
   },
   orderIdText: {
     fontSize: 13,
-    color: TEXT_COLORS.primary,
+    color: TEXT_COLORS.secondary,
     fontWeight: "500",
   },
   orderIdContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    backgroundColor: 'rgba(0, 0, 0, 0.05)',
     paddingVertical: 2,
     paddingHorizontal: 6,
     borderRadius: 4,
@@ -461,12 +368,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     paddingVertical: 2,
-
   },
   orderContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1
   },
   orderImg: {
     height: 300,
@@ -488,7 +393,8 @@ const styles = StyleSheet.create({
   orderButton: {
     backgroundColor: THEME_COLORS.secondary,
     borderRadius: 5,
-    padding: 10
+    padding: 10,
+    marginTop:100
   },
   noOrderText: {
     color: TEXT_COLORS.whiteColor
@@ -499,5 +405,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     paddingVertical: 10,
   },
-
+   cardArrow: {
+    transform: [{ translateX: 3 }],
+    marginLeft: 10,
+  },
+  
 });

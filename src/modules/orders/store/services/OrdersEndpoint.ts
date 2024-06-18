@@ -18,10 +18,17 @@ export const ordersService = ordersApi.injectEndpoints({
             },
           }), 
         getOrdersByUserId: builder.mutation({
-            query: (id) => ({
-                url: `/getOrdersByUserId?userId=${id}`,
-                method: 'GET'
-            }),
+            query: ({ userId, page, limit, orderStatus, orderStatusMain }:any) => {
+                console.log(userId, page, limit, orderStatus, orderStatusMain,'dheeraj')
+                let url = `/getOrdersByUserId?userId=${userId}&page=${page}&limit=${limit}&orderStatus=${orderStatus}`;
+                if (orderStatusMain) {
+                    url += `&orderStatus=${orderStatusMain}`;
+                }
+                return {
+                    url,
+                    method: 'GET',
+                };
+            },
             invalidatesTags: ['orders'],
         }),
 

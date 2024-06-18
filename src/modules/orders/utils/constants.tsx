@@ -5,6 +5,7 @@ export interface OrderItem {
     itemName: string;
     itemPrice: number;
     itemQty: string;
+    itemUnit: number;
     _id: string;
   }
 export interface OrderTotals {

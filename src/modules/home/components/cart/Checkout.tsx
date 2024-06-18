@@ -207,8 +207,6 @@ export default function Checkout({ route }: any) {
                 <View style={style.payment}>
                     <Text style={style.payment_text}>Payment Method</Text>
                 </View>
-                <ScrollView horizontal={true}
-                    showsHorizontalScrollIndicator={false}>
                     <View style={style.payment_types}>
                         <View style={[style.payment_mode,
                         { backgroundColor: paymentType === 'cash' ? `${THEME_COLORS.light_color}` : 'white' }]}>
@@ -241,7 +239,6 @@ export default function Checkout({ route }: any) {
                             </TouchableOpacity>
                         </View>
                     </View>
-                </ScrollView>
                 <View style={style.note_container}>
                     <TextInput
                         multiline={true}
@@ -450,13 +447,16 @@ const style = StyleSheet.create({
         alignItems: 'center'
     },
     payment_types: {
+        flex:1,
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        flexWrap:'wrap',
+        justifyContent: 'space-evenly',
         alignItems: 'center',
         marginLeft: 20,
         marginRight: 20,
         marginTop: 20,
-        width: '95%'
+        width: '95%',
+        gap:10
     },
     payment_mode: {
         borderWidth: 1,
