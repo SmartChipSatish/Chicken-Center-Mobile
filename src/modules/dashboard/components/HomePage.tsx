@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, ScrollView, Alert, BackHandler, TextInput, Platform } from 'react-native';
 import CarouselCards from '../../home/components/homeCauresel/CarouselCard';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -7,20 +7,26 @@ import HeaderLocation from '../../home/components/location/HeaderLocation'
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 import { useLazyGetAllProductsQuery } from '../../home/store/services/getAllProductsService';
 import { setAddProducts, setFavourite } from '../../home/store/slices/ProductsListSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useUpdateUserMutation } from '../../auth/store/services/getUserDetailsService';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { setUser } from '../../accounts/store/slices/UserSlice';
 import { promptForEnableLocationIfNeeded } from 'react-native-android-location-enabler';
 // import ShowToster from '../../../sharedFolders/components/ShowToster';
+import { RootState } from '../../../store/store';
 
 const { height, width } = Dimensions.get('window')
 const HomePage = () => {
   const navigate = useNavigation<any>();
-  const [updateUser] = useUpdateUserMutation();
-  const [getItems] = useLazyGetAllProductsQuery<any>();
   const dispatch = useDispatch()
+  const products = useSelector((store: RootState) => store.products.addProducts);
+
+  const [updateUser] = useUpdateUserMutation();
+  const [getItems] = useLazyGetAllProductsQuery();
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   const BackPressAlert = () => {
     Alert.alert('Exit App', 'Are you sure you want to exit', [
@@ -37,7 +43,24 @@ const HomePage = () => {
     ])
     return true;
   }
+  const getProducts = async (page: number) => {
+    if (isLoading || !hasMore) return;
 
+    setIsLoading(true);
+    try {
+      const res = await getItems({ page: page });
+      console.log(res.data.items, 'res')
+      if (res?.data?.items.length > 0) {
+        dispatch(setAddProducts(products.concat(res?.data?.items)));
+
+      } else {
+        setHasMore(false);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+    setIsLoading(false);
+  };
   const sendFcmToken = async () => {
     const token = await AsyncStorage.getItem('fcmToken');
 
@@ -74,15 +97,17 @@ const HomePage = () => {
       }
     }, [])
   );
+  useEffect(() => {
+    getProducts(page);
+  }, [page]);
 
-  const handleGetItemData = async () => {
-    getItems().then((data) => {
-      console.log(data?.data?.items, 'allProducts')
-      dispatch(setAddProducts(data?.data?.items));
-    }).catch((error) => {
-      console.log(error, 'error');
-    })
-  }
+  const handleScroll = (event: any) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    if (layoutMeasurement.height + contentOffset.y >= contentSize.height) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
+
 
   const handleEnabledPressed = async () => {
     if (Platform.OS === 'android') {
@@ -101,11 +126,9 @@ const HomePage = () => {
   };
 
   useEffect(() => {
-    handleGetItemData();
     handleEnabledPressed();
     sendFcmToken()
   }, [])
-
   return (
 
     <View style={styles.container}>
@@ -125,14 +148,14 @@ const HomePage = () => {
       </View>
       {/* <Text>Enable Location Services</Text> */}
       {/* <Button title="Enable Location" onPress={handleEnabledPressed} /> */}
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView showsVerticalScrollIndicator={false} onScroll={handleScroll} scrollEventThrottle={16}>
         <View style={styles.carouselContainer}>
           <CarouselCards />
         </View>
         <View style={styles.freshMeats}>
           <Text style={styles.header}>Fresh Meats</Text>
-          <View style={{ justifyContent: 'center', alignItems: 'center',marginBottom:'2%' }}>
-            <ProductsList />
+          <View style={{ justifyContent: 'center', alignItems: 'center', marginBottom: '2%' }}>
+            <ProductsList isLoading={isLoading} />
           </View>
         </View>
       </ScrollView>

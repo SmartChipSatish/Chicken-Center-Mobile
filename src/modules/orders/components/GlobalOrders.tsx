@@ -20,6 +20,7 @@ import { setOrderCount } from '../store/slices/OrdersSlices';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
 import MakePayment from '../../payment/components/MakePayment';
+import { ActivityIndicator } from 'react-native-paper';
 
 
 export default function GlobalOrders() {
@@ -31,10 +32,12 @@ export default function GlobalOrders() {
   const appLogo = require('../../../assets/Images/app-logo.png');
   const [ordersData, setOrdersData] = useState<Order[]>([]);
   const [myOrderId, setMyOrderId] = useState<string>('');
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [orderStatus, setOrderStatus] = useState('');
   const [show, setShow] = useState(false);
-  const dispatch=useDispatch();
+  const dispatch = useDispatch();
   const [makepaydata, setMakepaydata] = useState({ orderId: '', addressId: '', totalAmount: 0 });
   const TABS = {
     PLACED: 'Received',
@@ -45,49 +48,62 @@ export default function GlobalOrders() {
   const [getOrdersByUserId] = useGetOrdersByUserIdMutation();
   const NoOrders = require('../../../assets/Images/NoOrdersFound.png');
   const getOrderData = async () => {
+    if (isLoading || !hasMore) return;
     setIsLoading(true)
     try {
-      setIsLoading(true)
       const storedUid = await AsyncStorage.getItem('userId');
       console.log(storedUid)
       const uid = storedUid?.replace(/['"]/g, '').trim();
       console.log(uid, 'uid')
       let response;
       if (selectedTab === 'Received') {
-        response = await getOrdersByUserId({ userId: uid, page: 1, limit: 10, orderStatus: selectedTab, orderStatusMain: 'PLACED' });
-    } else {
-        response = await getOrdersByUserId({ userId: uid, page: 1, limit: 10, orderStatus: selectedTab });
-    }
-      setOrdersData(response.data.orders)
+        response = await getOrdersByUserId({ userId: uid, page: page, limit: 10, orderStatus: selectedTab, orderStatusMain: 'PLACED' });
+      } else {
+        response = await getOrdersByUserId({ userId: uid, page: page, limit: 10, orderStatus: selectedTab });
+      }
+      if (response.data.orders.length > 0) {
+        setOrdersData((prev) => [...prev, ...response.data.orders])
+
+      } else {
+        setHasMore(false);
+      }
       dispatch(setOrderCount(response.data.length));
-      setIsLoading(false)
     } catch (error) {
       console.log(error)
-      setIsLoading(false)
     }
     setIsLoading(false)
   }
 
-  const filterOrders = () => {
-    return ordersData?.filter((item) => selectedTab === TABS.PLACED[0] ? TABS.PLACED.includes(item?.orderStatus) : item?.orderStatus === selectedTab)
-  }
+  // const filterOrders = () => {
+  //   return ordersData?.filter((item) => selectedTab === TABS.PLACED[0] ? TABS.PLACED.includes(item?.orderStatus) : item?.orderStatus === selectedTab)
+  // }
   const handleClose = () => {
     setShow(false)
   }
   const handlePaymentSuccess = () => {
     setMakepaydata({ orderId: '', addressId: '', totalAmount: 0 });
-    getOrderData(); 
+    getOrderData();
   };
 
   useFocusEffect(
     useCallback(() => {
       getOrderData()
-    }, [selectedTab])
+    }, [selectedTab, page])
   )
 
   const handleTabPress = (tab: React.SetStateAction<string>) => {
     setSelectedTab(tab);
+    setPage(1)
+    setOrdersData([])
+    setHasMore(true)
   };
+  const handleScroll = (event: any) => {
+    const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+    if (layoutMeasurement.height + contentOffset.y >= contentSize.height) {
+      setPage((prevPage) => prevPage + 1);
+    }
+  };
+  console.log(ordersData.length, page, isLoading, hasMore)
   return (
     <>
       <View style={{ marginTop: -10, flex: 1 }}>
@@ -96,101 +112,100 @@ export default function GlobalOrders() {
           <TabButton label={'DELIVERED'} isSelected={selectedTab === TABS.DELIVERED} onPress={() => handleTabPress(TABS.DELIVERED)} />
           <TabButton label={'CANCELLED'} isSelected={selectedTab === TABS.CANCELLED} onPress={() => handleTabPress(TABS.CANCELLED)} />
         </View>
-        {!isLoading &&
-          <ScrollView >
-            {ordersData && ordersData.length > 0 ? ordersData.map((item: Order) => (
-              <Pressable key={item._id}
-                onPress={() => { setMyOrderId(item._id); setOrderStatus(item?.orderStatus); setModalVisible1(true); }}
-                style={({ pressed }) => [
-                  {
-                    backgroundColor: pressed ? '#ddd' : '#f0f0f0',
-                    transform: [{ scale: pressed ? 0.98 : 1 }],
-                  },
-                  styles.main_card,
-                ]}
-              >
-                <View key={item._id} style={styles.card}>
-                  <View style={styles.orderIdCardHeader}>
-                    <View style={styles.orderIdContainer}>
-                      <Text style={styles.orderIdText}>ORDER ID: </Text>
-                      <Text style={styles.orderIdHeader}>#{item?.id.slice(-4)}</Text>
-                    </View>
-
-                    {/* <StatusButton status='PLACED'/> */}
-                    {item?.orderStatus !== 'DELIVERED' && <RatingDisplay rating={4.3} votes={2925} />}
-
-                  </View>
-
-                  <View style={styles.item_details}>
-                    <Image style={styles.tinyLogo} source={{ uri: item?.items[0]?.imageUrl }} />
-                    <View style={styles.itemDetailsContainer}>
-                      <View style={styles.nameTextContainer}>
-                        <Text style={styles.itemName}>{item?.items[0]?.itemName}</Text>
-                      </View>
-                      <View style={styles.ordersPlace}>
-                        <Text style={styles.amount}>₹{item?.totals?.amount}</Text>
-                        <Text> | </Text>
-                        <Text style={styles.price1}>Qty: {item?.totals?.quantity}</Text>
-
+        {
+          <ScrollView onScroll={handleScroll} scrollEventThrottle={16}>
+            {ordersData && ordersData.length > 0 ? ordersData.map((item: Order) => {
+              return (
+                <Pressable key={item._id}
+                  onPress={() => { setMyOrderId(item._id); setOrderStatus(item?.orderStatus); setModalVisible1(true); }}
+                  style={({ pressed }) => [
+                    {
+                      backgroundColor: pressed ? '#ddd' : '#f0f0f0',
+                      transform: [{ scale: pressed ? 0.98 : 1 }],
+                    },
+                    styles.main_card,
+                  ]}
+                >
+                  <View key={item._id} style={styles.card}>
+                    <View style={styles.orderIdCardHeader}>
+                      <View style={styles.orderIdContainer}>
+                        <Text style={styles.orderIdText}>ORDER ID: </Text>
+                        <Text style={styles.orderIdHeader}>#{item?.id.slice(-4)}</Text>
                       </View>
 
+                      {/* <StatusButton status='PLACED'/> */}
+                      {item?.orderStatus !== 'DELIVERED' && <RatingDisplay rating={4.3} votes={2925} />}
 
                     </View>
-                    <View style={{ marginLeft: 10 }}>
-                      <StatusButton status={item?.orderStatus} />
-                    </View>
-                    <View style={styles.cardArrow}>
-                      <RightArrowIcon />
+
+                    <View style={styles.item_details}>
+                      <Image style={styles.tinyLogo} source={{ uri: item?.items[0]?.imageUrl }} />
+                      <View style={styles.itemDetailsContainer}>
+                        <View style={styles.nameTextContainer}>
+                          <Text style={styles.itemName}>{item?.items[0]?.itemName}</Text>
+                        </View>
+                        <View style={styles.ordersPlace}>
+                          <Text style={styles.amount}>₹{item?.totals?.amount}</Text>
+                          <Text> | </Text>
+                          <Text style={styles.price1}>Qty: {item?.totals?.quantity}</Text>
+
+                        </View>
+
+
+                      </View>
+                      <View style={{ marginLeft: 10 }}>
+                        <StatusButton status={item?.orderStatus} />
+                      </View>
+                      <View style={styles.cardArrow}>
+                        <RightArrowIcon />
+                      </View>
+
                     </View>
 
+                    <View style={styles.twoButtons}>
+                      {item?.orderStatus === 'DELIVERD' && <TouchableOpacity onPress={() => navigation.navigate('checkout', { totalAmount: '', re_orderId: item?.id })}>
+                        <Text style={styles.RepeatColor}>Repeat Order</Text>
+                      </TouchableOpacity>}
+
+
+                      {item?.orderStatus === 'DELIVERD' && <TouchableOpacity onPress={() => setShow(true)}>
+                        <Text style={styles.RepeatColor1}>Rate order</Text>
+                      </TouchableOpacity>}
+                      {item?.orderStatus === 'PLACED' && item?.paymentStatus === 'PENDING' && <View>
+                        <TouchableOpacity onPress={() => setMakepaydata({ orderId: item?.id, addressId: item?.addressId, totalAmount: item?.totals?.amount })} disabled={isLoading}>
+                          <Text style={styles.RepeatColor} disabled={isLoading}>Make Payment</Text>
+                        </TouchableOpacity>
+
+                      </View>}
+                      {item?.orderStatus !== 'DELIVERD' && <TouchableOpacity onPress={() => setShow(true)}>
+                        <Text style={styles.RepeatColor1}>Cancel Order</Text>
+                      </TouchableOpacity>}
+                    </View>
                   </View>
+                </Pressable>
+              )
+            }) :
+              <>
+                {!isLoading && <View style={styles.orderContainer}>
+                  <Image source={NoOrders} style={styles.orderImg} />
+                  <TouchableOpacity style={styles.orderButton} onPress={() => navigation.navigate('home')}>
+                    <Text style={styles.noOrderText}>Back To Home</Text>
+                  </TouchableOpacity>
 
-              <View style={styles.twoButtons}>
-                {item?.orderStatus === 'DELIVERD' && <TouchableOpacity onPress={()=>navigation.navigate('checkout',{totalAmount: '', re_orderId:item?.id})}>
-                  <Text style={styles.RepeatColor}>Repeat Order</Text>
-                </TouchableOpacity>}
-
-
-                    {item?.orderStatus === 'DELIVERD' && <TouchableOpacity onPress={() => setShow(true)}>
-                      <Text style={styles.RepeatColor1}>Rate order</Text>
-                    </TouchableOpacity>}
-                    {item?.orderStatus === 'PLACED' && item?.paymentStatus === 'PENDING' && <View>
-                      <TouchableOpacity onPress={() => setMakepaydata({ orderId: item?.id, addressId: item?.addressId, totalAmount: item?.totals?.amount })} disabled={isLoading}>
-                        <Text style={styles.RepeatColor} disabled={isLoading}>Make Payment</Text>
-                      </TouchableOpacity>
-
-                    </View>}
-                    { item?.orderStatus !== 'DELIVERD' && <TouchableOpacity onPress={() => setShow(true)}>
-                      <Text style={styles.RepeatColor1}>Cancel Order</Text>
-                    </TouchableOpacity>}
-    </View>
-                </View>
-              </Pressable>
-            )) :
-              <View style={styles.orderContainer}>
-                 <Image source={NoOrders} style={styles.orderImg} />              
-                {/* <Text style={styles.orderHeader}>No Orders Found</Text>
-                <Text style={styles.orderBody}>
-                  Looks like you haven't made {"\n"}
-                  {'            '}your order yet...
-                </Text> */}
-                <TouchableOpacity style={styles.orderButton} onPress={() => navigation.navigate('home')}>
-                  <Text style={styles.noOrderText}>Back To Home</Text>
-                </TouchableOpacity>
-
-              </View>
+                </View>}
+              </>
             }
           </ScrollView>
         }
 
         {show && <RateOrder show={show} handleClose={handleClose} />}
         {
-          makepaydata.orderId != '' && makepaydata?.addressId !== '' && 
+          makepaydata.orderId != '' && makepaydata?.addressId !== '' &&
           <MakePayment orderId={makepaydata.orderId}
-                       type={'online'}
-                       addressId={makepaydata?.addressId}
-                       totalAmount={makepaydata.totalAmount} 
-                       onSuccess={handlePaymentSuccess}/>
+            type={'online'}
+            addressId={makepaydata?.addressId}
+            totalAmount={makepaydata.totalAmount}
+            onSuccess={handlePaymentSuccess} />
         }
 
         {/* Order summary modal */}
@@ -214,7 +229,8 @@ export default function GlobalOrders() {
           </Modal>
         </View>
       </View>
-      {isLoading && <Loding />}
+      {isLoading && ordersData.length === 0 && <Loding />}
+      {ordersData?.length > 0 && isLoading && <ActivityIndicator size="small" color={THEME_COLORS.secondary} />}
     </>
 
   );
@@ -296,7 +312,7 @@ const styles = StyleSheet.create({
     width: '96%',
     top: 10
   },
-  
+
   tinyLogo: {
     height: 70,
     width: 80,
@@ -395,7 +411,7 @@ const styles = StyleSheet.create({
     backgroundColor: THEME_COLORS.secondary,
     borderRadius: 5,
     padding: 10,
-    marginTop:100
+    marginTop: 100
   },
   noOrderText: {
     color: TEXT_COLORS.whiteColor
@@ -406,9 +422,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2f2f2',
     paddingVertical: 10,
   },
-   cardArrow: {
+  cardArrow: {
     transform: [{ translateX: 3 }],
     marginLeft: 10,
   },
-  
+
 });
