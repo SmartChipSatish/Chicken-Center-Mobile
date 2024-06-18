@@ -104,8 +104,8 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
                         <View key={item?._id} style={styles.card}>
                             <Image style={styles.tinyLogo} source={{ uri: item?.imageUrl }} />
                             <View style={styles.cardContent}>
-                                <Text style={styles.title}>{item?.itemName}</Text>
-                                <Text style={styles.price1}>Qty:{item?.itemQty}</Text>
+                                <Text style={styles.title}>{item?.itemName} - {item?.itemQty}</Text>
+                                <Text style={styles.price1}>Qty:{item?.itemUnit}</Text>
                                 <Text style={styles.price}>₹{item?.itemPrice}</Text>
                                 <View style={styles.rightAlign}>
                                 </View>
@@ -115,9 +115,9 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
 
 
                     <View style={styles.cards}>
-                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', }}>
+                        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between',marginTop:-10 }}>
 
-                            <Text style={styles.Billdetails}>Bill Details</Text>
+                            <Text style={styles.BilldetailsMain}>Bill Details</Text>
                             <StatusButton status={orderStatus} />
 
                         </View>
@@ -217,6 +217,13 @@ const styles = StyleSheet.create({
         color: "#626364",
         fontSize: 20,
         marginBottom: 10
+    },
+    BilldetailsMain: {
+        fontWeight: "bold",
+        color: "#626364",
+        fontSize: 20,
+        marginBottom: 10,
+        marginTop: 10
     },
     discounts: {
         color: "green",
@@ -324,13 +331,13 @@ const styles = StyleSheet.create({
     price: {
         fontSize: TEXT_FONT_SIZE.medium,
         color: THEME_COLORS.secondary,
-        marginVertical: 5,
+        marginVertical: 2,
         fontWeight: "bold"
     },
     price1: {
         fontSize: 13,
         color: TEXT_COLORS.secondary,
-        marginVertical: 5,
+        marginVertical: 2,
         fontWeight: '800'
     },
     rightAlign: {
