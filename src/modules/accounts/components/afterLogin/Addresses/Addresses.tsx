@@ -8,6 +8,7 @@ import { NoAddressIcon } from '../../../../../assets/svgimages/AccountsSvgs/acco
 import { Cross, LocationIcon, Menuicon } from '../../../../../assets/svgimages/SaveAsIcons';
 import { TEXT_COLORS, THEME_COLORS } from '../../../../../globalStyle/GlobalStyles';
 import { setDisplayAddressAll, setItemid } from '../../../store/slices/LocationSlice';
+import LottieView from 'lottie-react-native';
 
 const Addresses = () => {
   const [getAddressByUser] = useGetAddressByuserMutation();
@@ -60,7 +61,7 @@ const Addresses = () => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" style={styles.extraLargeIndicator} color={THEME_COLORS.secondary} />
+          <LottieView source={require('./store/Animation.json')} autoPlay loop style={styles.lottie}/>
         </View>
       </SafeAreaView>
     );
@@ -135,9 +136,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
   },
-  iconText: {
+    iconText: {
     display: "flex",
     flexDirection: "row",
+  },
+  lottie: {
+    width: 70,
+    height: 70, 
   },
   cityText: {
     fontSize: 16,
@@ -146,6 +151,10 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     marginTop:40, 
+    display:"flex",
+    flexDirection:"row",
+    justifyContent:"center",
+    alignItems:"center",
   },
   extraLargeIndicator: {
     transform: [{ scale: 1.5 }], 

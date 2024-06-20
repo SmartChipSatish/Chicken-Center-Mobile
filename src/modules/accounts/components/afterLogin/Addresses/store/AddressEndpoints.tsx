@@ -7,7 +7,7 @@ export const ordersService = addressApi.injectEndpoints({
 
         createAddress: builder.mutation({
             query: ({ id, user }) => ({
-                url: `/users/addAddresfs?userId=${id}`,
+                url: `/users/addAddress?userId=${id}`,
                 method: 'POST',
                 body: user
             }),
