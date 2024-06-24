@@ -5,7 +5,7 @@ import OrderSummary from './OrderSummary';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CrossMark from '../../../assets/svgimages/util';
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
-import { useGetOrdersByUserIdMutation, useLazyGetOrdersByUserId1Query } from '../store/services/OrdersEndpoint';
+import { useGetOrdersByUserIdMutation, useLazyGetOrdersByUserId1Query, useUpdateOrderMutation } from '../store/services/OrdersEndpoint';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Loding from '../../dashboard/components/Loding';
 import { Order } from '../utils/constants';
@@ -24,6 +24,7 @@ import { ActivityIndicator } from 'react-native-paper';
 
 
 export default function GlobalOrders() {
+  // const {orderReload} = route?.params;
   const navigation = useNavigation<any>()
   const [modalVisible, setModalVisible] = useState(false);
   const [currentRatedItem, setCurrentRatedItem] = useState<any>(null);
@@ -46,6 +47,7 @@ export default function GlobalOrders() {
   };
   const [selectedTab, setSelectedTab] = useState('Received');
   const [getOrdersByUserId] = useGetOrdersByUserIdMutation();
+  const [updateOrder] = useUpdateOrderMutation();
   const NoOrders = require('../../../assets/Images/NoOrdersFound.png');
   const getOrderData = async () => {
     if (isLoading || !hasMore) return;
@@ -54,11 +56,13 @@ export default function GlobalOrders() {
       const storedUid = await AsyncStorage.getItem('userId');
       console.log(storedUid)
       const uid = storedUid?.replace(/['"]/g, '').trim();
-      console.log(uid, 'uid')
+      console.log(uid,selectedTab, 'uid')
       let response;
       if (selectedTab === 'Received') {
+        console.log(uid,selectedTab, 'uid1')
         response = await getOrdersByUserId({ userId: uid, page: page, limit: 10, orderStatus: selectedTab, orderStatusMain: 'PLACED' });
       } else {
+        console.log(uid,selectedTab, 'uid2')
         response = await getOrdersByUserId({ userId: uid, page: page, limit: 10, orderStatus: selectedTab });
       }
       if (response.data.orders.length > 0) {
@@ -74,6 +78,19 @@ export default function GlobalOrders() {
     setIsLoading(false)
   }
 
+  const cancelOrder = async(OrderId: string) => {
+    try{
+     const response = await updateOrder({ orderId: OrderId, orderStatus:'CANCELLED'});
+     console.log(response.data.orderStatus,'orderCANCELED');
+     if(response.data.orderStatus === 'CANCELLED'){
+      console.log('dheeraj')
+        getOrderData()
+     }
+   
+    }catch(err){
+      console.log(err)
+    }
+  }
   // const filterOrders = () => {
   //   return ordersData?.filter((item) => selectedTab === TABS.PLACED[0] ? TABS.PLACED.includes(item?.orderStatus) : item?.orderStatus === selectedTab)
   // }
@@ -177,7 +194,7 @@ export default function GlobalOrders() {
                         </TouchableOpacity>
 
                       </View>}
-                      {item?.orderStatus !== 'DELIVERD' && <TouchableOpacity onPress={() => setShow(true)}>
+                      {item?.orderStatus === 'PLACED' && item?.paymentStatus === 'PENDING' && <TouchableOpacity onPress={() => cancelOrder(item?._id)}>
                         <Text style={styles.RepeatColor1}>Cancel Order</Text>
                       </TouchableOpacity>}
                     </View>
