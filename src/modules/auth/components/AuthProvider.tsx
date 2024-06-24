@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
+import { DevSettings } from 'react-native';
 
 interface AuthContextProps {
   userToken: string | null;
@@ -24,6 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async() => {
     await AsyncStorage.clear();
     setUserToken(null);
+    DevSettings.reload();
   };
 
   const checkUser=async()=>{
