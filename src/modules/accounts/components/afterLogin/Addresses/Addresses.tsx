@@ -17,6 +17,7 @@ const Addresses = () => {
   const [loading, setLoading] = useState(true);
   const [visibleModal, setNewVisible] = useState(false);
   const [deleteId, setDeleteId] = useState<any>({});
+  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const navigation = useNavigation<any>();
   const dispatch = useDispatch();
 
@@ -43,8 +44,11 @@ const Addresses = () => {
     return `${address?.houseNo}, ${address?.landmark}, ${address?.city}, ${address?.state} ${address?.pincode || ""}`;
   };
 
-  const handleSubmitAddress = (e: any) => {
+  const handleOpenModal = (e: any, position: { top: number; left: number }) => {
+    setModalPosition(position);
     setDeleteId(e);
+    setNewVisible(true);
+    dispatch(setItemid(e));
   };
 
   const handleDeleteAddress = async () => {
@@ -79,7 +83,12 @@ const Addresses = () => {
                   <Text style={styles.cityText}>{address?.city}</Text>
                 </View>
                 <View style={styles.crossIcondata}>
-                  <TouchableOpacity onPress={() => { handleSubmitAddress(address); setNewVisible(true); dispatch(setItemid(address)); }}>
+                  <TouchableOpacity
+                    onPress={(event) => {
+                      const { pageX, pageY } = event.nativeEvent;
+                      handleOpenModal(address, { top: pageY, left: pageX });
+                    }}
+                  >
                     <Menuicon height={20} width={20} />
                   </TouchableOpacity>
                 </View>
@@ -102,14 +111,14 @@ const Addresses = () => {
         visible={visibleModal}
         onRequestClose={() => setNewVisible(false)}
       >
-        <View style={styles.modalBackground}>
+        <View style={[styles.modalBackground, { top: modalPosition.top, left: modalPosition.left }]}>
           <View style={styles.modalContents}>
             <TouchableOpacity onPress={() => setNewVisible(!visibleModal)}>
               <View style={styles.crossIcon}>
                 <Cross height={10} width={10} />
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate('payment')}>
+            <TouchableOpacity onPress={() =>{navigation.navigate('payment');setNewVisible(!visibleModal)} }>
               <Text style={{ color: "black", fontWeight: "bold" }}>Edit</Text>
             </TouchableOpacity>
             <View style={styles.separator2}></View>
@@ -119,14 +128,13 @@ const Addresses = () => {
           </View>
         </View>
       </Modal>
-      
-      
-        <View style={styles.buttonBackground}>
-          <TouchableOpacity style={styles.fixedBottomButton} onPress={() => navigation.navigate('addaddress')}>
-            <Text style={styles.buttonText}>Add new address</Text>
-          </TouchableOpacity>
-        </View>
-      
+
+      <View style={styles.buttonBackground}>
+        <TouchableOpacity style={styles.fixedBottomButton} onPress={() => navigation.navigate('addaddress')}>
+          <Text style={styles.buttonText}>Add new address</Text>
+        </TouchableOpacity>
+      </View>
+
     </SafeAreaView>
   );
 };
@@ -136,13 +144,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
   },
-    iconText: {
+  iconText: {
     display: "flex",
     flexDirection: "row",
   },
   lottie: {
     width: 70,
-    height: 70, 
+    height: 70,
   },
   cityText: {
     fontSize: 16,
@@ -150,14 +158,14 @@ const styles = StyleSheet.create({
     color: TEXT_COLORS.primary,
   },
   loadingContainer: {
-    marginTop:40, 
-    display:"flex",
-    flexDirection:"row",
-    justifyContent:"center",
-    alignItems:"center",
+    marginTop: 40,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   extraLargeIndicator: {
-    transform: [{ scale: 1.5 }], 
+    transform: [{ scale: 1.5 }],
   },
   addressText: {
     fontSize: 14,
@@ -212,19 +220,19 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   modalBackground: {
-    flex: 1,
-    alignItems: 'flex-end',
+    position: 'absolute',
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContents: {
     width: 150,
     padding: 10,
-    backgroundColor: 'white',
+    backgroundColor: 'orange',
     borderRadius: 5,
     alignItems: "center",
-    marginRight: 30,
-    marginTop: 100,
-  },
+    marginLeft: -140,
+    marginTop:-30,
+}
+,
   crossIcon: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
