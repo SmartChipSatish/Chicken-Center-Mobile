@@ -27,7 +27,7 @@ function CustomTabBarLabel({ label, color }: any) {
 
 
     return (
-        <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <View style={{ alignItems: 'center', justifyContent: 'center', minWidth: 60 }}>
             {label === 'Home' && <HomeIcon color={color} />}
             {label === 'Cart' && <CartItemsIcon color={color} />}
             {label === 'Orders' && <OrdersIcon color={color} />}
