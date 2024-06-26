@@ -39,9 +39,21 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData, setLoding }: pa
   const [isLoading, setIsLoading] = useState(false);
   const [show, setShow] = useState(false);
   const toast = useToast();
+  
   const [createData] = useCreateOrderMutation();
   const [initiateOrder] = useInitiateOrderMutation();
   const [paymentVerify] = useVerifyOrderMutation();
+  const user = useSelector((store: RootState) => store.user.user);
+  const formatMobileNumber = (mobileNumber: string) => {
+    if (mobileNumber.startsWith('+91')) {
+        return mobileNumber.slice(3);
+    } else if (mobileNumber.startsWith('91') && mobileNumber.length === 12) {
+        return mobileNumber.slice(2);
+    } else {
+        return mobileNumber;
+    }
+};
+const formattedNumber = user ? formatMobileNumber(user.primaryNumber.toString()) : '';
 
   const items = cartItems.map(item => {
     return ({
@@ -52,7 +64,6 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData, setLoding }: pa
       imageUrl: item.imageUrl,
       itemName: item.itemName,
       itemUnit:item?.quantity,
-      contactNumber:'9948917262'
     })
   });
   const createOrder = async () => {
@@ -67,6 +78,7 @@ const Payment = ({ totalAmount, type, addressId,repeatOrderData, setLoding }: pa
           updatedBy: uid,
           addressId: addressId,
           paymentType: type,
+          contactNumber:formattedNumber,
           items: repeatOrderData !== undefined ? repeatOrderData?.items : items,
           totals: repeatOrderData !== undefined ? repeatOrderData?.totals : {
             quantity: totalQuantity,

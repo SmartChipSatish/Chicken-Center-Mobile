@@ -33,7 +33,7 @@ const OrderConfirmationScreen = ({ show, handleClose,totalAmount,orderId,type }:
 
           <Button
             title={type ==='makePayment'? "Close" :"Go To Orders"}
-            onPress={() => type ==='makePayment'? handleClose(): navigation.navigate('orders')}
+            onPress={() => type ==='makePayment'? handleClose(): navigation.navigate('orders',{newOrder: true})}
             color={THEME_COLORS.secondary}
             
           />

@@ -94,7 +94,7 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
                     onPress={() => {
                         setModalVisible1()
                     }}>
-                    <CrossMark color={'black'} width={20} height={20} style={{ marginRight: '2%' }}></CrossMark>
+                    <CrossMark color={'black'} width={20} height={20} style={styles.crossMark}></CrossMark>
                 </TouchableOpacity>
             </View>
 
@@ -195,8 +195,7 @@ const styles = StyleSheet.create({
         color: TEXT_COLORS.primary,
         fontSize: TEXT_FONT_SIZE.large,
         marginLeft: 5,
-        height: 35,
-        fontWeight: '600'
+        fontWeight: '500',
     },
 
     cards: {
@@ -235,16 +234,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        height: 57,
+        height: 56,
         width: '100%',
         shadowColor: '#000',
-        shadowOffset: { width: 100, height: 10 },
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
+        left:12
     },
     crossMark: {
-        top: 5
+        marginRight: '4%'
     },
     OrderDetails: {
         display: 'flex',
