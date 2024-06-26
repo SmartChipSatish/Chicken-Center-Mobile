@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import CrossMark from '../../../assets/svgimages/util';
 import { TEXT_COLORS, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 import { useGetOrdersByUserIdMutation, useLazyGetOrdersByUserId1Query, useUpdateOrderMutation } from '../store/services/OrdersEndpoint';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import Loding from '../../dashboard/components/Loding';
 import { Order } from '../utils/constants';
 import StatusButton from './StatusButton';
@@ -24,8 +24,10 @@ import { ActivityIndicator } from 'react-native-paper';
 
 
 export default function GlobalOrders() {
-  // const {orderReload} = route?.params;
-  const navigation = useNavigation<any>()
+
+  const navigation = useNavigation<any>();
+  const route = useRoute<any>();
+  const {newOrder} = route?.params || {};
   const [modalVisible, setModalVisible] = useState(false);
   const [currentRatedItem, setCurrentRatedItem] = useState<any>(null);
   const [ratings, setRatings] = useState<any>({});
@@ -83,8 +85,8 @@ export default function GlobalOrders() {
      const response = await updateOrder({ orderId: OrderId, orderStatus:'CANCELLED'});
      console.log(response.data.orderStatus,'orderCANCELED');
      if(response.data.orderStatus === 'CANCELLED'){
-      console.log('dheeraj')
-        getOrderData()
+        setOrdersData([]);
+        getOrderData();
      }
    
     }catch(err){
@@ -104,8 +106,12 @@ export default function GlobalOrders() {
 
   useFocusEffect(
     useCallback(() => {
+      if(newOrder){
+        setOrdersData([]);
+        navigation.setParams({ newOrder: false });
+      }
       getOrderData()
-    }, [selectedTab, page])
+    }, [selectedTab, page, newOrder])
   )
 
   const handleTabPress = (tab: React.SetStateAction<string>) => {
