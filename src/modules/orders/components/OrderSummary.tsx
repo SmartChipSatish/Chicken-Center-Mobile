@@ -13,7 +13,7 @@ import RatingDisplay from '../../../sharedFolders/components/RatingDisplay';
 import RateOrder from './RateOrder';
 
 export default function OrderSummary({ orderId, setModalVisible1, orderStatus }: { orderId: string, setModalVisible1: () => void, orderStatus: string }) {
-    const user = useSelector((store: RootState) => store.user.user);
+    const user = useSelector((store: RootState) => store?.user?.user);
 
     const [ordersData, setOrdersData] = useState<OrderItem[]>()
     const [totalOrder, setTotalOrder] = useState<Order>();

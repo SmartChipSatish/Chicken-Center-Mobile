@@ -136,7 +136,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         width: '100%',
         textAlignVertical: 'top',
-        color:TEXT_COLORS.primary
+        color:TEXT_COLORS.primary,
+        fontSize:16
     },sub_btn:{
         backgroundColor:THEME_COLORS.secondary,
         width:'90%',
