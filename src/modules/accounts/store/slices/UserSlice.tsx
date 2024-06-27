@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { UserDetails } from '../../utlis/constents';
+import { resetAll } from '../../../../store/slices/ResetSlice';
 
 interface UserState {
     user: UserDetails | null;
@@ -15,7 +16,9 @@ const userSlice = createSlice({
         setUser: (state, action) => {
             state.user = action.payload;
         },
-    }
+    },extraReducers: (builder) => {
+        builder.addCase(resetAll, () => initialState);
+      }
 })
 
 export const { setUser } = userSlice.actions;

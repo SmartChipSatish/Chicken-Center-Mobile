@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import { DevSettings } from 'react-native';
+import { resetAll } from '../../../store/slices/ResetSlice';
+import { useDispatch } from 'react-redux';
 
 interface AuthContextProps {
   userToken: string | null;
@@ -14,6 +16,7 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userToken, setUserToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const dispatch = useDispatch();
 
   const login = (token: string, userId:string) => {
     AsyncStorage.setItem('idToken', JSON.stringify(token + userId));
@@ -25,7 +28,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = async() => {
     await AsyncStorage.clear();
     setUserToken(null);
-    DevSettings.reload();
+    // DevSettings.reload();
+    dispatch(resetAll());
   };
 
   const checkUser=async()=>{

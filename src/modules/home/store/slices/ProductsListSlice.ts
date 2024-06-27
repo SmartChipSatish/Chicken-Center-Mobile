@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { itemData, itemsDetails } from '../../utils/constents';
+import { resetAll } from '../../../../store/slices/ResetSlice';
 
 interface ProductList {
     addProducts: itemData[];
@@ -66,7 +67,9 @@ const ProductsListSlice = createSlice({
             })
             state.addProducts = data
         },
-    }
+    },extraReducers: (builder) => {
+        builder.addCase(resetAll, () => initialState);
+      }
 });
 
 export const { setAddProducts, setQuantity, setFavourite, setShowQuantity, setShowQuantityReset, setResetQuantity } = ProductsListSlice.actions;
