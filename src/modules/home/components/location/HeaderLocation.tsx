@@ -63,6 +63,7 @@ const HeaderLocation = () => {
     maxLat: 17.6,
     minLon: 78.2,
     maxLon: 78.8,
+
   };
 
   const isWithinHyderabadBounds = (lat: number, lon: number) => {
