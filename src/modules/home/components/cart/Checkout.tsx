@@ -43,9 +43,9 @@ export default function Checkout({ route }: any) {
     const [selectedAddress, setSelectedAddress] = useState<any>();
     const itemsids = useSelector((store: RootState) => store.locations.itemId);
     const [addressId, setAddressId] = useState<any>({});
-    const [repeatOrderData,setRepeatOrderData]= useState<any>();
+    const [repeatOrderData, setRepeatOrderData] = useState<any>();
     const [getOrders] = useGetOrderByIdMutation();
-    const [loding,setLoding]=useState<boolean>(false);
+    const [loding, setLoding] = useState<boolean>(false);
     const user = useSelector((store: RootState) => store.user.user);
     const formatMobileNumber = (mobileNumber: string) => {
         if (mobileNumber.startsWith('+91')) {
@@ -57,8 +57,8 @@ export default function Checkout({ route }: any) {
         }
     };
     const formattedNumber = user ? formatMobileNumber(user.primaryNumber.toString()) : '';
-  
-    const toast =useToast();
+
+    const toast = useToast();
     const items = cartItems.map(item => {
         return ({
             itemId: item?.id,
@@ -67,10 +67,10 @@ export default function Checkout({ route }: any) {
             amount: item?.total,
             imageUrl: item?.imageUrl,
             itemName: item?.itemName,
-            itemUnit:item?.quantity,
+            itemUnit: item?.quantity,
         })
     });
-    
+
     const totalQuantity = cartItems.reduce((accumulator, item) => accumulator + item?.quantity, 0);
 
     const createOrder = async () => {
@@ -85,14 +85,14 @@ export default function Checkout({ route }: any) {
                     updatedBy: uid,
                     addressId: addressId?._id,
                     paymentType: paymentType,
-                    contactNumber:formattedNumber,
-                    items: totalAmount ==='' ? repeatOrderData.items :items,
-                    totals: totalAmount ===''? repeatOrderData.totals:{
-                        quantity:  totalQuantity,
+                    contactNumber: formattedNumber,
+                    items: totalAmount === '' ? repeatOrderData.items : items,
+                    totals: totalAmount === '' ? repeatOrderData.totals : {
+                        quantity: totalQuantity,
                         amount: totalAmount
                     }
                 }).unwrap();
-                console.log(response,'itemresponse')
+                console.log(response, 'itemresponse')
                 setOrderId(response?._id)
                 if (response && response?._id) {
                     dispatch(setClearCart())
@@ -148,7 +148,7 @@ export default function Checkout({ route }: any) {
 
     const handleDeleteAddress = async () => {
         try {
-       await deleteUserAddress({ id: addressId?._id, status: false }).unwrap();
+            await deleteUserAddress({ id: addressId?._id, status: false }).unwrap();
             const deleteAddress = everyoneAddress.filter((item: any) => item?._id !== addressId?._id);
             setSome(deleteAddress);
         } catch (error) {
@@ -171,60 +171,60 @@ export default function Checkout({ route }: any) {
 
     }
 
-    const handleRepOrderData=async()=>{
-      const response = await getOrders(re_orderId);
-      setRepeatOrderData(response.data)
+    const handleRepOrderData = async () => {
+        const response = await getOrders(re_orderId);
+        setRepeatOrderData(response.data)
     }
-    const handleSetLoding=(status:boolean)=>{
+    const handleSetLoding = (status: boolean) => {
         setLoding(status)
     }
 
-    useEffect(()=>{
-     if(re_orderId !== ''){
-        handleRepOrderData();
-     }
-    },[re_orderId])
+    useEffect(() => {
+        if (re_orderId !== '') {
+            handleRepOrderData();
+        }
+    }, [re_orderId])
 
     return (
         <View style={style.container}>
-           <View style={[loding && style.display_none,{ flex: 1}]}>
-            <ScrollView style={[style.sub_container,]}
-                keyboardShouldPersistTaps='handled'
-                showsVerticalScrollIndicator={false}>
-                <View style={style.card2}>
-                    <View style={style.addAddress}>
-                        <Text style={style.add_text}>Delivery Address</Text>
-                        <Text style={style.add_btn} onPress={() => navigation.navigate('addaddress')}>+ Add New Address</Text>
-                    </View>
+            <View style={[loding && style.display_none, { flex: 1 }]}>
+                <ScrollView style={[style.sub_container,]}
+                    keyboardShouldPersistTaps='handled'
+                    showsVerticalScrollIndicator={false}>
+                    <View style={style.card2}>
+                        <View style={style.addAddress}>
+                            <Text style={style.add_text}>Delivery Address</Text>
+                            <Text style={style.add_btn} onPress={() => navigation.navigate('addaddress')}>+ Add New Address</Text>
+                        </View>
 
-                    <View style={style.separator}></View>
-                    <View>
-                        {everyoneAddress?.length > 0 ?
-                            <TouchableOpacity style={style.card1} onPress={() => { toggleModal() }}>
-                                <View style={style.one}>
-                                    <LocationIcon fill={"orange"}  height={20} width={20} />
-                                    <Text
-                                        style={style.textLoc}
-                                        numberOfLines={1}
-                                        ellipsizeMode="tail"
-                                    >
-                                        <Text style={style.text1}>
-                                            {selectedAddress?.city || ''} 
+                        <View style={style.separator}></View>
+                        <View>
+                            {everyoneAddress?.length > 0 ?
+                                <TouchableOpacity style={style.card1} onPress={() => { toggleModal() }}>
+                                    <View style={style.one}>
+                                        <LocationIcon fill={"orange"} height={20} width={20} />
+                                        <Text
+                                            style={style.textLoc}
+                                            numberOfLines={1}
+                                            ellipsizeMode="tail"
+                                        >
+                                            <Text style={style.text1}>
+                                                {selectedAddress?.city || ''}
+                                            </Text>
+                                            <Text> </Text> {`${selectedAddress?.name || ''} ${selectedAddress?.landmark || ''} ${selectedAddress?.city || ''} ${selectedAddress?.state || ''} ${selectedAddress?.pincode || ''}`}
                                         </Text>
-                                        <Text> </Text> {`${selectedAddress?.name || ''} ${selectedAddress?.landmark || ''} ${selectedAddress?.city || ''} ${selectedAddress?.state || ''} ${selectedAddress?.pincode || ''}`}
-                                    </Text>
-                                    <DownArrow height={20} width={20} />
-                                </View>
-                            </TouchableOpacity> :
-                            <TouchableOpacity onPress={() => navigation.navigate('addaddress')} >
-                                <Text style={style.addADDRESS} >Add Address</Text>
-                            </TouchableOpacity>
-                        }
+                                        <DownArrow height={20} width={20} />
+                                    </View>
+                                </TouchableOpacity> :
+                                <TouchableOpacity onPress={() => navigation.navigate('addaddress')} >
+                                    <Text style={style.addADDRESS} >Add Address</Text>
+                                </TouchableOpacity>
+                            }
+                        </View>
                     </View>
-                </View>
-                <View style={style.payment}>
-                    <Text style={style.payment_text}>Payment Method</Text>
-                </View>
+                    <View style={style.payment}>
+                        <Text style={style.payment_text}>Payment Method</Text>
+                    </View>
                     <View style={style.payment_types}>
                         <View style={[style.payment_mode,
                         { backgroundColor: paymentType === 'cash' ? `${THEME_COLORS.light_color}` : 'white' }]}>
@@ -257,35 +257,35 @@ export default function Checkout({ route }: any) {
                             </TouchableOpacity>
                         </View>
                     </View>
-                <View style={style.note_container}>
-                    <TextInput
-                        multiline={true}
-                        numberOfLines={5}
-                        style={style.note} />
+                    <View style={style.note_container}>
+                        <TextInput
+                            multiline={true}
+                            numberOfLines={5}
+                            style={style.note} />
+                    </View>
+                </ScrollView>
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    {paymentType === 'cash' ?
+                        <TouchableOpacity style={[style.confirm_order, { backgroundColor: (addressId?._id && paymentType) ? THEME_COLORS.secondary : THEME_COLORS.light_color }]}
+                            onPress={createOrder}>
+                            {isLoading && <ActivityIndicator size="small" color={THEME_COLORS.primary} />}
+                            <Text style={style.cashBtn} disabled={isLoading}>
+                                Confirm Order
+                            </Text>
+                        </TouchableOpacity> :
+                        <Payment totalAmount={totalAmount}
+                            type={paymentType}
+                            addressId={addressId?._id}
+                            repeatOrderData={repeatOrderData}
+                            setLoding={handleSetLoding} />}
+                    {show && <OrderConfirmationScreen show={show}
+                        handleClose={handleClose}
+                        totalAmount={totalAmount === '' ? repeatOrderData?.totals?.amount : totalAmount}
+                        orderId={orderId} />}
                 </View>
-            </ScrollView>
-            <View style={{justifyContent:'center',alignItems:'center'}}>
-            {paymentType === 'cash' ?
-                <TouchableOpacity style={[style.confirm_order,{backgroundColor:(addressId?._id && paymentType) ?THEME_COLORS.secondary: THEME_COLORS.light_color}] }
-                                  onPress={createOrder}>
-                    {isLoading && <ActivityIndicator size="small" color={THEME_COLORS.primary} />}
-                    <Text style={style.cashBtn}  disabled={isLoading}>
-                        Confirm Order
-                    </Text>
-                </TouchableOpacity> :
-                <Payment totalAmount={totalAmount} 
-                         type={paymentType} 
-                         addressId={addressId?._id} 
-                         repeatOrderData={repeatOrderData}
-                         setLoding={handleSetLoding}/>}
-            {show && <OrderConfirmationScreen show={show} 
-                                              handleClose={handleClose} 
-                                              totalAmount={totalAmount ===''? repeatOrderData?.totals?.amount : totalAmount} 
-                                              orderId={orderId} />}
             </View>
-            </View>
-            
-            {loding && <Loding/>}
+
+            {loding && <Loding />}
             <View>
                 <Modal
                     visible={modalVisible}
@@ -317,7 +317,7 @@ export default function Checkout({ route }: any) {
                                         >
                                             <View>
                                                 <View style={style.textIcons} >
-                                                    <LocationIcon fill={"orange"}  height={20} width={20}></LocationIcon>
+                                                    <LocationIcon fill={"orange"} height={20} width={20}></LocationIcon>
                                                     <Text style={style.text2} numberOfLines={1} ellipsizeMode="tail">{e?.city || ''}</Text>
                                                 </View>
                                                 <Text style={style.text}>
@@ -348,13 +348,14 @@ export default function Checkout({ route }: any) {
 
                     <View style={style.modalBackground}>
                         <View style={style.modalContents}>
-                           <TouchableOpacity onPress={()=>{
-                            setModalVisibles(!modalVisibles)}}>
+                            <TouchableOpacity onPress={() => {
+                                setModalVisibles(!modalVisibles)
+                            }}>
                                 <View style={style.crossIcon}>
-                                <Cross  height={10} width={10}></Cross>
+                                    <Cross height={10} width={10}></Cross>
                                 </View>
-                          
-                           </TouchableOpacity>
+
+                            </TouchableOpacity>
                             <TouchableOpacity onPress={() => { navigation.navigate('payment') }}>
                                 <Text style={{ color: "black", fontWeight: "bold" }}>Edit</Text>
                             </TouchableOpacity>
@@ -438,7 +439,7 @@ const style = StyleSheet.create({
     }, add_btn: {
         color: THEME_COLORS.secondary,
         fontSize: 16,
-        fontWeight:'bold'
+        fontWeight: 'bold'
     },
 
     colorsText: {
@@ -469,16 +470,16 @@ const style = StyleSheet.create({
         alignItems: 'center'
     },
     payment_types: {
-        flex:1,
+        flex: 1,
         flexDirection: 'row',
-        flexWrap:'wrap',
+        flexWrap: 'wrap',
         justifyContent: 'space-evenly',
         alignItems: 'center',
         marginLeft: 20,
         marginRight: 20,
         marginTop: 20,
         width: '95%',
-        gap:10
+        gap: 10
     },
     payment_mode: {
         borderWidth: 1,
@@ -517,7 +518,7 @@ const style = StyleSheet.create({
         // backgroundColor: THEME_COLORS.secondary,
         height: 45,
         borderRadius: 10,
-        flexDirection:'row',
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         width: '60%',
@@ -559,7 +560,7 @@ const style = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        marginLeft:'2%'
+        marginLeft: '2%'
     },
     container1: {
         padding: 16,
@@ -653,11 +654,11 @@ const style = StyleSheet.create({
         padding: 10,
         backgroundColor: 'white',
         borderRadius: 5,
-        alignItems:"center",
+        alignItems: "center",
         marginRight: 30,
-        marginTop:20
+        marginTop: 20
     },
-    display_none:{
-        display:'none'
+    display_none: {
+        display: 'none'
     }
 })

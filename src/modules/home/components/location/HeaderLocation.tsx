@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useCallback } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Modal,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import MapView, { Marker } from 'react-native-maps';
@@ -30,6 +31,8 @@ import ProfileAvatar from "../../utils/ProfileAvatar";
 import { RootState } from "../../../../store/store";
 import { useCreateAddressMutation, useGetAddressByuserMutation } from "../../../accounts/components/afterLogin/Addresses/store/AddressEndpoints";
 import { useFocusEffect } from '@react-navigation/native';
+
+
 const HeaderLocation = () => {
   const user = useSelector((store: RootState) => store.user.user);
   const [getAddressByUser] = useGetAddressByuserMutation()
@@ -43,6 +46,7 @@ const HeaderLocation = () => {
   const [userName, setUserName] = useState('');
   const [imageUri, setImgageUri] = useState('')
   const dispatch = useDispatch();
+
   const navigation = useNavigation<any>();
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -52,7 +56,24 @@ const HeaderLocation = () => {
   const [longitude, setLongitude] = useState<any>(null);
   const [displayAddress, setDisplayAddress] = useState('');
   const [error, setError] = useState<any>(null);
-  const mapKey = 'AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY'
+  const mapKey = 'AIzaSyC0gW5zGpTdX-XaxspBWi_jfCNYdIaJBsY';
+
+  const hyderabadBounds = {
+    minLat: 17.2,
+    maxLat: 17.6,
+    minLon: 78.2,
+    maxLon: 78.8,
+
+  };
+
+  const isWithinHyderabadBounds = (lat: number, lon: number) => {
+    return (
+      lat >= hyderabadBounds.minLat &&
+      lat <= hyderabadBounds.maxLat &&
+      lon >= hyderabadBounds.minLon &&
+      lon <= hyderabadBounds.maxLon
+    );
+  };
   const fetchSuggestions = async (text: any) => {
     const apiKey = mapKey; // Replace with your API key
     const response = await fetch(
@@ -74,11 +95,18 @@ const HeaderLocation = () => {
       );
       const data = await response.json();
       const location = data.results[0].geometry.location;
-      setUserLoc({ latitude: location.lat, longitude: location.lng });
-      setLatitude(location.lat);
-      setLongitude(location.lng);
-      setDisplayAddress(item.description);
-      setModalVisible(false); // Close the modal
+
+      if (isWithinHyderabadBounds(location.lat, location.lng)) {
+        setUserLoc({ latitude: location.lat, longitude: location.lng });
+        setLatitude(location.lat);
+        setDisplayAddress(item.description);
+
+        setLongitude(location.lng);
+        setModalVisible(false); // Close the modal
+      } else {
+        Alert.alert("Error", "This area is not serviceable");
+      }
+
     }
   };
 
@@ -106,23 +134,28 @@ const HeaderLocation = () => {
     if (granted) {
       Geolocation.getCurrentPosition(
         async location => {
-          setLatitude(location.coords.latitude);
-          setLongitude(location.coords.longitude);
+          if (isWithinHyderabadBounds(location.coords.latitude, location.coords.longitude)) {
+            setLatitude(location.coords.latitude);
+            setLongitude(location.coords.longitude);
 
-          try {
-            const response = await Geocoder.from(
-              location.coords.latitude,
-              location.coords.longitude,
-            );
-            const address = response.results[0].formatted_address;
-            setDisplayAddress(address);
-            setUserInput(address);
-            setUserLoc({
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude
-            });
-          } catch (error: any) {
-            setError(error.message);
+            try {
+              const response = await Geocoder.from(
+                location.coords.latitude,
+                location.coords.longitude,
+              );
+              const address = response.results[0].formatted_address;
+              setDisplayAddress(address);
+              setUserInput(address);
+              setUserLoc({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude
+              });
+            } catch (error: any) {
+              setError(error.message);
+            }
+          } else {
+            Alert.alert("Error", "This area is not serviceable");
+
           }
         },
         error => setError(error.message),
@@ -148,51 +181,55 @@ const HeaderLocation = () => {
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
           Geolocation.getCurrentPosition(
             async location => {
-              setLatitude(location.coords.latitude);
-              setLongitude(location.coords.longitude);
+              if (isWithinHyderabadBounds(location.coords.latitude, location.coords.longitude)) {
+                setLatitude(location.coords.latitude);
+                setLongitude(location.coords.longitude);
 
-              try {
-                const response = await Geocoder.from(
-                  location.coords.latitude,
-                  location.coords.longitude,
-                );
-                const address = response.results[0].formatted_address;
-                const addressComponents = response.results[0].address_components;
-                const flatComponent = addressComponents.find(component =>
-                  component.types.includes('subpremise')
-                );
-                const cityComponent = addressComponents.find(component =>
-                  component.types.includes('locality')
-                );
-                const countryComponent = addressComponents.find(component =>
-                  component.types.includes('country')
-                );
-                const pincodecomponent = addressComponents.find(component =>
-                  component.types.includes('postal_code')
-                );
-                const streetComponent = addressComponents.find(component =>
-                  component.types.includes('route')
-                );
-                const stateComponent = addressComponents.find(component =>
-                  component.types.includes('administrative_area_level_1')
-                );
+                try {
+                  const response = await Geocoder.from(
+                    location.coords.latitude,
+                    location.coords.longitude,
+                  );
+                  const address = response.results[0].formatted_address;
+                  const addressComponents = response.results[0].address_components;
+                  const flatComponent = addressComponents.find(component =>
+                    component.types.includes('subpremise')
+                  );
+                  const cityComponent = addressComponents.find(component =>
+                    component.types.includes('locality')
+                  );
+                  const countryComponent = addressComponents.find(component =>
+                    component.types.includes('country')
+                  );
+                  const pincodecomponent = addressComponents.find(component =>
+                    component.types.includes('postal_code')
+                  );
+                  const streetComponent = addressComponents.find(component =>
+                    component.types.includes('route')
+                  );
+                  const stateComponent = addressComponents.find(component =>
+                    component.types.includes('administrative_area_level_1')
+                  );
 
-                const flat = flatComponent ? flatComponent.long_name : '';
-                const city = cityComponent ? cityComponent.long_name : '';
-                const country = countryComponent ? countryComponent.long_name : '';
-                const pincode = pincodecomponent ? pincodecomponent.long_name : '';
-                const street = streetComponent ? streetComponent.long_name : '';
-                const state = stateComponent ? stateComponent.long_name : '';
-                const landmark = flatComponent ? flatComponent.long_name : '';
-                const mobile = flatComponent ? flatComponent.long_name : '';
-                setLocation({ city, country, address, pincode, street, state, landmark, mobile })
-                setDisplayAddress(address);
-                setUserLoc({
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude
-                });
-              } catch (error: any) {
-                setError(error.message);
+                  const flat = flatComponent ? flatComponent.long_name : '';
+                  const city = cityComponent ? cityComponent.long_name : '';
+                  const country = countryComponent ? countryComponent.long_name : '';
+                  const pincode = pincodecomponent ? pincodecomponent.long_name : '';
+                  const street = streetComponent ? streetComponent.long_name : '';
+                  const state = stateComponent ? stateComponent.long_name : '';
+                  const landmark = flatComponent ? flatComponent.long_name : '';
+                  const mobile = flatComponent ? flatComponent.long_name : '';
+                  setLocation({ city, country, address, pincode, street, state, landmark, mobile });
+                  setDisplayAddress(address);
+                  setUserLoc({
+                    latitude: location.coords.latitude,
+                    longitude: location.coords.longitude
+                  });
+                } catch (error: any) {
+                  setError(error.message);
+                }
+              } else {
+                Alert.alert("Error", "This area is not serviceable ");
               }
             },
             error => setError(error.message),
@@ -207,6 +244,7 @@ const HeaderLocation = () => {
       }
     }
   };
+
 
 
   useEffect(() => {
@@ -259,7 +297,7 @@ const HeaderLocation = () => {
     try {
       const getdata = await getAddressByUser(userId).unwrap();
       setAllTheAddress(getdata.secondaryAddress);
-  
+
       if (getdata.secondaryAddress.length === 0) {
         createAllAddressesSecond(true);
       }
@@ -286,25 +324,27 @@ const HeaderLocation = () => {
       if (location?.address && location?.city && location?.pincode && location?.state) {
         await addAddress({ id: userId, user: dataTosend }).unwrap();
         getAllAddresses(); // Refresh addresses after adding
-        
+
       }
     } catch (error) {
       console.log(error);
     }
   };
 
- useFocusEffect(useCallback(()=>{{
-  getAllAddresses();
-  }},[]))
+  useFocusEffect(useCallback(() => {
+    {
+      getAllAddresses();
+    }
+  }, []))
 
   // useFocusEffect(useCallback(()=>{{
   //   dispatch(setDisplayAddressAll(alltheAddress));
   // }},[alltheAddress, dispatch]))
 
 
-  
-  
-  
+
+
+
 
 
 
@@ -524,7 +564,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     height: 65,
-    width:'100%'
+    width: '100%'
   },
   locationImg1: {
     display: 'flex',
@@ -630,10 +670,10 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 25,
-  },profile_Container:{
-    marginRight:'1%',
-    height:'100%',
-    justifyContent:'center',
-    alignItems:'center'
+  }, profile_Container: {
+    marginRight: '1%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 });
