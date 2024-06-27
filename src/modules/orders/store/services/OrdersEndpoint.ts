@@ -50,11 +50,12 @@ export const ordersService = ordersApi.injectEndpoints({
         }),
 
         updateOrder: builder.mutation({
-            query: order => ({
-                url: '/updateOrder',
+            query: ({orderId, orderStatus}) =>{ 
+                return {
+                url: `/updateOrder?orderId=${orderId}`,
                 method: 'POST',
-                body: order
-            }),
+                body:{ orderStatus}
+            }},
             invalidatesTags: ['orders']
         })
     })

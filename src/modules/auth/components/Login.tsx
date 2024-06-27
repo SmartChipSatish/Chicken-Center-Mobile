@@ -143,7 +143,7 @@ export default function LoginPage() {
     return (
         // <View style={style.container}>
         <ImageBackground source={backgroundImg}
-            style={{ height: '100%' }}>
+            style={{ height: '100%',width:'100%' }}>
             <ScrollView showsVerticalScrollIndicator={false}
                 contentContainerStyle={style.scrollViewContent}
                 keyboardShouldPersistTaps='always'>

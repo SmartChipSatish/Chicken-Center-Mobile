@@ -33,7 +33,7 @@ const Navigation = () => {
             </ToastProvider>}
             {loading && <LottieView
                 source={splashScreen}
-                style={{ width: "100%", height: "100%", backgroundColor: 'black' }}
+                style={{ width: "100%", height: "100%", backgroundColor: '#FFFFFF' }}
                 autoPlay
                 loop
             />}

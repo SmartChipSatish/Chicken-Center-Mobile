@@ -46,6 +46,18 @@ export default function Checkout({ route }: any) {
     const [repeatOrderData, setRepeatOrderData] = useState<any>();
     const [getOrders] = useGetOrderByIdMutation();
     const [loding, setLoding] = useState<boolean>(false);
+    const user = useSelector((store: RootState) => store.user.user);
+    const formatMobileNumber = (mobileNumber: string) => {
+        if (mobileNumber.startsWith('+91')) {
+            return mobileNumber.slice(3);
+        } else if (mobileNumber.startsWith('91') && mobileNumber.length === 12) {
+            return mobileNumber.slice(2);
+        } else {
+            return mobileNumber;
+        }
+    };
+    const formattedNumber = user ? formatMobileNumber(user.primaryNumber.toString()) : '';
+
     const toast = useToast();
     const items = cartItems.map(item => {
         return ({
@@ -56,7 +68,6 @@ export default function Checkout({ route }: any) {
             imageUrl: item?.imageUrl,
             itemName: item?.itemName,
             itemUnit: item?.quantity,
-            contactNumber: '9948917262'
         })
     });
 
@@ -74,6 +85,7 @@ export default function Checkout({ route }: any) {
                     updatedBy: uid,
                     addressId: addressId?._id,
                     paymentType: paymentType,
+                    contactNumber: formattedNumber,
                     items: totalAmount === '' ? repeatOrderData.items : items,
                     totals: totalAmount === '' ? repeatOrderData.totals : {
                         quantity: totalQuantity,
