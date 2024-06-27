@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { resetAll } from '../../../../store/slices/ResetSlice';
 
 interface OrderItems {
     ordersCount:number
@@ -15,7 +16,9 @@ const OrderItemsSlice = createSlice({
         setOrderCount: (state, action) => {
             state.ordersCount = action.payload;
         },
-    }
+    },extraReducers: (builder) => {
+        builder.addCase(resetAll, () => initialState);
+      }
 })
 
 export const { setOrderCount } = OrderItemsSlice.actions;

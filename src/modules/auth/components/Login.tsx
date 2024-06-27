@@ -141,9 +141,10 @@ export default function LoginPage() {
     );
 
     return (
-        // <View style={style.container}>
+        <View style={style.container}>
         <ImageBackground source={backgroundImg}
-            style={{ height: '100%',width:'100%' }}>
+            style={style.imageBackground}
+             resizeMode="cover">
             <ScrollView showsVerticalScrollIndicator={false}
                 contentContainerStyle={style.scrollViewContent}
                 keyboardShouldPersistTaps='always'>
@@ -186,7 +187,7 @@ export default function LoginPage() {
             </ScrollView>
             {loding && <Loding type='login' />}
         </ImageBackground>
-        // </View>
+     </View>
     );
 }
 
@@ -255,5 +256,11 @@ const style = StyleSheet.create({
         marginRight: '2%',
         fontSize: 18,
         color: TEXT_COLORS.primary,
-    }
+    }, imageBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+        height: '100%',
+      },
 });

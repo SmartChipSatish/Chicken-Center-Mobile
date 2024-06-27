@@ -115,10 +115,12 @@ export default function GlobalOrders() {
   )
 
   const handleTabPress = (tab: React.SetStateAction<string>) => {
-    setSelectedTab(tab);
-    setPage(1)
-    setOrdersData([])
-    setHasMore(true)
+    if(tab !== selectedTab){
+      setSelectedTab(tab);
+      setPage(1)
+      setOrdersData([])
+      setHasMore(true)
+    }
   };
   const handleScroll = (event: any) => {
     const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;

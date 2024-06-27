@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import { TEXT_COLORS, TEXT_FONT_SIZE, THEME_COLORS } from '../../../globalStyle/GlobalStyles';
 import { useGetOrderByIdMutation } from '../store/services/OrdersEndpoint';
 import Loding from '../../dashboard/components/Loding';
@@ -11,6 +11,9 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../store/store';
 import RatingDisplay from '../../../sharedFolders/components/RatingDisplay';
 import RateOrder from './RateOrder';
+import { CallLogo } from '../../../assets/svgimages/SaveAsIcons';
+
+const delivery_boy_logo = require('../../../assets/Images/delivery_logo.png')
 
 export default function OrderSummary({ orderId, setModalVisible1, orderStatus }: { orderId: string, setModalVisible1: () => void, orderStatus: string }) {
     const user = useSelector((store: RootState) => store?.user?.user);
@@ -84,6 +87,11 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
     const handleClose = () => {
         setShow(false)
     }
+
+    const handleCallToDeliveryBoy=()=>{
+        Linking.openURL(`tel:${123456789}`);
+    }
+
     console.log(orderStatus, 'orderStatus')
     return (
 
@@ -149,10 +157,21 @@ export default function OrderSummary({ orderId, setModalVisible1, orderStatus }:
                             <TouchableOpacity onPress={() => setShow(true)}>
                                 <RatingDisplay rating={4.3} votes={2925} />
                             </TouchableOpacity>
-
+                           
                             {/* <StatusButton status='DELIVERED'/>   */}
                         </View>
-
+                        <View style={styles.delivery_boy_details}>
+                            <View style={styles.delivery_boy_logo_name}>
+                                <Image source={delivery_boy_logo} style={styles.delivery_logo} />
+                                <View>
+                                    <Text style={styles.delivery_boy_name}>Delivery boy Name</Text>
+                                    <Text style={{ marginLeft: '5%' }}>Your delivery partner</Text>
+                                </View>
+                            </View>
+                            <TouchableOpacity style={styles.call_icon} onPress={handleCallToDeliveryBoy}>
+                                <CallLogo />
+                            </TouchableOpacity>
+                        </View>
                         <Text style={styles.AlltextColors}>Order id</Text>
                         <Text style={[styles.AlltexFonts, styles.textColor]}>#{orderId}</Text>
                         <Text style={styles.AlltextColors}>UserName</Text>
@@ -410,6 +429,37 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
+    },delivery_logo:{
+        width: 70,
+        height: 70,
+        borderRadius:50,
+        objectFit:'cover'
+    },delivery_boy_details:{
+        flexDirection:'row',
+        justifyContent:'space-between',
+        alignItems:'center',
+        marginBottom:'5%',
+        marginTop:'5%'
+    },delivery_boy_logo_name:{
+        flexDirection:'row',
+        justifyContent:'center',
+        // alignItems:'center'
+    },delivery_boy_name:{
+        fontSize:16,
+        fontWeight:'500',
+        color:TEXT_COLORS.primary,
+        marginLeft:'5%'
+    }, call_icon: {
+        backgroundColor: '#FFFFFF', 
+        borderRadius: 50,
+        padding: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+        elevation: 6,
     }
 
 });

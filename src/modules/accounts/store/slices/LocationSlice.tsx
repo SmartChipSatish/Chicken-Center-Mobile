@@ -1,4 +1,5 @@
 import {createSlice} from '@reduxjs/toolkit';
+import { resetAll } from '../../../../store/slices/ResetSlice';
 
 
 interface ProductList {
@@ -60,8 +61,10 @@ const locationsSlice = createSlice({
         },
         setItemid: (state, action) => {
             state.itemId=action.payload
-        },
-    }
+        }
+    },extraReducers: (builder) => {
+        builder.addCase(resetAll, () => initialState);
+      }
 });
 
 export const { setAddLocation,setLatitudes,setLongitudes,setDisplayAddressAll,setItemid } = locationsSlice.actions;
