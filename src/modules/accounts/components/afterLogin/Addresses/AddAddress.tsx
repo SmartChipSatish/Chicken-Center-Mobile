@@ -16,10 +16,11 @@ import { useToast } from 'react-native-toast-notifications'
 import { ShowToster } from '../../../../../sharedFolders/components/ShowToster'
 
 export default function AddAddress() {
-  console.log(saveAs,"saveAs-----")
+  console.log(saveAs, "saveAs-----")
   const navigation = useNavigation<any>();
   const userLatitudes = useSelector((store: RootState) => store.locations.latitudes)
   const userLongitudes = useSelector((store: RootState) => store.locations.longitudes);
+  console.log(userLatitudes, userLongitudes, 'userLatitudes')
   const cartItems = useSelector((store: RootState) => store.cartProducts.cartProducts);
   const [addAddress] = useCreateAddressMutation();
   const [placeholderShow, setPlaceholderShow] = useState(false);
@@ -40,6 +41,7 @@ export default function AddAddress() {
   const toast = useToast();
 
   const handleAddress = (location: any) => {
+    console.log(location, 'sai')
     const flat = location?.address?.split(',')?.shift() || '';
     setAddress({ city: location.city, country: location.country, address: location.address, flat: flat, pincode: location.pincode, street: location.street, state: location.state });
   }
@@ -51,6 +53,11 @@ export default function AddAddress() {
 
 
   const createAllAddresses = async (status: boolean) => {
+    if (userLatitudes === null || userLongitudes === null) {
+      ShowToster(toast, 'This address is not serviceable.', '', 'error');
+
+      return;
+    }
     const value = await AsyncStorage.getItem('userId');
     const userId = value ? JSON.parse(value) : null;
     console.log(userId, "userId")
@@ -87,7 +94,7 @@ export default function AddAddress() {
       }
       else {
         // Alert.alert("Enter all the fields...")
-        ShowToster(toast, 'Enter all the fields...', '', 'error'); 
+        ShowToster(toast, 'Enter all the fields...', '', 'error');
       }
 
 
@@ -156,7 +163,7 @@ export default function AddAddress() {
   const mobileavalidation = (e: string) => {
     const mobileNumberRegex = /^[6-9]\d{9}$/;
     if (e.length === 10 && mobileNumberRegex.test(e)) {
-      setmobilenotify(false); 
+      setmobilenotify(false);
     } else {
       setmobilenotify(true);
     }
@@ -253,8 +260,10 @@ export default function AddAddress() {
           <Text style={Style.side_header}>Save as</Text>
           <View style={{ flexDirection: 'row', marginTop: 5 }}>
             {saveAs.map((e, inedx) => {
-              return <TouchableOpacity style={[Style.savas_btn, { backgroundColor: saveType === e.title  ? `${THEME_COLORS.light_color}` : 'white',
-                borderColor: saveType === e.title ? 'white' : 'black' }]}
+              return <TouchableOpacity style={[Style.savas_btn, {
+                backgroundColor: saveType === e.title ? `${THEME_COLORS.light_color}` : 'white',
+                borderColor: saveType === e.title ? 'white' : 'black'
+              }]}
                 key={inedx}
                 onPress={() => { setSaveType(e.title); setbutton(e) }}>
                 <e.icon fill={saveType === e.title ? 'white' : 'black'} width={20} height={20} color={`${TEXT_COLORS.primary}`} />
