@@ -4,9 +4,9 @@ import { DevSettings } from 'react-native';
 
 interface AuthContextProps {
   userToken: string | null;
-  login: (token: string,userId:string) => void;
+  login: (token: string, userId: string) => void;
   logout: () => void;
-  loading:boolean
+  loading: boolean
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -15,37 +15,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userToken, setUserToken] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const login = (token: string, userId:string) => {
+  const login = (token: string, userId: string) => {
+    console.log(token, userId)
     AsyncStorage.setItem('idToken', JSON.stringify(token + userId));
     AsyncStorage.setItem('userId', JSON.stringify(userId));
     AsyncStorage.setItem('login', 'true');
     setUserToken(token);
   };
 
-  const logout = async() => {
+  const logout = async () => {
     await AsyncStorage.clear();
     setUserToken(null);
     DevSettings.reload();
   };
 
-  const checkUser=async()=>{
-     const tocken= await AsyncStorage.getItem('idToken');
-     const loginCheck= await AsyncStorage.getItem('login');
-     setTimeout(() => {
+  const checkUser = async () => {
+    const tocken = await AsyncStorage.getItem('idToken');
+    const loginCheck = await AsyncStorage.getItem('login');
+    setTimeout(() => {
       setLoading(false);
-      }, 3000);
-      
-     if(tocken && Boolean(loginCheck)){
+    }, 3000);
+
+    if (tocken && Boolean(loginCheck)) {
       setUserToken(tocken);
-      }else{
-        setUserToken(null);
-      }
-     
+    } else {
+      setUserToken(null);
+    }
+
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     checkUser();
-  },[])
+  }, [])
 
   return (
     <AuthContext.Provider value={{ userToken, login, logout, loading }}>

@@ -92,7 +92,7 @@ const ProfileScreen: React.FC = () => {
 
         try {
             const storeduserId = await AsyncStorage.getItem('userId');
-
+            console.log(storeduserId)
             if (storeduserId) {
                 const userId = storeduserId.replace(/['"]/g, '').trim();
                 const response = await updateUser({

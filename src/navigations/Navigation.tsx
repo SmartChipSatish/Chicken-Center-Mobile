@@ -11,7 +11,7 @@ const splashScreen = require('./splash_screen.json')
 
 const Navigation = () => {
     const { userToken, loading } = useAuth();
-
+    console.log(userToken, 'nav userToken')
     return (
         <>
             {!loading && <ToastProvider

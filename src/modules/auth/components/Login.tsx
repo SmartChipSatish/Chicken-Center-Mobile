@@ -32,7 +32,7 @@ export default function LoginPage() {
     }
 
     GoogleSignin.configure({
-        webClientId: '781535826140-6kr39lp0fm05a2fupcecf42j9ka8o5v0.apps.googleusercontent.com',
+        webClientId: '970630702265-o2468cr66o0p9tjbq0edilhhvhj4rvpd.apps.googleusercontent.com',
     });
 
     const SendOtp = async () => {
@@ -116,7 +116,7 @@ export default function LoginPage() {
                 const userId = data?.data?._id
                 if (userId) {
                     setLoding(false);
-                    login(JSON.stringify(idTokens),userId);
+                    login(JSON.stringify(idTokens), userId);
                     navigation.reset({
                         index: 0,
                         routes: [{ name: 'main' }],
@@ -143,7 +143,7 @@ export default function LoginPage() {
     return (
         // <View style={style.container}>
         <ImageBackground source={backgroundImg}
-            style={{ height: '100%',width:'100%' }}>
+            style={{ height: '100%', width: '100%' }}>
             <ScrollView showsVerticalScrollIndicator={false}
                 contentContainerStyle={style.scrollViewContent}
                 keyboardShouldPersistTaps='always'>

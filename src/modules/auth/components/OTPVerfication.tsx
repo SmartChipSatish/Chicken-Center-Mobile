@@ -66,9 +66,11 @@ export default function OTPVerfication({ navigation, route }: any) {
         await auth().signInWithCredential(credential);
         const user = auth().currentUser;
         const idToken = await user?.getIdToken();
+        console.log(idToken)
         if (idToken) {
           AsyncStorage.setItem('idToken', JSON.stringify(idToken))
           const data = await getUser(`${user?.uid}`);
+          console.log(data)
           const userId = data?.data?._id
           const name = data?.data?.name
           if (userId && name !== '') {
